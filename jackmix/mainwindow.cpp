@@ -75,8 +75,8 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	_mw->layout->setColStretch( 1, 0 );
 	_mw->layout->setColStretch( 0, 1000 );
 
-	QStringList ins = QStringList()<<"in_1"<<"in_2"<<"in_3"<<"in_4"<<"in_5"<<"in_6";
-	QStringList outs = QStringList()<<"out_1"<<"out_2";
+	QStringList ins = QStringList()<<"in_1"<<"in_2"<<"in_3"<<"in_4"<<"in_5"<<"in_6"<<"in_7"<<"in_8";
+	QStringList outs = QStringList()<<"out_1"<<"out_2"<<"out_3";
 	_mixerwidget = new MixingMatrix::Widget( ins, outs, _mw );
 	_mw->layout->addWidget( _mixerwidget, 1,0 );
 	_inputswidget = new MixingMatrix::Widget( ins, QStringList(), _mw );
@@ -85,15 +85,18 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	_mw->layout->addWidget( _outputswidget, 1,1 );
 
 	_mixerwidget->createControl( QStringList()<<"in_1"<<"in_2", QStringList()<<"out_1"<<"out_2" );
-	_mixerwidget->createControl( QStringList()<<"in_4", QStringList()<<"out_1"<<"out_2" );
+	_mixerwidget->createControl( QStringList()<<"in_3"<<"in_4", QStringList()<<"out_1"<<"out_2" );
+	_mixerwidget->createControl( QStringList()<<"in_5", QStringList()<<"out_1"<<"out_2" );
+	_mixerwidget->createControl( QStringList()<<"in_6", QStringList()<<"out_1"<<"out_2" );
 	//_mixerwidget->createControl( QStringList()<<"in_4", QStringList()<<"out_1" );
 	//_mixerwidget->createControl( QStringList()<<"in_4", QStringList()<<"out_2" );
 	_mixerwidget->autoFill();
 
+	_inputswidget->createControl( QStringList()<<"in_1"<<"in_2", QStringList()<<"in_1"<<"in_2" );
 	_inputswidget->createControl( QStringList()<<"in_3"<<"in_4", QStringList()<<"in_3"<<"in_4" );
 	_inputswidget->autoFill();
 
-	_outputswidget->createControl( QStringList()<<"out_1"<<"out_2", QStringList()<<"out_1"<<"out_2" );
+	//_outputswidget->createControl( QStringList()<<"out_1"<<"out_2", QStringList()<<"out_1"<<"out_2" );
 	_outputswidget->autoFill();
 
 	BACKEND->addInput( "in_1" );
@@ -102,9 +105,11 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	BACKEND->addInput( "in_4" );
 	BACKEND->addInput( "in_5" );
 	BACKEND->addInput( "in_6" );
+	BACKEND->addInput( "in_7" );
+	BACKEND->addInput( "in_8" );
 	BACKEND->addOutput( "out_1" );
 	BACKEND->addOutput( "out_2" );
-	//BACKEND->addOutput( "out_3" );
+	BACKEND->addOutput( "out_3" );
 }
 
 MainWindow::~MainWindow() {

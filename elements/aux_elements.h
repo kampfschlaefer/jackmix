@@ -53,53 +53,6 @@ private:
 	QString _inchannel, _outchannel;
 };
 
-/**
- * A MonotoStereo control.
- */
-class Mono2StereoElement : public JackMix::MixingMatrix::Element, public dB2VolCalc
-{
-Q_OBJECT
-public:
-	Mono2StereoElement( QStringList, QStringList, MixingMatrix::Widget*, const char* =0 );
-	~Mono2StereoElement();
-
-	int inchannels() const { return 1; }
-	int outchannels() const { return 2; }
-
-private slots:
-	void slot_toggle();
-	void balance( float );
-	void volume( float );
-	void calculateVolumes();
-private:
-	QString _inchannel, _outchannel1, _outchannel2;
-	float _balance_value, _volume_value;
-};
-
-/**
- * A StereotoStereo control.
- */
-class Stereo2StereoElement : public JackMix::MixingMatrix::Element, public dB2VolCalc
-{
-Q_OBJECT
-public:
-	Stereo2StereoElement( QStringList, QStringList, MixingMatrix::Widget*, const char* =0 );
-	~Stereo2StereoElement();
-
-	int inchannels() const { return 2; }
-	int outchannels() const { return 2; }
-
-private slots:
-	void slot_toggle();
-	void slot_replace() { emit replace( this ); }
-	void balance( float );
-	void volume( float );
-	void calculateVolumes();
-private:
-	QString _inchannel1, _inchannel2, _outchannel1, _outchannel2;
-	float _balance_value, _volume_value;
-};
-
 }; // MixerElements
 }; // JackMix
 

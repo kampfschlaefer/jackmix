@@ -27,6 +27,7 @@ libmixingelements_la_LDADD = \
 
 # which sources should be compiled
 libmixingelements_la_SOURCES = \
+	stereo_elements.cpp \
 	aux_elements.cpp
 
 # let automoc handle all of the meta source files (moc)
