@@ -25,15 +25,15 @@
 #include "osc_server.h"
 
 int main( int argc, char** argv ) {
-	std::cout << "JackMix-Server starting" << std::endl;
+	//std::cout << "JackMix-Server starting" << std::endl;
 
 	QApplication *qapp = new QApplication( argc, argv );
 
 	OSC::Server* _oscserver = new OSC::Server();
 
 	TextEdit *mw = new TextEdit();
-	const char* signal = SIGNAL( gotData( QString ) );
-	const char* slot = SLOT( appendData( QString ) );
+	const char* signal = SIGNAL( gotData( QString, QVariant ) );
+	const char* slot = SLOT( appendData( QString, QVariant ) );
 	qDebug( "! %s -> %s ? %s", signal, slot, ( QObject::connect( _oscserver, signal, mw, slot ) )?"True":"False" );
 	mw->show();
 

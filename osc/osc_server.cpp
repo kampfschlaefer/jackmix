@@ -52,38 +52,42 @@ void Server::stop() {
 }
 
 void Server::data( const char* path, QVariant data ) {
-	qDebug( "Server::data( %s, %s(%s) )", path, data.toString().latin1(), data.typeName() );
-	emit gotData( path );
+//	qDebug( "Server::data( %s, %s(%s) )", path, data.toString().latin1(), data.typeName() );
+	emit gotData( path, data );
 }
 
-void OSC::error( int num, const char *msg, const char *path )
-{
-	printf( "liblo server error %d in path %s: %s\n", num, path, msg );
+void OSC::error( int num, const char *msg, const char *path ) {
+	qWarning( "liblo server error %d in path %s: %s\n", num, path, msg );
 }
 
-int OSC::generic_handler( const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data )
-{
-	std::cout << "OSC::generic_handler()" << std::endl;
-	int i;
+int OSC::generic_handler( const char *path, const char *types, lo_arg **argv, int argc, void * /*data*/, void *user_data ) {
+	//std::cout << "OSC::generic_handler()" << std::endl;
 
 	Server* _server = static_cast<Server*>( user_data );
 
-	printf( "path: <%s>\n", path );
-	for ( i=0; i<argc; i++ ) {
+/*	printf( "path: <%s>\n", path );
+	for ( int i=0; i<argc; i++ ) {
 		printf( "arg %d '%c' ", i, types[ i ] );
 		lo_arg_pp( lo_type( types[ i ] ), argv[ i ] );
 		printf( "\n" );
+	}*/
+/*	qDebug( "Qt'ified version:" );
+	QString qtypes = types;
+	for ( int i=0; i<argc; i++ ) {
+		QString tmp = &( argv[ i ]->S );
+		qDebug( "arg %i '%c' %p %s", i, qtypes.ref( i ).latin1(), argv[ i ], tmp.latin1() );
 	}
-	if ( argc==1 ) {
+	qDebug( "\n" );*/
+	if ( argc>=1 ) {
 		if ( lo_is_numerical_type( lo_type( types[ 0 ] ) ) )
 			_server->data( path, double( lo_hires_val( lo_type( types[ 0 ] ), argv[ 0 ] ) ) );
-//		else if ( lo_is_string_type( lo_type( types[ 0 ] ) ) )
-//			_server->data( path, QString( strchr( lo_string_types, lo_type( argv[ 0 ] ) ) ) );
-		else _server->data( path );
+		else if ( lo_is_string_type( lo_type( types[ 0 ] ) ) )
+			_server->data( path, &( argv[ 0 ]->S ) );
+		else
+			_server->data( path );
 	} else
 		_server->data( path );
-	std::cout << data << std::endl;
-	printf( "\n" );
+//	printf( "\n" );
 
 	return 1;
 }

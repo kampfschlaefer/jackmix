@@ -8,8 +8,8 @@ TextEdit::TextEdit( QWidget* p, const char* n ) : QTextEdit( p,n ) {
 TextEdit::~TextEdit() {
 }
 
-void TextEdit::appendData( QString data ) {
-	qDebug( "TextEdit::append( %s )", data.latin1() );
-	this->append( data );
+void TextEdit::appendData( QString path, QVariant data ) {
+//	qDebug( "TextEdit::append( %s, %s (%s) )", path.latin1(), data.toString().latin1(), data.typeName() );
+	this->append( QString( path )+" ("+data.toString()+")" );
 }
 

@@ -37,12 +37,12 @@ namespace OSC {
 		Server( QObject*, const char* =0 );
 		Server( QString port="5282", QObject* =0, const char* =0 );
 		~Server();
-		void data( const char* data, QVariant="" );
+		void data( const char* data, QVariant=0 );
 	public slots:
 		void start( QString port="5282" );
 		void stop();
 	signals:
-		void gotData( QString );
+		void gotData( QString, QVariant );
 	private:
 		lo_server_thread _server;
 	};

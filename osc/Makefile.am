@@ -3,7 +3,7 @@ SUBDIRS=.
 
 # this is the program that gets installed.  it's name is used for all
 # of the other Makefile.am variables
-bin_PROGRAMS = jackmix_osc_client jackmix_osc_server
+check_PROGRAMS = jackmix_osc_client jackmix_osc_server
 lib_LTLIBRARIES = libqosc.la
 
 # set the include path for X, qt and KDE
