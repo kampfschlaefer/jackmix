@@ -53,11 +53,11 @@ VGStereoChannelWidget::VGStereoChannelWidget( QString in, VolumeGroup* group, QW
 	_layout->addWidget( new QLabel( _group->name(), this ) );
 	QHBoxLayout* _layout2 = new QHBoxLayout( _layout );
 	VolumeSlider* tmp;
-	tmp = new VolumeSlider( "L", 1, Qt::Vertical, this );
+	tmp = new VolumeSlider( "L", 1, BottomToTop, this );
 	connect( tmp, SIGNAL( valueChanged( QString,float ) ), this, SLOT( valueChanged( QString,float ) ) );
 	_layout2->addWidget( tmp );
 	_layout2->addWidget( new QTickmarks( -36, 12, BottomToTop, posLeft|posRight, this ) );
-	tmp = new VolumeSlider( "R", 1, Qt::Vertical, this );
+	tmp = new VolumeSlider( "R", 1, BottomToTop, this );
 	connect( tmp, SIGNAL( valueChanged( QString,float ) ), this, SLOT( valueChanged( QString,float ) ) );
 	_layout2->addWidget( tmp );
 }

@@ -4,6 +4,7 @@
 
 #include <qframe.h>
 #include <qstring.h>
+#include "common.h"
 #include "dbvolcalc.h"
 
 namespace JackMix {
@@ -15,7 +16,7 @@ public:
 		\param QString name of the Channel
 		\param float initial volume value
 	*/
-	VolumeSlider( QString, float, Qt::Orientation =Qt::Vertical, QWidget* =0, const char* =0 );
+	VolumeSlider( QString, float, Direction, QWidget* =0, const char* =0 );
 	~VolumeSlider();
 signals:
 	void valueChanged( QString, float );

@@ -4,6 +4,7 @@
 
 #include "jack_backend.h"
 #include "volumeslider.h"
+#include "qtickmarks.h"
 
 #include <iostream>
 #include <qlabel.h>
@@ -50,9 +51,10 @@ VGAuxChannelWidget::VGAuxChannelWidget( QString in, VGAux* group, QWidget* p, co
 	_layout->setMargin( 1 );
 	VolumeSlider* tmp;
 	for ( int i=0; i<_group->channels(); i++ ) {
-		tmp = new VolumeSlider( _group->name() + "_" + QString::number( i ), 1, Qt::Horizontal, this );
+		tmp = new VolumeSlider( _group->name() + "_" + QString::number( i ), 1, LeftToRight, this );
 		connect( tmp, SIGNAL( valueChanged( QString,float ) ), this, SLOT( valueChanged( QString,float ) ) );
 		_layout->addWidget( tmp );
+		_layout->addWidget( new QTickmarks( -36, 12, LeftToRight, posTop|posBottom, this ) );
 	}
 }
 VGAuxChannelWidget::~VGAuxChannelWidget() {
