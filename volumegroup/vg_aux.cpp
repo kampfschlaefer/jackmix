@@ -30,6 +30,7 @@
 #include <iostream>
 #include <qlabel.h>
 #include <qlayout.h>
+#include <qdom.h>
 
 using namespace JackMix;
 
@@ -42,11 +43,28 @@ std::cerr << "VGAux::VGAux( " << name() << ", " << channels() << ", " << p << ",
 	}
 	VolumeGroupFactory::the()->registerGroup( this );
 }
+VGAux::VGAux( QDomElement elem, QObject* p, const char* n )
+ : VolumeGroup( elem.attribute( "name", "default" ), elem.attribute( "channels", "2" ).toInt(), p,n )
+{
+std::cerr << "VGAux::VGAux( QDomElement " << elem.tagName() <<" )" << std::endl;
+	for ( int i=0; i<channels(); i++ ) {
+		BACKEND->addOutput( name() + "_" + QString::number( i ) );
+	}
+	VolumeGroupFactory::the()->registerGroup( this );
+}
+
 VGAux::~VGAux() {
 	std::cerr << "VGAux::~VGAux()" << std::endl;
 	for ( int i=0; i<channels(); i++ ) {
 		BACKEND->removeOutput( name() + "_" + QString::number( i ) );
 	}
+}
+void VGAux::appendToDoc( QDomDocument doc, QDomElement elem ) {
+	QDomElement tmp = doc.createElement( "volumegroup" );
+	tmp.setAttribute( "type", "VGAux" );
+	tmp.setAttribute( "name", name() );
+	tmp.setAttribute( "channels", channels() );
+	elem.appendChild( tmp );
 }
 
 VolumeGroupMasterWidget* VGAux::masterWidget( QWidget* parent ) {

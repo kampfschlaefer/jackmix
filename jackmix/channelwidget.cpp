@@ -36,7 +36,7 @@ ChannelWidget::ChannelWidget( QString name, QWidget* p, const char* n ) : QFrame
 	init();
 }
 
-ChannelWidget::ChannelWidget( QDomElement elem, QWidget* p, const char* n ) : QFrame( p,n ) {
+ChannelWidget::ChannelWidget( QDomElement elem, QWidget* p, const char* n ) : QFrame( p,n ), _element( elem ) {
 	std::cerr << "ChannelWidget::ChannelWidget( " << &elem << ", " << p << ", n )" << std::endl;
 	if ( elem.tagName() == "channel" )
 		_name = elem.attribute( "name" );
@@ -61,7 +61,6 @@ void ChannelWidget::init() {
 	}
 	/// RemoveButton
 	{
-std::cerr << "Create PushButton" << std::endl;
 		QPushButton* tmp = new QPushButton( "Remove", this );
 		_layout->addWidget( tmp );
 		connect( tmp, SIGNAL( clicked() ), this, SLOT( remove() ) );
@@ -80,15 +79,16 @@ std::cerr << "Create PushButton" << std::endl;
 ChannelWidget::~ChannelWidget() {
 	std::cerr << "ChannelWidget::~ChannelWidget()" << std::endl;
 	BACKEND->removeInput( _name );
+	_element.clear();
 }
 
 void ChannelWidget::valueChanged( QString out, float n ) {
-	std::cerr << "ChannelWidget::valueChanged( " << out << ", " << n << " )" << std::endl;
+	//std::cerr << "ChannelWidget::valueChanged( " << out << ", " << n << " )" << std::endl;
 	BACKEND->setVolume( _name, out, n );
 }
 
 void ChannelWidget::newVG( VolumeGroup* n ) {
-	std::cerr << "ChannelWidget::newVG( " << n << " )" << std::endl;
+	//std::cerr << "ChannelWidget::newVG( " << n << " )" << std::endl;
 	VolumeGroupChannelWidget* tmp = n->channelWidget( _name, this );
 	layout()->add( tmp );
 	tmp->show();
@@ -96,7 +96,7 @@ void ChannelWidget::newVG( VolumeGroup* n ) {
 }
 
 void ChannelWidget::removeVG( VolumeGroup* n ) {
-	std::cerr << "ChannelWidget::removeVG( " << n << " )" << std::endl;
+	//std::cerr << "ChannelWidget::removeVG( " << n << " )" << std::endl;
 	for ( uint i=0; i<_groupwidgets.count(); i++ ) {
 		if ( _groupwidgets.at( i )->group() == n ) {
 			delete _groupwidgets.at( i );
@@ -106,16 +106,15 @@ void ChannelWidget::removeVG( VolumeGroup* n ) {
 }
 
 void ChannelWidget::remove() {
-	std::cerr << "ChannelWidget::remove()" << std::endl;
+	//std::cerr << "ChannelWidget::remove()" << std::endl;
 	_groupwidgets.setAutoDelete( true );
 	_groupwidgets.clear();
-	delete this;
+	emit remove( this );
 }
 
-QDomElement ChannelWidget::toXML() {
-	QDomElement tmp;
-	tmp.setTagName( "channel" );
+void ChannelWidget::appendToDoc( QDomDocument doc, QDomElement element ) {
+	QDomElement tmp = doc.createElement( "channel" );
 	tmp.setAttribute( "name", _name );
-	return tmp;
+	element.appendChild( tmp );
 }
 

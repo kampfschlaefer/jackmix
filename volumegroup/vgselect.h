@@ -24,6 +24,7 @@
 #include <qdialog.h>
 
 class QButtonGroup;
+class QDomElement;
 
 namespace JackMix {
 
@@ -41,6 +42,11 @@ private slots:
 private:
 	VolumeGroup* _vg;
 	QButtonGroup* _btngroup;
+};
+
+class VGDomCreator {
+public:
+	static bool createFromDomElement( QDomElement );
 };
 
 };

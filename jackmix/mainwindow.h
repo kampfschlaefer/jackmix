@@ -27,6 +27,7 @@
 
 class QHBox;
 class QSettings;
+class QDomElement;
 
 namespace JackMix {
 
@@ -47,6 +48,7 @@ private slots:
 	void init( QString );
 	void closeEvent( QCloseEvent* );
 private:
+	void recursiveXML( QDomElement );
 	void newChannel( ChannelWidget* );
 	QHBox* mw;
 	QValueList<ChannelWidget*> _channelwidgets;

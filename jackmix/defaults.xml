@@ -1,0 +1,13 @@
+#define DEFAULTSTRING " \
+<Mainrc> \
+ <in> \
+  <channel name=\"in_1\" /> \
+  <channel name=\"in_2\" /> \
+  <channel name=\"in_3\" /> \
+  <channel name=\"in_4\" /> \
+ </in> \
+ <out> \
+  <volumegroup type=\"VGAux\" name=\"aux\" channels=\"3\" /> \
+  <volumegroup type=\"VGStereo\" name=\"stereo\" /> \
+ </out> \
+</Mainrc>"

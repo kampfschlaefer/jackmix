@@ -29,6 +29,7 @@
 #include <qbuttongroup.h>
 #include <qradiobutton.h>
 #include <qinputdialog.h>
+#include <qdom.h>
 
 using namespace JackMix;
 
@@ -81,4 +82,15 @@ void VGSelectDialog::finish() {
 	accept();
 }
 
+bool VGDomCreator::createFromDomElement( QDomElement elem ) {
+qDebug( "VGDomCreator::createFromDomElement( QDomElement )" );
+	if ( elem.tagName() == "volumegroup" ) {
+		if ( elem.attribute( "type" )=="VGAux" )
+			new VGAux( elem );
+		else if ( elem.attribute( "type", "VGStereo" )=="VGStereo" )
+			new VGStereo( elem );
+		return true;
+	}
+	return false;
+}
 

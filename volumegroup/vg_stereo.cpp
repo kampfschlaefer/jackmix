@@ -31,6 +31,7 @@
 #include <iostream>
 #include <qlabel.h>
 #include <qlayout.h>
+#include <qdom.h>
 
 using namespace JackMix;
 
@@ -42,10 +43,24 @@ std::cerr << "VGStereo::VGStereo( " << name() << ", " << p << ", n )" << std::en
 	BACKEND->addOutput( name() + "_R" );
 	VolumeGroupFactory::the()->registerGroup( this );
 }
+VGStereo::VGStereo( QDomElement elem, QObject* p, const char* n )
+ : VolumeGroup( elem.attribute( "name", "default" ), 2, p,n )
+{
+std::cerr << "VGStereo::VGStereo( " << name() << ", " << p << ", n )" << std::endl;
+	BACKEND->addOutput( name() + "_L" );
+	BACKEND->addOutput( name() + "_R" );
+	VolumeGroupFactory::the()->registerGroup( this );
+}
 VGStereo::~VGStereo() {
 std::cerr << "VGStereo::~VGStereo()" << std::endl;
 	BACKEND->removeOutput( name() + "_L" );
 	BACKEND->removeOutput( name() + "_R" );
+}
+void VGStereo::appendToDoc( QDomDocument doc, QDomElement elem ) {
+	QDomElement tmp = doc.createElement( "volumegroup" );
+	tmp.setAttribute( "type", "VGStereo" );
+	tmp.setAttribute( "name", name() );
+	elem.appendChild( tmp );
 }
 
 VolumeGroupMasterWidget* VGStereo::masterWidget( QWidget* parent ) {
@@ -87,7 +102,12 @@ VGStereoChannelWidget::VGStereoChannelWidget( QString in, VolumeGroup* g, QWidge
 	QVBoxLayout* _layout = new QVBoxLayout( this );
 	//_layout->setMargin( 10 );
 	_layout->addWidget( new QLabel( group()->name() + " L & R", this ), -1, Qt::AlignCenter );
-	QHBoxLayout* _layout2 = new QHBoxLayout( _layout );
+
+	StereoVolumeSlider* tmp2 = new StereoVolumeSlider( group()->name()+"_L", group()->name()+"_R", -36, 12, this );
+	connect( tmp2, SIGNAL( valueChanged( QString,float ) ), this, SLOT( valueChanged( QString,float ) ) );
+	_layout->addWidget( tmp2 );
+
+	/*QHBoxLayout* _layout2 = new QHBoxLayout( _layout );
 	_layout->setStretchFactor( _layout2, 100 );
 	VolumeSlider* tmp;
 	tmp = new VolumeSlider( group()->name()+"_L", 1, BottomToTop, this, false );
@@ -96,7 +116,7 @@ VGStereoChannelWidget::VGStereoChannelWidget( QString in, VolumeGroup* g, QWidge
 	_layout2->addWidget( new QTickmarks( -36, 12, BottomToTop, posLeft|posRight, this, 7 ) );
 	tmp = new VolumeSlider( group()->name()+"_R", 1, BottomToTop, this, false );
 	connect( tmp, SIGNAL( valueChanged( QString,float ) ), this, SLOT( valueChanged( QString,float ) ) );
-	_layout2->addWidget( tmp );
+	_layout2->addWidget( tmp );*/
 }
 VGStereoChannelWidget::~VGStereoChannelWidget() {
 }

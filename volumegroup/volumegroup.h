@@ -25,6 +25,9 @@
 #include <qvaluevector.h>
 #include <qptrlist.h>
 
+class QDomDocument;
+class QDomElement;
+
 namespace JackMix {
 
 class VolumeGroup;
@@ -62,6 +65,11 @@ public:
 	 */
 	VolumeGroup( QString, int, QObject* =0, const char* =0 );
 	/**
+	 *
+	 * \param QDomElement xml-element to restore
+	 */
+	VolumeGroup( QDomElement, QObject* =0, const char* =0 );
+	/**
 	 * What implementers have to do:
 	 *   - Delete the channels
 	 */
@@ -82,6 +90,7 @@ public:
 	int channels() const { return _channels; }
 	QString name() const { return _name; }
 
+	virtual void appendToDoc( QDomDocument, QDomElement ) =0;
 public slots:
 	/**
 	 * Is called to remove the VG.

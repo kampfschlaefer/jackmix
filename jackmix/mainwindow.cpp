@@ -36,11 +36,13 @@
 #include <qinputdialog.h>
 #include <qsettings.h>
 
+#include "defaults.xml"
+
 using namespace JackMix;
 
 MainWindow::MainWindow( QWidget* p, const char* n ) : QMainWindow( p,n ), _settings( new QSettings( /*QSettings::Ini*/ ) ) {
-//	_settings->setPath( "arnoldarts.de", "jackmix", QSettings::User );
-//	_settings->beginGroup( "jackmix" );
+	_settings->setPath( "arnoldarts.de", "jackmix", QSettings::User );
+	_settings->beginGroup( "jackmix" );
 std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	QPopupMenu *file = new QPopupMenu( this );
 	menuBar()->insertItem( "File", file );
@@ -51,35 +53,40 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	edit->insertItem( "Add Input", this, SLOT( addInput() ) );
 	edit->insertItem( "Add Output", this, SLOT( addOutput() ) );
 
-std::cerr << "MainWindow::MainWindow() VolumeGroups" << std::endl;
-	new VGAux( "aux", 3, this );
-	new VGStereo( "stereo", this );
+	//new VGAux( "aux", 3, this );
+	//new VGStereo( "stereo", this );
 
-std::cerr << "MainWindow::MainWindow() Layout" << std::endl;
 	mw = new QHBox( this );
 	this->setCentralWidget( mw );
 	mw->setSpacing( 3 );
 
+	init( _settings->readEntry( "/SaveOnExit/Config", DEFAULTSTRING ) );
+
 	_master = new MasterWidgets( this, "MasterControls" );
 	addDockWindow( _master, DockRight );
-
-	QString tmp = "<doc><channel name=\"in_1\" /><channel name=\"in_2\" /><channel name=\"in_3\" /><channel name=\"in_4\" /></doc>";
-	init( tmp );
 }
 
 void MainWindow::init( QString xml ) {
 std::cerr << "MainWindow::init( " << xml << " )" << std::endl;
 	QDomDocument doc;
 	doc.setContent( xml );
-	QDomNode tmp = doc.documentElement().firstChild();
+	recursiveXML( doc.documentElement() );
+std::cerr << "MainWindow::init() finished..." << std::endl;
+}
+
+void MainWindow::recursiveXML( QDomElement elem ) {
+	QDomNode tmp = elem.firstChild();
 	while ( !tmp.isNull() ) {
 		QDomElement elem = tmp.toElement();
 		if ( elem.tagName() == "channel" )
 			newChannel( new ChannelWidget( elem, mw ) );
+		else if ( elem.tagName() == "volumegroup" )
+			VGDomCreator::createFromDomElement( elem );
+		else recursiveXML( elem );
 		tmp = tmp.nextSibling();
 	}
-std::cerr << "MainWindow::init() finished..." << std::endl;
 }
+
 MainWindow::~MainWindow() {
 std::cerr << "MainWindow::~MainWindow()" << std::endl;
 }
@@ -89,18 +96,30 @@ std::cerr << "MainWindow::closeEvent( QCloseEvent " << e << " )" << std::endl;
 	QDomDocument doc( "Mainrc" );
 	QDomElement docElem = doc.createElement( "Mainrc" );
 	doc.appendChild( docElem );
-	for ( uint i = 0; i<_channelwidgets.size(); i++ ) {
-		std::cerr << _channelwidgets[ i ]->toXML().tagName() << std::endl;
-		docElem.appendChild( _channelwidgets[ i ]->toXML() );
-	}
-	std::cout << "XML: " << doc.toString() << std::endl;
-//	_settings->writeEntry( "jackmix/Input", QString( doc.toString() ) );
+
+	// In Channels
+	QDomElement in = doc.createElement( "in" );
+	docElem.appendChild( in );
+	for ( uint i = 0; i<_channelwidgets.size(); i++ )
+		_channelwidgets[ i ]->appendToDoc( doc, in );
+
+	// Out Channels
+	QDomElement out = doc.createElement( "out" );
+	docElem.appendChild( out );
+	for ( int i = 0; i<VolumeGroupFactory::the()->groups(); i++ )
+		VolumeGroupFactory::the()->group( i )->appendToDoc( doc, out );
+
+	qDebug( ">>> XML-tree\n" + doc.toString() + "<<< XML-tree" );
+
+	_settings->beginGroup( "/SaveOnExit" );
+	_settings->writeEntry( "/Config", QString( doc.toString() ) );
+
 	e->accept();
 	delete _settings;
 }
 
 void MainWindow::addInput() {
-std::cerr << "MainWindow::addInput()" << std::endl;
+	//std::cerr << "MainWindow::addInput()" << std::endl;
 	QString name = QInputDialog::getText( "Name", "Name for the Input" );
 	//std::cerr << "MainWindow::addInput() after dialog" << std::endl;
 	if ( !name.isEmpty() ) {
@@ -116,12 +135,14 @@ void MainWindow::addOutput() {
 }
 void MainWindow::removeInput( ChannelWidget* n ) {
 	//std::cerr << "MainWindow::removeInput( " << n << " )" << std::endl;
-	std::cerr << ( ( _channelwidgets.remove( n ) )?"true":"false" ) << std::endl;
+	//std::cerr << ( ( _channelwidgets.remove( n ) )?"true":"false" ) << std::endl;
+	_channelwidgets.remove( n );
 	delete n;
 }
 
 void MainWindow::newChannel( ChannelWidget* n ) {
 	_channelwidgets.append( n );
+	connect( n, SIGNAL( remove( ChannelWidget* ) ), this, SLOT( removeInput( ChannelWidget* ) ) );
 }
 
 

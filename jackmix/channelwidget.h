@@ -38,7 +38,9 @@ public:
 	ChannelWidget( QDomElement, QWidget*, const char* =0 );
 	~ChannelWidget();
 
-	QDomElement toXML();
+	void appendToDoc( QDomDocument doc, QDomElement element );
+signals:
+	void remove( ChannelWidget* );
 public slots:
 	void newVG( VolumeGroup* );
 	void removeVG( VolumeGroup* );
@@ -49,6 +51,7 @@ private:
 	void init();
 	QString _name;
 	QPtrList<VolumeGroupChannelWidget> _groupwidgets;
+	QDomElement _element;
 };
 
 };

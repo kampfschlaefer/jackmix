@@ -37,6 +37,7 @@ public:
 		\param int number of channels
 	*/
 	VGStereo( QString, QObject* =0, const char* =0 );
+	VGStereo( QDomElement, QObject* =0, const char* =0 );
 	~VGStereo();
 
 	/// returns the masterwidget. The argument is used the first time for parenting the widget.
@@ -47,6 +48,8 @@ public:
 		\param The parent for the widget
 	*/
 	VolumeGroupChannelWidget* channelWidget( QString, QWidget* );
+
+	void appendToDoc( QDomDocument, QDomElement );
 };
 
 };
