@@ -4,10 +4,11 @@
 
 #include <qframe.h>
 #include <qstring.h>
+#include "dbvolcalc.h"
 
 namespace JackMix {
 
-class VolumeSlider : public QFrame {
+class VolumeSlider : public QFrame, public dB2VolCalc {
 Q_OBJECT
 public:
 	/**
