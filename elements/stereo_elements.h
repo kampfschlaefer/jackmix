@@ -79,6 +79,7 @@ private:
 class Stereo2StereoElement : public JackMix::MixingMatrix::Element, public dB2VolCalc
 {
 Q_OBJECT
+Q_PROPERTY( double balance READ getBalance WRITE balance )
 Q_PROPERTY( double volume READ getVolume WRITE volume )
 public:
 	Stereo2StereoElement( QStringList, QStringList, MixingMatrix::Widget*, const char* =0 );
@@ -88,10 +89,9 @@ public:
 	int outchannels() const { return 2; }
 
 	double getVolume() const { return _volume_value; }
-
 	void volume( double n ) { volume( float( n ) ); }
-signals:
-	void volume_changed( float );
+	double getBalance() const { return _balance_value; }
+	void balance( double n ) { balance( float( n ) ); }
 private slots:
 	void balance( float );
 	void volume( float );

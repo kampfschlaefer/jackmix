@@ -132,6 +132,7 @@ public slots:
 	void debugPrint();
 
 private slots:
+	void valueChanged( ElementSlotSignalPair );
 	void valueChanged( Element*, QString );
 private:
 	enum Mode _mode;
@@ -218,6 +219,7 @@ protected slots:
 	// Use this slot if you want a simple selection toggle
 	void slot_simple_select() { select( !isSelected() ); }
 
+	void contextMenuEvent( QContextMenuEvent* );
 private:
 	QStringList _in, _out;
 	bool _selected;

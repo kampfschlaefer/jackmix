@@ -35,7 +35,7 @@ namespace JackMix {
 namespace MixingMatrix {
 
 bool ElementSlotSignalPair::exists() const {
-	return !element->metaObject()->findProperty( slot );
+	return ( element->metaObject()->findProperty( slot ) > -1 )?true:false;
 }
 
 Widget::Widget( QStringList ins, QStringList outs, QWidget* p, const char* n )
@@ -241,6 +241,11 @@ void Widget::connectMasterSlave( ElementSlotSignalPair sender, ElementSlotSignal
 			qWarning( " * Feedback-loop detected! Aborting..." );
 		else
 			_connections.insert( receiver,sender );
+	} else {
+		if ( !sender.exists() )
+			qWarning( " * * Sender %s doesn't exist! * *", sender.debug().latin1() );
+		if ( !receiver.exists() )
+			qWarning( " * * Receiver %s doesn't exist! * *", receiver.debug().latin1() );
 	}
 }
 
@@ -281,13 +286,15 @@ void Widget::toggleConnectionLister() {
 }
 
 void Widget::valueChanged( Element* master, QString signal ) {
-	ElementSlotSignalPair m( master, signal );
+	valueChanged( ElementSlotSignalPair( master, signal ) );
+}
+void Widget::valueChanged( ElementSlotSignalPair value ) {
 	QMap<ElementSlotSignalPair,ElementSlotSignalPair>::Iterator it;
 	for ( it = _connections.begin(); it != _connections.end(); ++it )
-		if ( it.data() == m ) {
-			//qDebug( "Widget::valueChanged( %p, %s ) connections=%i", master, signal.latin1(), _connections.size() );
+		if ( it.data() == value ) {
+			//qDebug( "Widget::valueChanged( %s ) connections=%i", value.debug().latin1(), _connections.size() );
 			//qDebug( " * Connection found!\n   Element: %p %s", ( *it ).element, ( *it ).slot.latin1() );
-			it.key().element->setProperty( it.key().slot, m.element->property( m.slot ) );
+			it.key().element->setProperty( it.key().slot, value.element->property( value.slot ) );
 		}
 }
 
@@ -392,6 +399,10 @@ QStringList Element::getPropertyList() {
 
 void Element::showMenu() {
 	_menu->exec( QCursor::pos() );
+}
+void Element::contextMenuEvent( QContextMenuEvent* ev ) {
+	showMenu();
+	ev->accept();
 }
 
 ElementFactory::ElementFactory() {

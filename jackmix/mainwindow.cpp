@@ -23,7 +23,6 @@
 
 #include "jack_backend.h"
 #include "mixingmatrix.h"
-#include "aux_elements.h"
 #include "channelselector.h"
 
 #include <iostream>
@@ -79,11 +78,9 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	_viewmenu = new QPopupMenu( this );
 	menuBar()->insertItem( "View", _viewmenu );
 	_togglein_action = new QAction( "Hide inputcontrols", 0, this );
-	//_togglein_action->setToggleAction( true );
 	connect( _togglein_action, SIGNAL( activated() ), this, SLOT( togglein() ) );
 	_togglein_action->addTo( _viewmenu );
 	_toggleout_action = new QAction( "Hide outputcontrols", 0, this );
-	//_toggleout_action->setToggleAction( true );
 	connect( _toggleout_action, SIGNAL( activated() ), this, SLOT( toggleout() ) );
 	_toggleout_action->addTo( _viewmenu );
 	_showLister = new QAction( "Toggle ConnectionLister", CTRL+Key_L, this );
@@ -184,7 +181,6 @@ void MainWindow::togglein() {
 		_inputswidget->show();
 		_togglein_action->setMenuText( "Hide inputcontrols" );
 	}
-	//_togglein_action->setOn( shown );
 }
 void MainWindow::toggleout() {
 	bool shown = _outputswidget->isShown();
@@ -195,7 +191,6 @@ void MainWindow::toggleout() {
 		_outputswidget->show();
 		_toggleout_action->setMenuText( "Hide outputcontrols" );
 	}
-	//_toggleout_action->setOn( shown );
 }
 
 void MainWindow::addInput() {

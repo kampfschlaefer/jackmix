@@ -68,11 +68,11 @@ void Slider::paintEvent( QPaintEvent* ) {
 	// Center the coordinates..
 	p.translate( width()/2, height()/2 );
 
-	int w = width()-4;
-	int h = height()-4;
-	if ( w < h ) {
-		w = height()-4;
-		h = width()-4;
+	int w = width();//-4;
+	int h = height();//-4;
+	if ( width() < height() ) {
+		w = height();//-4;
+		h = width();//-4;
 		p.rotate( -90 );
 		rotated = true;
 	}
@@ -102,17 +102,17 @@ void Slider::paintEvent( QPaintEvent* ) {
 void Slider::mousePressEvent( QMouseEvent* ev ) {
 	if ( ev->button() == LeftButton && _faderarea.contains( ev->pos() ) )
 		if ( width()>=height() )
-			value( ndbtodb( ( ev->x() ) / float( width() ) ) );
+			value( ndbtodb( ( ev->x() ) / float( _faderarea.width() ) ) );
 		else
-			value( ndbtodb( ( height() - ev->y() ) / float( height() ) ) );
+			value( ndbtodb( ( _faderarea.height() - ev->y() ) / float( _faderarea.height() ) ) );
 }
 
 void Slider::mouseMoveEvent( QMouseEvent* ev ) {
 	if ( _faderarea.contains( ev->pos() ) )
 		if ( width()>=height() )
-			value( ndbtodb( ( ev->pos().x() ) / float( width() ) ) );
+			value( ndbtodb( ( ev->pos().x() ) / float( _faderarea.width() ) ) );
 		else
-			value( ndbtodb( ( height() - ev->pos().y() ) / float( height() ) ) );
+			value( ndbtodb( ( _faderarea.height() - ev->pos().y() ) / float( _faderarea.height() ) ) );
 }
 
 void Slider::wheelEvent( QWheelEvent* ev ) {

@@ -72,7 +72,7 @@ ConnectionLister::ConnectionLister( Widget* w, QWidget* p, const char* n )
 
 	QValueList<Element*>::Iterator it;
 	for ( it=_widget->_elements.begin(); it!=_widget->_elements.end(); ++it ) {
-		//qDebug( "  %p : %s", ( *it ), ( *it )->getPropertyList().join( "," ).latin1() );
+		qDebug( "  %p : %s", ( *it ), ( *it )->getPropertyList().join( "," ).latin1() );
 		QStringList tmp = ( *it )->getPropertyList();
 		if ( !tmp.empty() ) {
 			_box_signals->insertItem( new ElementConnectView( _box_signals, ( *it ) ) );
@@ -84,7 +84,7 @@ ConnectionLister::~ConnectionLister() {
 }
 
 void ConnectionLister::connectControls() {
-	qDebug( "ConnectionLister::connectControls()" );
+	//qDebug( "ConnectionLister::connectControls()" );
 	if ( _box_signals->selectedItem() && _box_signals->selectedItem()->rtti() == 5282 && _box_slots->selectedItem() && _box_slots->selectedItem()->rtti() == 5282 ) {
 		ElementPropertyView* signal = static_cast<ElementPropertyView*>( _box_signals->selectedItem() );
 		//qDebug( " Selected Signals: %s", signal->property().debug().latin1() );
@@ -115,7 +115,7 @@ void ConnectionLister::selectionChanged() {
 }
 
 ElementConnectView::ElementConnectView( QListView* p, Element* e ) : QListViewItem( p ), _element( e ) {
-	//qDebug( "ElementConnectView::ElementConnectView( %p, %p )", p, e );
+	//qDebug( "ElementConnectView::ElementConnectView( %p, %p )", p, _element );
 	setText( 0, QString( "%1" ).arg( int( e ) ) );
 	setSelectable( false );
 	QStringList tmp = e->getPropertyList();

@@ -66,26 +66,15 @@ AuxElement::AuxElement( QStringList inchannel, QStringList outchannel, Widget* p
 	, _inchannel( inchannel[ 0 ] )
 	, _outchannel( outchannel[ 0 ] )
 {
-	QGridLayout* _layout = new QGridLayout( this, 2,2, 3 );
-	QPushButton* _btn_select = new QPushButton( "S", this );
-	layout()->add( _btn_select );
-	connect( _btn_select, SIGNAL( clicked() ), this, SLOT( slot_toggle() ) );
-	QPushButton* _btn_replace = new QPushButton( "R", this );
-	layout()->add( _btn_replace );
-	connect( _btn_replace, SIGNAL( clicked() ), this, SLOT( slot_replace() ) );
+	menu()->insertItem( "Select", this, SLOT( slot_simple_select() ) );
+	menu()->insertItem( "Replace", this, SLOT( slot_simple_replace() ) );
+	QGridLayout* _layout = new QGridLayout( this, 1,1, 3 );
 
 	QFloatPoti* poti = new QFloatPoti( amptodb( BACKEND->getVolume( _inchannel, _outchannel ) ), -36, 6, 10, QColor( 255,0,0 ), this, _inchannel );
-	_layout->addMultiCellWidget( poti, 1,1, 0,1 );
+	_layout->addWidget( poti, 0,0 );
 	connect( poti, SIGNAL( valueChanged( float ) ), this, SLOT( emitvalue( float ) ) );
 }
 AuxElement::~AuxElement() {
-}
-
-void AuxElement::slot_toggle() {
-	select( !isSelected() );
-}
-void AuxElement::slot_replace() {
-	emit replace( this );
 }
 
 void AuxElement::emitvalue( float n ) {

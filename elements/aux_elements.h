@@ -45,8 +45,6 @@ public:
 	int outchannels() const { return 1; }
 
 public slots:
-	void slot_toggle();
-	void slot_replace();
 	void emitvalue( float );
 
 private:
