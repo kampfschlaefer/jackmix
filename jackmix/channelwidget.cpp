@@ -3,7 +3,6 @@
 #include "channelwidget.moc"
 
 #include "jack_backend.h"
-#include "volumeslider.h"
 #include "volumegroup.h"
 #include <qstringlist.h>
 #include <qlayout.h>
