@@ -28,7 +28,6 @@ jackmix_SOURCES = \
 	volumegroup.cpp \
 	vg_aux.cpp \
 	vg_stereo.cpp \
-	qtickmarks.cpp \
 	main.cpp
 
 # these are the headers for your project

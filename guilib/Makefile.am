@@ -27,6 +27,7 @@ libjackmix_gui_la_SOURCES = \
 	qimageeffect.cpp \
 	qfloatslider.cpp \
 	qfloatpoti.cpp \
+	qtickmarks.cpp \
 	qpoti.cpp
 
 #poti_test_SOURCES = poti_test.cpp \
