@@ -16,7 +16,8 @@ typedef portsmap::Iterator ports_it;
 
 class JackBackend {
 public:
-	static JackBackend* backend() { static JackBackend* backend = new JackBackend(); return backend; }
+	/// Only call it with argument true if you really want the jack-connection finished...
+	static JackBackend* backend( bool =false );
 
 	void addOutput( QString );
 	void addInput( QString );

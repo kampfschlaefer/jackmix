@@ -6,6 +6,15 @@
 
 using namespace JackMix;
 
+JackBackend* JackBackend::backend( bool del ) {
+	static JackBackend* backend = new JackBackend();
+	if ( del ) {
+		delete backend;
+		backend=0;
+	}
+	return backend;
+}
+
 JackBackend::JackBackend() {
 	std::cout << "JackBackend::JackBackend()" << std::endl;
 	client = ::jack_client_new( "JackMix" );
