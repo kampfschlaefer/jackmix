@@ -79,13 +79,13 @@ VGStereoMasterWidget::VGStereoMasterWidget( VGStereo* g, QWidget* p, const char*
 	setMargin( 1 );
 	setLineWidth( 1 );
 	setFrameStyle( QFrame::Panel|QFrame::Raised );
-	QVBoxLayout* _layout = new QVBoxLayout( layout() );
+	//QVBoxLayout* _layout = new QVBoxLayout( layout() );
 //	layout()->addItem( _layout );
-	_layout->setMargin( 1 );
-	_layout->addWidget( new QLabel( group()->name(), this ), -1, Qt::AlignCenter );
+	layout()->setMargin( 1 );
+	layout()->add( new QLabel( group()->name(), this )/*, -1, Qt::AlignCenter*/ );
 	StereoVolumeSlider* tmp2 = new StereoVolumeSlider( group()->name()+"_L", group()->name()+"_R", -36, 12, this );
 	connect( tmp2, SIGNAL( valueChanged( QString,float ) ), this, SLOT( valueChanged( QString,float ) ) );
-	_layout->addWidget( tmp2 );
+	layout()->add( tmp2 );
 }
 VGStereoMasterWidget::~VGStereoMasterWidget() {
 }

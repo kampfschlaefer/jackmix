@@ -36,6 +36,7 @@
 #include <qinputdialog.h>
 #include <qsettings.h>
 #include <qfiledialog.h>
+#include <qscrollview.h>
 
 #include "defaults.xml"
 
@@ -56,12 +57,16 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	edit->insertItem( "Add Input...", this, SLOT( addInput() ) );
 	edit->insertItem( "Add Output...", this, SLOT( addOutput() ) );
 
-	//new VGAux( "aux", 3, this );
-	//new VGStereo( "stereo", this );
+//	mw = new QHBox( this );
+//	this->setCentralWidget( mw );
+//	mw->setSpacing( 3 );
 
-	mw = new QHBox( this );
-	this->setCentralWidget( mw );
+	QScrollView *tmp = new QScrollView( this );
+	mw = new QHBox( tmp->viewport() );
 	mw->setSpacing( 3 );
+	mw->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Expanding );
+	tmp->addChild( mw );
+	this->setCentralWidget( tmp );
 
 	readXML( _settings->readEntry( "/SaveOnExit/Config", DEFAULTSTRING ) );
 
@@ -86,6 +91,8 @@ void MainWindow::recursiveXML( QDomElement elem ) {
 			newChannel( new ChannelWidget( elem, mw ) );
 		else if ( elem.tagName() == "volumegroup" )
 			VGDomCreator::createFromDomElement( elem );
+		else if ( elem.tagName() == "matrix" )
+			BACKEND->fromXML( elem );
 		else recursiveXML( elem );
 		tmp = tmp.nextSibling();
 	}
@@ -109,6 +116,11 @@ QString MainWindow::writeXML() {
 	QDomElement docElem = doc.createElement( "Mainrc" );
 	doc.appendChild( docElem );
 
+	// Mixermatrix
+	QDomElement matrix = doc.createElement( "mixing" );
+	docElem.appendChild( matrix );
+	BACKEND->toXML( doc, matrix );
+
 	// In Channels
 	QDomElement in = doc.createElement( "in" );
 	docElem.appendChild( in );
@@ -121,7 +133,7 @@ QString MainWindow::writeXML() {
 	for ( int i = 0; i<VolumeGroupFactory::the()->groups(); i++ )
 		VolumeGroupFactory::the()->group( i )->appendToDoc( doc, out );
 
-	qDebug( ">>> XML-tree\n" + doc.toString() + "<<< XML-tree" );
+	//qDebug( ">>> XML-tree\n" + doc.toString() + "<<< XML-tree" );
 
 	return doc.toString();
 }
@@ -192,8 +204,9 @@ MasterWidgets::~MasterWidgets() {
 
 void MasterWidgets::newVG( VolumeGroup* n ) {
 	//std::cerr << "MasterWidgets::newVG( " << n << " )" << std::endl;
-	QBoxLayout* _layout = boxLayout();
-	_layout->addWidget( n->masterWidget( this ) );
+	//QBoxLayout* _layout = boxLayout();
+	//_layout->addWidget( n->masterWidget( this ) );
+	boxLayout()->add( n->masterWidget( this ) );
 	n->masterWidget( this )->show();
 }
 

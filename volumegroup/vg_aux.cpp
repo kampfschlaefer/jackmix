@@ -113,7 +113,7 @@ VGAuxChannelWidget::VGAuxChannelWidget( QString in, VGAux* g, QWidget* p, const 
 	_layout->setAutoAdd( true );
 	VolumeKnob* tmp;
 	for ( int i=0; i<group()->channels(); i++ ) {
-		tmp = new VolumeKnob( group()->name() + "_" + QString::number( i ), 1, this );
+		tmp = new VolumeKnob( group()->name() + "_" + QString::number( i ), BACKEND->getVolume( inchannel(), group()->name() + "_" + QString::number( i ) ), this );
 		connect( tmp, SIGNAL( valueChanged( QString,float ) ), this, SLOT( valueChanged( QString,float ) ) );
 //		_layout->add( tmp );
 //		_layout->addWidget( new QTickmarks( -36, 12, LeftToRight, posLeft, this, 7 ) );

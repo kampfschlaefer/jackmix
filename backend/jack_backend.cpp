@@ -65,11 +65,12 @@ void JackBackend::removeInput( QString name ) {
 }
 
 void JackBackend::setVolume( QString channel, QString output, float volume ) {
-	//std::cerr << "JackBackend::setVolume( " << channel << ", " << output << ", " << volume << " )" << std::endl;
+	std::cerr << "JackBackend::setVolume( " << channel << ", " << output << ", " << volume << " )" << std::endl;
 	volumes[ channel ][ output ] = volume;
 }
 
 float JackBackend::getVolume( QString channel, QString output ) {
+	//std::cerr << "JackBackend::getVolume( " << channel << ", " << output << " ) = " << volumes[ channel ][ output ] << std::endl;
 	volumes[ channel ].insert( output, 1, FALSE );
 	return volumes[ channel ][ output ];
 }
@@ -105,8 +106,44 @@ QStringList JackBackend::inchannels() {
 }
 
 void JackBackend::toXML( QDomDocument doc, QDomElement elem ) {
+std::cout << "JackBackend::toXML()" << std::endl;
+	QDomElement matrix = doc.createElement( "matrix" );
+
+	QStringList ins = inchannels();
+	QStringList outs = outchannels();
+	for ( uint i=0; i<ins.size(); i++ ) {
+		QDomElement in = doc.createElement( "instrip" );
+		in.setAttribute( "channel", ins[ i ] );
+		for ( uint j=0; j<outs.size(); j++ ) {
+			QDomElement out = doc.createElement( "out" );
+			out.setAttribute( "channel", outs[ j ] );
+			out.setAttribute( "value", getVolume( ins[ i ], outs[ j ] ) );
+			in.appendChild( out );
+		}
+		matrix.appendChild( in );
+	}
+
+	elem.appendChild( matrix );
 }
 void JackBackend::fromXML( QDomElement elem ) {
+	QString inch;
+	if ( elem.tagName() == "matrix" )
+		for ( QDomNode n = elem.firstChild(); !n.isNull(); n=n.nextSibling() ) {
+			QDomElement tmp = n.toElement();
+			if ( !tmp.isNull() ) {
+				if ( tmp.tagName() == "instrip" ) {
+					inch = tmp.attribute( "channel" );
+					for ( QDomNode m = tmp.firstChild(); !m.isNull(); m=m.nextSibling() ) {
+						QDomElement tmp2 = m.toElement();
+						if ( !tmp2.isNull() ) {
+							QString outch( tmp2.attribute( "channel" ) );
+							float value = tmp2.attribute( "value", "1" ).toFloat();
+							setVolume( inch, outch, value );
+						}
+					}
+				}
+			}
+		}
 }
 
 

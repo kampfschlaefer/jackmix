@@ -38,6 +38,8 @@
 
 #include "qpixmapeffect.h"
 
+#include <iostream>
+
 #define PI 3.1415926
 static const int thresholdTime = 500;
 static const int repeatTime    = 100;
@@ -152,7 +154,6 @@ QSize QPoti::minimumSizeHint() const
 		width = QMAX( width, d->labelRect.width() + frameRect().width() - contentsRect().width() );
 		height += metrics.lineSpacing();
 	}
-	//kdDebug() << k_funcinfo << "return " <<  width << "x" << height << endl;
 	return QSize( width, height );
 }
 
@@ -440,6 +441,7 @@ void QPoti::reallyMovePoti( float newPos )
 
 void QPoti::drawContents( QPainter * p )
 {
+//std::cout << "void QPoti::drawContents( QPainter * p )" << std::endl;
 	QPixmap doublebuffer( contentsRect().size() );
 	doublebuffer.fill( colorGroup().background() );
 	QPainter dbp( &doublebuffer );
@@ -450,10 +452,10 @@ void QPoti::drawContents( QPainter * p )
 		dbp.drawText( contentsRect().x() - metrics.leftBearing( d->label[ 0 ] ) + ( contentsRect().width() - d->labelRect.width() ) / 2, metrics.height(), d->label );
 	}
 
-    int interval = tickInt;
-    if( interval <= 0 )
+	int interval = tickInt;
+	if( interval <= 0 )
 		interval = 12;
-    if( ticks )
+	if( ticks )
 		drawTicks( &dbp, buttonRadius, tickLength, interval );
 
 	dbp.drawPixmap( d->buttonRect, d->bgPixmap( colorGroup() ) );
@@ -461,7 +463,7 @@ void QPoti::drawContents( QPainter * p )
 	if( hasFocus() )
 		style().drawPrimitive( QStyle::PE_FocusRect, &dbp, d->buttonRect, colorGroup() );
 
-    paintPoti( &dbp );
+	paintPoti( &dbp );
 	dbp.end();
 	p->drawPixmap( contentsRect(), doublebuffer );
 }
@@ -664,7 +666,9 @@ void QPoti::keyPressEvent( QKeyEvent *e )
 
 void QPoti::setValue( int value )
 {
-    QRangeControl::setValue( value );
+	QRangeControl::setValue( value );
+	valueChange();
+	update();
 }
 
 
