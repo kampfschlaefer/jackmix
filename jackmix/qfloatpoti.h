@@ -36,6 +36,7 @@ public slots:
 protected:
 	void paintEvent( QPaintEvent* );
 	void wheelEvent( QWheelEvent* );
+	void mouseMoveEvent( QMouseEvent* );
 private:
 	QFloatPoti_private* d;
 };

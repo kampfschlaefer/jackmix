@@ -23,6 +23,7 @@
 
 #include <qpainter.h>
 #include <qvaluevector.h>
+#include <iostream>
 
 class QFloatPoti_private {
 public:
@@ -136,5 +137,10 @@ void QFloatPoti::wheelEvent( QWheelEvent* ev ) {
 		setValue( d->value - step );
 	}
 	repaint();
+}
+
+void QFloatPoti::mouseMoveEvent( QMouseEvent* ev ) {
+//	std::cerr << "QFloatPoti::mouseMoveEvent( " << ev << " (" << ev->x() << "|" << ev->y() << ") )" << std::endl;
+//	int lasty
 }
 
