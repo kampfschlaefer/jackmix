@@ -36,6 +36,21 @@ float JackBackend::getVolume( QString channel, QString output ) {
 	return volumes[ channel ][ output ];
 }
 
+void JackBackend::setOutVolume( QString ch, float n ) {
+	outvolumes[ ch ] = n;
+}
+float JackBackend::getOutVolume( QString ch ) {
+	outvolumes.insert( ch, 1, FALSE );
+	return outvolumes[ ch ];
+}
+void JackBackend::setInVolume( QString ch, float n ) {
+	involumes[ ch ] = n;
+}
+float JackBackend::getInVolume( QString ch ) {
+	involumes.insert( ch, 1, FALSE );
+	return involumes[ ch ];
+}
+
 QStringList JackBackend::outchannels() {
 	QStringList tmp;
 	JackMix::ports_it it;
@@ -63,25 +78,35 @@ int JackMix::process( jack_nframes_t nframes, void* /*arg*/ ) {
 	ports_it in_it;
 	ports_it out_it;
 //	std::cout << "JackMix::process 1" << std::endl;
+	/// Blank outports...
 	for ( out_it = BACKEND->out_ports.begin(); out_it != BACKEND->out_ports.end(); ++out_it ) {
 		jack_default_audio_sample_t* tmp = outs[ out_it.key() ];
 		for ( jack_nframes_t n=0; n<nframes; n++ ) tmp[ n ] = 0;
 	}
+	/// Adjust inlevels.
+	for ( in_it = BACKEND->in_ports.begin(); in_it != BACKEND->in_ports.end(); ++in_it ) {
+		jack_default_audio_sample_t* tmp = ins[ in_it.key() ];
+		float volume = BACKEND->getInVolume( in_it.key() );
+		for ( jack_nframes_t n=0; n<nframes; n++ ) tmp[ n ] *= volume;
+	}
 //	std::cout << "JackMix::process 2" << std::endl;
+	/// The actual mixing.
 	for ( in_it = BACKEND->in_ports.begin(); in_it != BACKEND->in_ports.end(); ++in_it ) {
 		jack_default_audio_sample_t* tmpin = ins[ in_it.key() ];
 		for ( out_it = BACKEND->out_ports.begin(); out_it != BACKEND->out_ports.end(); ++out_it ) {
 			jack_default_audio_sample_t* tmpout = outs[ out_it.key() ];
-			float tmpvolume = BACKEND->getVolume(  in_it.key(), out_it.key() );
+			float tmpvolume = BACKEND->getVolume( in_it.key(), out_it.key() );
 			for ( jack_nframes_t n=0; n<nframes; n++ ) {
 				tmpout[ n ] += tmpin[ n ] * tmpvolume;
 			}
 		}
 	}
 //	std::cout << "JackMix::process 3" << std::endl;
+	/// Adjust outlevels.
 	for ( out_it = BACKEND->out_ports.begin(); out_it != BACKEND->out_ports.end(); ++out_it ) {
 		jack_default_audio_sample_t* tmp = outs[ out_it.key() ];
-		for ( jack_nframes_t n=0; n<nframes; n++ ) tmp[ n ] /= 2;
+		float volume = BACKEND->getOutVolume( out_it.key() );
+		for ( jack_nframes_t n=0; n<nframes; n++ ) tmp[ n ] *= volume;
 	}
 //	std::cout << "JackMix::process 4" << std::endl;
 	return 0;

@@ -26,6 +26,11 @@ public:
 	/// returns the volume of channel,output
 	float getVolume( QString,QString );
 
+	void setOutVolume( QString, float );
+	float getOutVolume( QString );
+	void setInVolume( QString, float );
+	float getInVolume( QString );
+
 	/// returns a QStringList with the names of the out-channels
 	QStringList outchannels();
 	/// returns a QStringList with the names of the in-channels
@@ -42,6 +47,8 @@ public:
 	::jack_client_t *client;
 	/// First dimension is input-channels, second is output-channels
 	QMap<QString,QMap<QString,float> > volumes;
+	QMap<QString,float> outvolumes;
+	QMap<QString,float> involumes;
 };
 
 #define BACKEND JackMix::JackBackend::backend()
