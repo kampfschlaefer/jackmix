@@ -36,8 +36,10 @@ typedef portsmap::Iterator ports_it;
 
 class JackBackend {
 public:
-	/// Only call it with argument true if you really want the jack-connection finished...
-	static JackBackend* backend( bool =false );
+	/// Initializes the connection
+	JackBackend();
+	/// Ends everything
+	~JackBackend();
 
 	void addOutput( QString );
 	void removeInput( QString );
@@ -62,10 +64,6 @@ public:
 	void toXML( QDomDocument, QDomElement );
 	void fromXML( QDomElement );
 private:
-	/// Initializes the connection
-	JackBackend();
-	/// Ends everything
-	~JackBackend();
 
 public:
 	portsmap in_ports;
@@ -76,8 +74,6 @@ public:
 	QMap<QString,float> outvolumes;
 	QMap<QString,float> involumes;
 };
-
-#define BACKEND JackMix::JackBackend::backend()
 
 int process( ::jack_nframes_t, void* );
 

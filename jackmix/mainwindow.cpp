@@ -43,7 +43,7 @@
 using namespace JackMix;
 using namespace MixingMatrix;
 
-MainWindow::MainWindow( QWidget* p, const char* n ) : QMainWindow( p,n ) {
+MainWindow::MainWindow( QWidget* p, const char* n ) : QMainWindow( p,n ), _backend( new JackBackend() ) {
 std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	_filemenu = new QPopupMenu( this );
 	menuBar()->insertItem( "File", _filemenu );
@@ -100,11 +100,11 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 
 	QStringList ins = QStringList()<<"in_1"<<"in_2"<<"in_3"<<"in_4"<<"in_5"<<"in_6"<<"in_7"<<"in_8";
 	QStringList outs = QStringList()<<"out_1"<<"out_2"<<"out_3";
-	_mixerwidget = new MixingMatrix::Widget( ins, outs, _mw );
+	_mixerwidget = new MixingMatrix::Widget( ins, outs, _backend, _mw );
 	_mw->layout->addWidget( _mixerwidget, 1,0 );
-	_inputswidget = new MixingMatrix::Widget( ins, QStringList(), _mw );
+	_inputswidget = new MixingMatrix::Widget( ins, QStringList(), _backend, _mw );
 	_mw->layout->addWidget( _inputswidget, 0,0 );
-	_outputswidget = new MixingMatrix::Widget( QStringList(), outs, _mw );
+	_outputswidget = new MixingMatrix::Widget( QStringList(), outs, _backend, _mw );
 	_mw->layout->addWidget( _outputswidget, 1,1 );
 
 	_mixerwidget->createControl( QStringList()<<"in_1"<<"in_2", QStringList()<<"out_1"<<"out_2" );
@@ -120,17 +120,17 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	//_outputswidget->createControl( QStringList()<<"out_1"<<"out_2", QStringList()<<"out_1"<<"out_2" );
 	_outputswidget->autoFill();
 
-	BACKEND->addInput( "in_1" );
-	BACKEND->addInput( "in_2" );
-	BACKEND->addInput( "in_3" );
-	BACKEND->addInput( "in_4" );
-	BACKEND->addInput( "in_5" );
-	BACKEND->addInput( "in_6" );
-	BACKEND->addInput( "in_7" );
-	BACKEND->addInput( "in_8" );
-	BACKEND->addOutput( "out_1" );
-	BACKEND->addOutput( "out_2" );
-	BACKEND->addOutput( "out_3" );
+	_backend->addInput( "in_1" );
+	_backend->addInput( "in_2" );
+	_backend->addInput( "in_3" );
+	_backend->addInput( "in_4" );
+	_backend->addInput( "in_5" );
+	_backend->addInput( "in_6" );
+	_backend->addInput( "in_7" );
+	_backend->addInput( "in_8" );
+	_backend->addOutput( "out_1" );
+	_backend->addOutput( "out_2" );
+	_backend->addOutput( "out_3" );
 
 	_debugPrint = new QAction( "DebugPrint", CTRL+Key_P, this );
 	connect( _debugPrint, SIGNAL( activated() ), _mixerwidget, SLOT( debugPrint() ) );
@@ -140,7 +140,8 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 }
 
 MainWindow::~MainWindow() {
-std::cerr << "MainWindow::~MainWindow()" << std::endl;
+	std::cerr << "MainWindow::~MainWindow()" << std::endl;
+	delete _backend;
 }
 
 void MainWindow::closeEvent( QCloseEvent* e ) {
@@ -199,7 +200,7 @@ void MainWindow::addInput() {
 		addInput( tmp );
 }
 void MainWindow::addInput( QString name ) {
-	BACKEND->addInput( name );
+	_backend->addInput( name );
 	_mixerwidget->addinchannel( name );
 	_mixerwidget->autoFill();
 	_inputswidget->addinchannel( name );
@@ -211,7 +212,7 @@ void MainWindow::addOutput() {
 		addOutput( tmp );
 }
 void MainWindow::addOutput( QString name ) {
-	BACKEND->addOutput( name );
+	_backend->addOutput( name );
 	_mixerwidget->addoutchannel( name );
 	_mixerwidget->autoFill();
 	_outputswidget->addoutchannel( name );
@@ -220,7 +221,7 @@ void MainWindow::addOutput( QString name ) {
 
 void MainWindow::removeInput() {
 qDebug( "MainWindow::removeInput()" );
-	ChannelSelector *tmp = new ChannelSelector( "Delete Inputchannels", "Selecte the inputchannels for deletion:", BACKEND->inchannels(), this );
+	ChannelSelector *tmp = new ChannelSelector( "Delete Inputchannels", "Selecte the inputchannels for deletion:", _backend->inchannels(), this );
 	connect( tmp, SIGNAL( selectedChannel( QString ) ), this, SLOT( removeInput( QString ) ) );
 	tmp->show();
 }
@@ -229,7 +230,7 @@ qDebug( "MainWindow::removeInput( QString %s )", n.latin1() );
 }
 void MainWindow::removeOutput() {
 qDebug( "MainWindow::removeOutput()" );
-	ChannelSelector *tmp = new ChannelSelector( "Delete Outputchannels", "Selecte the outputchannels for deletion:", BACKEND->outchannels(), this );
+	ChannelSelector *tmp = new ChannelSelector( "Delete Outputchannels", "Selecte the outputchannels for deletion:", _backend->outchannels(), this );
 	connect( tmp, SIGNAL( selectedChannel( QString ) ), this, SLOT( removeOutput( QString ) ) );
 	tmp->show();
 }

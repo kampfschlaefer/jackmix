@@ -29,14 +29,10 @@ int main( int argc, char** argv ) {
 
 	QApplication *qapp = new QApplication( argc, argv );
 
-	(void*) JackMix::JackBackend::backend();
-
 	JackMix::MainWindow *mw = new JackMix::MainWindow();
 	mw->show();
 
 	qapp->setMainWidget( mw );
 
-	int ret = qapp->exec();
-	(void*) JackMix::JackBackend::backend( true );
-	return ret;
+	return qapp->exec();
 }

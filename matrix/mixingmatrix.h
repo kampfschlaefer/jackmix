@@ -27,7 +27,12 @@
 #include <qpopupmenu.h>
 #include <qaction.h>
 
+#include "jack_backend.h"
+
 namespace JackMix {
+
+//class JackBackend;
+
 namespace MixingMatrix {
 
 class Element;
@@ -64,9 +69,11 @@ Q_ENUMS( Direction )
 Q_PROPERTY( Mode mode READ mode WRITE mode )
 Q_PROPERTY( Direction direction READ direction WRITE direction )
 public:
-	// \param inchannels, outchannels, parent, name=0
-	Widget( QStringList, QStringList, QWidget*, const char* =0 );
+	// \param inchannels, outchannels, backend, parent, name=0
+	Widget( QStringList, QStringList, JackMix::JackBackend*, QWidget*, const char* =0 );
 	~Widget();
+
+	JackMix::JackBackend* backend() const { return _backend; }
 
 	QStringList inchannels() const { return _inchannels; }
 	QStringList outchannels() const { return _outchannels; }
@@ -142,6 +149,7 @@ private:
 	QStringList _inchannels, _outchannels;
 	ConnectionLister* _connectionlister;
 	QMap <ElementSlotSignalPair,ElementSlotSignalPair> _connections;
+	JackMix::JackBackend* _backend;
 };
 
 class Element : public QFrame
@@ -160,6 +168,8 @@ public:
 	 */
 	Element( QStringList in, QStringList out, Widget*, const char* =0 );
 	virtual ~Element();
+
+	JackMix::JackBackend* backend() const { return _parent->backend(); }
 
 	// The size of this control in channels.
 	virtual int inchannels() const =0;

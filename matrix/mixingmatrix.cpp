@@ -38,13 +38,14 @@ bool ElementSlotSignalPair::exists() const {
 	return ( element->metaObject()->findProperty( slot ) > -1 )?true:false;
 }
 
-Widget::Widget( QStringList ins, QStringList outs, QWidget* p, const char* n )
+Widget::Widget( QStringList ins, QStringList outs, JackMix::JackBackend* backend, QWidget* p, const char* n )
 	: QFrame( p,n )
 	, _mode( Normal )
 	, _direction( None )
 	, _inchannels( ins )
 	, _outchannels( outs )
 	, _connectionlister( 0 )
+	, _backend( backend )
 {
 	if ( _inchannels.size()==0 ) {
 		_direction = Vertical;

@@ -70,7 +70,7 @@ AuxElement::AuxElement( QStringList inchannel, QStringList outchannel, Widget* p
 	menu()->insertItem( "Replace", this, SLOT( slot_simple_replace() ) );
 	QGridLayout* _layout = new QGridLayout( this, 1,1, 3 );
 
-	QFloatPoti* poti = new QFloatPoti( amptodb( BACKEND->getVolume( _inchannel, _outchannel ) ), -36, 6, 10, QColor( 255,0,0 ), this, _inchannel );
+	QFloatPoti* poti = new QFloatPoti( amptodb( backend()->getVolume( _inchannel, _outchannel ) ), -36, 6, 10, QColor( 255,0,0 ), this, _inchannel );
 	_layout->addWidget( poti, 0,0 );
 	connect( poti, SIGNAL( valueChanged( float ) ), this, SLOT( emitvalue( float ) ) );
 }
@@ -79,6 +79,6 @@ AuxElement::~AuxElement() {
 
 void AuxElement::emitvalue( float n ) {
 	//qDebug( "AuxElement::emitvalue( float %f dB ) that means ampfactor %f", n, dbtoamp( n ) );
-	BACKEND->setVolume( _inchannel, _outchannel, dbtoamp( n ) );
+	backend()->setVolume( _inchannel, _outchannel, dbtoamp( n ) );
 }
 

@@ -26,21 +26,12 @@
 
 using namespace JackMix;
 
-JackBackend* JackBackend::backend( bool del ) {
-	static JackBackend* backend = new JackBackend();
-	if ( del ) {
-		delete backend;
-		backend=0;
-	}
-	return backend;
-}
-
 JackBackend::JackBackend() {
 	std::cout << "JackBackend::JackBackend()" << std::endl;
-	//client = ::jack_client_new( "JackMix" );
-	client = 0;
+	client = ::jack_client_new( "JackMix" );
+	//client = 0;
 	if ( client ) {
-		::jack_set_process_callback( client, JackMix::process, 0 );
+		::jack_set_process_callback( client, JackMix::process, this );
 		std::cout << "JackBackend::JackBackend() activate" << std::endl;
 		::jack_activate( client );
 	}
@@ -165,43 +156,44 @@ void JackBackend::fromXML( QDomElement elem ) {
 }
 
 
-int JackMix::process( jack_nframes_t nframes, void* /*arg*/ ) {
+int JackMix::process( jack_nframes_t nframes, void* arg ) {
 	//std::cout << "JackMix::process( jack_nframes_t " << nframes << ", void* )" << std::endl;
+	JackMix::JackBackend* backend = static_cast<JackMix::JackBackend*>( arg );
 	QMap<QString,jack_default_audio_sample_t*> ins;
 	JackMix::ports_it it;
-	for ( it = BACKEND->in_ports.begin(); it!=BACKEND->in_ports.end(); ++it )
+	for ( it = backend->in_ports.begin(); it!=backend->in_ports.end(); ++it )
 		ins.insert( it.key(), (jack_default_audio_sample_t*) jack_port_get_buffer( it.data(), nframes ) );
 	QMap<QString,jack_default_audio_sample_t*> outs;
-	for ( it = BACKEND->out_ports.begin(); it != BACKEND->out_ports.end(); ++it )
+	for ( it = backend->out_ports.begin(); it != backend->out_ports.end(); ++it )
 		outs.insert( it.key(), (jack_default_audio_sample_t*) jack_port_get_buffer( it.data(), nframes ) );
 	ports_it in_it;
 	ports_it out_it;
 	/// Blank outports...
-	for ( out_it = BACKEND->out_ports.begin(); out_it != BACKEND->out_ports.end(); ++out_it ) {
+	for ( out_it = backend->out_ports.begin(); out_it != backend->out_ports.end(); ++out_it ) {
 		jack_default_audio_sample_t* tmp = outs[ out_it.key() ];
 		for ( jack_nframes_t n=0; n<nframes; n++ ) tmp[ n ] = 0;
 	}
 	/// Adjust inlevels.
-	for ( in_it = BACKEND->in_ports.begin(); in_it != BACKEND->in_ports.end(); ++in_it ) {
+	for ( in_it = backend->in_ports.begin(); in_it != backend->in_ports.end(); ++in_it ) {
 		jack_default_audio_sample_t* tmp = ins[ in_it.key() ];
-		float volume = BACKEND->getInVolume( in_it.key() );
+		float volume = backend->getInVolume( in_it.key() );
 		for ( jack_nframes_t n=0; n<nframes; n++ ) tmp[ n ] *= volume;
 	}
 	/// The actual mixing.
-	for ( in_it = BACKEND->in_ports.begin(); in_it != BACKEND->in_ports.end(); ++in_it ) {
+	for ( in_it = backend->in_ports.begin(); in_it != backend->in_ports.end(); ++in_it ) {
 		jack_default_audio_sample_t* tmpin = ins[ in_it.key() ];
-		for ( out_it = BACKEND->out_ports.begin(); out_it != BACKEND->out_ports.end(); ++out_it ) {
+		for ( out_it = backend->out_ports.begin(); out_it != backend->out_ports.end(); ++out_it ) {
 			jack_default_audio_sample_t* tmpout = outs[ out_it.key() ];
-			float tmpvolume = BACKEND->getVolume( in_it.key(), out_it.key() );
+			float tmpvolume = backend->getVolume( in_it.key(), out_it.key() );
 			for ( jack_nframes_t n=0; n<nframes; n++ ) {
 				tmpout[ n ] += tmpin[ n ] * tmpvolume;
 			}
 		}
 	}
 	/// Adjust outlevels.
-	for ( out_it = BACKEND->out_ports.begin(); out_it != BACKEND->out_ports.end(); ++out_it ) {
+	for ( out_it = backend->out_ports.begin(); out_it != backend->out_ports.end(); ++out_it ) {
 		jack_default_audio_sample_t* tmp = outs[ out_it.key() ];
-		float volume = BACKEND->getOutVolume( out_it.key() );
+		float volume = backend->getOutVolume( out_it.key() );
 		for ( jack_nframes_t n=0; n<nframes; n++ ) tmp[ n ] *= volume;
 	}
 	return 0;

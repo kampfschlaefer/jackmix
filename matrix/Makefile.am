@@ -10,7 +10,7 @@ check_PROGRAMS = matrix
 noinst_LTLIBRARIES = libmixingmatrix.la
 
 # set the include path for X, qt and KDE
-INCLUDES = -I$(top_srcdir)/guilib $(QT_INCLUDES) $(X_INCLUDES)
+INCLUDES = -I$(top_srcdir)/guilib -I$(top_srcdir)/backend $(QT_INCLUDES) $(X_INCLUDES)
 
 # the library search path. 
 #jackmix_LDFLAGS = $(KDE_RPATH) $(all_libraries)
