@@ -42,7 +42,6 @@ QFloatPoti::QFloatPoti( float value, float min, float max, int precision, QColor
  : QFrame( p,n )
  , d( new QFloatPoti_private() )
 {
-	this->setMinimumSize( 30,30 );
 	QBoxLayout* _layout = new QVBoxLayout( this );
 	d->poti = new QPoti( 0,100,1,0, this );
 	_layout->addWidget( d->poti );
@@ -57,7 +56,6 @@ QFloatPoti::QFloatPoti( QWidget* p, const char* n )
  : QFrame( p,n )
  , d( new QFloatPoti_private() )
 {
-	this->setMinimumSize( 30,30 );
 	QBoxLayout* _layout = new QVBoxLayout( this );
 	d->poti = new QPoti( 0,100,1,0, this );
 	_layout->addWidget( d->poti );
