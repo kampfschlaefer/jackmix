@@ -23,6 +23,8 @@
 
 #include <qframe.h>
 
+class QFloatPoti_private;
+
 class QFloatPoti : public QFrame {
 Q_OBJECT
 public:
@@ -30,11 +32,12 @@ public:
 	~QFloatPoti();
 public slots:
 	void setValue( float );
+	void setColor( QColor );
 protected:
 	void paintEvent( QPaintEvent* );
 	void wheelEvent( QWheelEvent* );
 private:
-	float _min, _max, _value;
+	QFloatPoti_private* d;
 };
 
 #endif
