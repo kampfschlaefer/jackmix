@@ -54,5 +54,5 @@ dnl WITH_NLS is for the po files
 dnl AM_KDE_WITH_NLS
 
 dnl KDE_USE_QT
-AC_PATH_QT
+AC_PATH_QT_1_3
 dnl AC_PATH_KDE
