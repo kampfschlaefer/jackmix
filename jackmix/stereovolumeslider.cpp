@@ -40,11 +40,11 @@ StereoVolumeSlider::StereoVolumeSlider( QString ch1, QString ch2, float _dbmin, 
 	connect( tmp, SIGNAL( valueChanged( float ) ), this, SLOT( balanceChanged( float ) ) );
 	layout->addWidget( tmp );
 	QHBoxLayout* layout2 = new QHBoxLayout( layout );
-	layout2->addWidget( new QTickmarks( dbmin, dbmax, BottomToTop, posRight, this ) );
+	layout2->addWidget( new QTickmarks( dbmin, dbmax, BottomToTop, posRight, this, 7 ) );
 	tmp = new QFloatSlider( 0, dbmin, dbmax, 0.1, 100, BottomToTop, this );
 	connect( tmp, SIGNAL( valueChanged( float ) ), this, SLOT( volumeChanged( float ) ) );
 	layout2->addWidget( tmp );
-	layout2->addWidget( new QTickmarks( dbmin, dbmax, BottomToTop, posLeft, this ) );
+	layout2->addWidget( new QTickmarks( dbmin, dbmax, BottomToTop, posLeft, this, 7 ) );
 }
 StereoVolumeSlider::~StereoVolumeSlider() {
 }
