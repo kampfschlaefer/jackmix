@@ -22,7 +22,7 @@
 #define JACKMIX_VOLUMEGROUP_AUX_H
 
 #include "volumegroup.h"
-#include <qvaluevector.h>
+#include <qptrlist.h>
 
 namespace JackMix {
 
@@ -47,10 +47,11 @@ public:
 		\param The parent for the widget
 	*/
 	VolumeGroupChannelWidget* channelWidget( QString, QWidget* );
+	void removeChannelWidget( VolumeGroupChannelWidget* );
 public:
 	void removeVG();
 private:
-	QValueVector<VGAuxChannelWidget*> _channelwidgets;
+	QPtrList<VGAuxChannelWidget> _channelwidgets;
 };
 
 };

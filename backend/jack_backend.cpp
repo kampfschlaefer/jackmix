@@ -58,6 +58,10 @@ void JackBackend::removeOutput( QString name ) {
 	jack_port_unregister( client, out_ports[ name ] );
 	out_ports.remove( name );
 }
+void JackBackend::removeInput( QString name ) {
+	jack_port_unregister( client, in_ports[ name ] );
+	in_ports.remove( name );
+}
 
 void JackBackend::setVolume( QString channel, QString output, float volume ) {
 	//std::cerr << "JackBackend::setVolume( " << channel << ", " << output << ", " << volume << " )" << std::endl;

@@ -41,9 +41,11 @@ public:
 public slots:
 	void addInput();
 	void addOutput();
+	void removeInput( ChannelWidget* );
 private slots:
 	void init();
 private:
+	void newChannel( ChannelWidget* );
 	QHBox* mw;
 	QValueList<ChannelWidget*> _channelwidgets;
 	MasterWidgets* _master;

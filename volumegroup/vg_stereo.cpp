@@ -56,10 +56,17 @@ VolumeGroupChannelWidget* VGStereo::channelWidget( QString name, QWidget* parent
 	_channelwidgets.append( tmp );
 	return tmp;
 }
+void VGStereo::removeChannelWidget( VolumeGroupChannelWidget* n ) {
+	_channelwidgets.find(  static_cast<VGStereoChannelWidget*>(  n ) );
+	_channelwidgets.remove();
+	delete n;
+}
 void VGStereo::removeVG() {
 std::cerr << "VGStereo::removeVG()" << std::endl;
-	for (  QValueVector<VGStereoChannelWidget*>::iterator tmp = _channelwidgets.begin(); tmp != _channelwidgets.end(); tmp++ )
-		delete *tmp;
+//	for (  QValueVector<VGStereoChannelWidget*>::iterator tmp = _channelwidgets.begin(); tmp != _channelwidgets.end(); tmp++ )
+//		delete *tmp;
+	_channelwidgets.setAutoDelete( true );
+	while ( _channelwidgets.count() > 0 ) _channelwidgets.removeLast();
 	delete _masterwidget;
 	VolumeGroupFactory::the()->unregisterGroup(  this );
 	std::cerr << "VGStereo::removeVG() before delete" << std::endl;

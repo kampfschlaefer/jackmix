@@ -53,13 +53,20 @@ VolumeGroupMasterWidget* VGAux::masterWidget( QWidget* parent ) {
 VolumeGroupChannelWidget* VGAux::channelWidget( QString name, QWidget* parent ) {
 std::cerr << "VGAux::channelWidget( " << name << ", " << parent << " )" << std::endl;
 	VGAuxChannelWidget *tmp = new VGAuxChannelWidget( name, this, parent );
-	_channelwidgets.push_back( tmp );
+	_channelwidgets.append( tmp );
 	return tmp;
+}
+void VGAux::removeChannelWidget( VolumeGroupChannelWidget* n ) {
+	_channelwidgets.find( static_cast<VGAuxChannelWidget*>( n ) );
+	_channelwidgets.remove();
+	delete n;
 }
 void VGAux::removeVG() {
 std::cerr << "VGAux::removeVG() removing widgets" << std::endl;
-	for ( QValueVector<VGAuxChannelWidget*>::iterator tmp = _channelwidgets.begin(); tmp != _channelwidgets.end(); tmp++ )
-		delete *tmp;
+//	for ( QPtrList<VGAuxChannelWidget*>::iterator tmp = _channelwidgets.begin(); tmp != _channelwidgets.end(); tmp++ )
+//		delete *tmp;
+	_channelwidgets.setAutoDelete( true );
+	while ( _channelwidgets.count() > 0 ) _channelwidgets.removeLast();
 	delete _masterwidget;
 	std::cerr << "VGAux::removeVG() remove channels" << std::endl;
 	for ( int i=0; i<channels(); i++ ) {

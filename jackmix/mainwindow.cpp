@@ -64,10 +64,10 @@ std::cerr << "MainWindow::MainWindow() Layout" << std::endl;
 
 void MainWindow::init() {
 std::cerr << "MainWindow::init()" << std::endl;
-	_channelwidgets.append( new ChannelWidget( "in_1", mw ) );
-	_channelwidgets.append( new ChannelWidget( "in_2", mw ) );
-	_channelwidgets.append( new ChannelWidget( "in_3", mw ) );
-	_channelwidgets.append( new ChannelWidget( "in_4", mw ) );
+	newChannel( new ChannelWidget( "in_1", mw ) );
+	newChannel( new ChannelWidget( "in_2", mw ) );
+	newChannel( new ChannelWidget( "in_3", mw ) );
+	newChannel( new ChannelWidget( "in_4", mw ) );
 std::cerr << "MainWindow::init() finished..." << std::endl;
 }
 MainWindow::~MainWindow() {
@@ -77,8 +77,11 @@ void MainWindow::addInput() {
 std::cerr << "MainWindow::addInput()" << std::endl;
 	QString name = QInputDialog::getText( "Name", "Name for the Input" );
 	//std::cerr << "MainWindow::addInput() after dialog" << std::endl;
-	if ( !name.isEmpty() )
-		_channelwidgets.append( new ChannelWidget( name, mw ) );
+	if ( !name.isEmpty() ) {
+		newChannel( new ChannelWidget( name, mw ) );
+//		_channelwidgets.append( tmp );
+//		connect( tmp, SIGNAL( remove( ChannelWidget* ) ), this, SLOT( removeInput( ChannelWidget* ) ) );
+	}
 	//std::cerr << "MainWindow::addInput() finished..." << std::endl;
 }
 void MainWindow::addOutput() {
@@ -90,6 +93,17 @@ void MainWindow::addOutput() {
 	}
 	_master->newVG( tmp->newVG() );
 }
+void MainWindow::removeInput( ChannelWidget* n ) {
+std::cerr << "MainWindow::removeInput( " << n << " )" << std::endl;
+	std::cerr << ( ( _channelwidgets.remove( n ) )?"true":"false" ) << std::endl;
+	delete n;
+}
+
+void MainWindow::newChannel( ChannelWidget* n ) {
+	_channelwidgets.append( n );
+	connect( n, SIGNAL( remove( ChannelWidget* ) ), this, SLOT( removeInput( ChannelWidget* ) ) );
+}
+
 
 MasterWidgets::MasterWidgets( QWidget* p, const char* n ) : QDockWindow( p,n ) {
 	for ( int i=0; i<VolumeGroupFactory::the()->groups(); i++ ) {

@@ -62,6 +62,7 @@ public:
 		\param The parent for the widget
 	*/
 	virtual VolumeGroupChannelWidget* channelWidget( QString, QWidget* ) =0;
+	virtual void removeChannelWidget( VolumeGroupChannelWidget* ) =0;
 
 	int channels();
 	QString name() const { return _name; }
@@ -95,6 +96,7 @@ public:
 	VolumeGroupChannelWidget( QString, VolumeGroup*, QWidget*, const char* =0 );
 	virtual ~VolumeGroupChannelWidget();
 	QString groupname() { return _group->name(); }
+	VolumeGroup* group() const { return _group; }
 protected:
 	QString _in;
 	VolumeGroup* _group;

@@ -37,6 +37,7 @@ public:
 	static JackBackend* backend( bool =false );
 
 	void addOutput( QString );
+	void removeInput( QString );
 	void addInput( QString );
 	void removeOutput( QString );
 

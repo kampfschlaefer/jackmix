@@ -27,6 +27,7 @@
 #include <qlayout.h>
 #include <qlabel.h>
 #include <iostream>
+#include <qpushbutton.h>
 
 using namespace JackMix;
 
@@ -37,6 +38,7 @@ ChannelWidget::ChannelWidget( QString name, QWidget* p, const char* n ) : QFrame
 	setMargin( 1 );
 	QBoxLayout *_layout = new QBoxLayout( this, QBoxLayout::TopToBottom );
 	_layout->setMargin( 1 );
+	/// Label
 	{
 		QLabel *tmp = new QLabel( _name, this );
 		tmp->setFrameStyle( QFrame::Panel|QFrame::Raised );
@@ -45,15 +47,26 @@ ChannelWidget::ChannelWidget( QString name, QWidget* p, const char* n ) : QFrame
 		tmp->setAlignment( Qt::AlignCenter );
 		tmp->setFont( QFont( "", 14, QFont::Bold ) );;
 		_layout->addWidget( tmp, 0 );
-		this->show();
 	}
+	/// RemoveButton
+	{
+std::cerr << "Create PushButton" << std::endl;
+		QPushButton* tmp = new QPushButton( "Remove", this );
+		_layout->addWidget( tmp );
+		connect( tmp, SIGNAL( clicked() ), this, SLOT( remove() ) );
+		tmp->show();
+	}
+
 	BACKEND->addInput( _name );
 
 	for ( int i=0; i<VolumeGroupFactory::the()->groups(); i++ )
 		newVG( VolumeGroupFactory::the()->group( i ) );
+
+	this->show();
 }
 ChannelWidget::~ChannelWidget() {
 	std::cerr << "ChannelWidget::~ChannelWidget()" << std::endl;
+	BACKEND->removeInput( _name );
 }
 
 void ChannelWidget::valueChanged( QString out, float n ) {
@@ -63,8 +76,22 @@ void ChannelWidget::valueChanged( QString out, float n ) {
 
 void ChannelWidget::newVG( VolumeGroup* n ) {
 	std::cerr << "ChannelWidget::newVG( " << n << " )" << std::endl;
-	QWidget* tmp = n->channelWidget( _name, this );
+	VolumeGroupChannelWidget* tmp = n->channelWidget( _name, this );
 	layout()->add( tmp );
 	tmp->show();
+	_groupwidgets.append( tmp );
+}
+
+/*void ChannelWidget::removeVG( VolumeGroup* n ) {
+	
+}*/
+
+void ChannelWidget::remove() {
+	std::cerr << "ChannelWidget::remove()" << std::endl;
+	for ( uint i=0; i<_groupwidgets.count(); i++ ) {
+		_groupwidgets.at( i )->group()->removeChannelWidget( _groupwidgets.at( i ) );
+		_groupwidgets.remove();
+	}
+	emit remove( this );
 }
 
