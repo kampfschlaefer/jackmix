@@ -16,7 +16,7 @@ INCLUDES         = -I$(top_srcdir)/guilib $(QT_INCLUDES)
 jackmix_LDFLAGS = $(JACK_CFLAGS)
 
 # the libraries to link against.
-jackmix_LDADD   = $(top_builddir)/guilib/libjackmix_gui.la $(LIB_QT) $(JACK_LIBS)
+jackmix_LDADD   = $(top_builddir)/guilib/libjackmix_gui.la $(top_builddir)/volumegroup/libjackmix_vg.la $(LIB_QT) $(JACK_LIBS)
 
 # which sources should be compiled for jackmix
 jackmix_SOURCES = \
@@ -32,11 +32,6 @@ jackmix_SOURCES = \
 
 # these are the headers for your project
 #noinst_HEADERS   = jackmix.h jackmixview.h jackmixpref.h
-
-# client stuff
-#jackmix_client_LDFLAGS = $(KDE_RPATH) $(all_libraries)
-#jackmix_client_LDADD   = $(LIB_KDECORE)
-#jackmix_client_SOURCES = jackmix_client.cpp
 
 # let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO
