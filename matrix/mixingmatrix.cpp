@@ -21,6 +21,11 @@
 #include "mixingmatrix.h"
 #include "mixingmatrix_privat.h"
 #include "mixingmatrix.moc"
+#include "mixingmatrix_privat.moc"
+
+#include "qlayout.h"
+#include "qlistbox.h"
+#include "qpushbutton.h"
 
 namespace JackMix {
 namespace MixingMatrix {
@@ -32,6 +37,7 @@ Widget::Widget( QStringList ins, QStringList outs, QWidget* p, const char* n )
 	, _direction( None )
 	, _inchannels( ins )
 	, _outchannels( outs )
+	, _connectionlister( 0 )
 {
 	if ( _inchannels.size()==0 ) {
 		_direction = Vertical;
@@ -44,6 +50,8 @@ Widget::Widget( QStringList ins, QStringList outs, QWidget* p, const char* n )
 	setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum );
 }
 Widget::~Widget() {
+	if ( _connectionlister )
+		delete _connectionlister;
 }
 
 
@@ -196,6 +204,18 @@ void Widget::addoutchannel( QString name ) {
 	_outchannels.push_back( name );
 	this->updateGeometry();
 }
+
+void Widget::toggleConnectionLister( bool n ) {
+	if ( !_connectionlister )
+		_connectionlister = new ConnectionLister( this, 0 );
+	_connectionlister->setShown( n );
+}
+void Widget::toggleConnectionLister() {
+	if ( !_connectionlister )
+		_connectionlister = new ConnectionLister( this, 0 );
+	_connectionlister->setShown( !_connectionlister->isShown() );
+}
+
 
 void Widget::debugPrint() {
 	qDebug( "\nWidget::debugPrint()" );
@@ -360,6 +380,34 @@ bool Global::create( QString type, QStringList ins, QStringList outs, Widget* pa
 void Global::debug() {
 	for ( uint i=0; i<_factories.size(); i++ )
 		qDebug( "The factory %p can create '%s'", _factories[ i ], _factories[ i ]->canCreate().join( " " ).latin1() );
+}
+
+ConnectionLister::ConnectionLister( Widget* w, QWidget* p, const char* n )
+	: QWidget( p,n )
+	, _widget( w )
+	, _layout( new QGridLayout( this, 2,3, 5,5 ) )
+	, _btn_connect( new QPushButton( "Connect", this ) )
+	, _btn_disconnect( new QPushButton( "Disconnect", this ) )
+	, _box_signals( new QListBox( this ) )
+	, _box_slots( new QListBox( this ) )
+{
+	qDebug( "ConnectionLister::ConnectionLister()" );
+	_layout->addWidget( _box_slots, 0,0 );
+	_layout->addWidget( _box_signals, 0,2 );
+	_layout->addWidget( _btn_connect, 1,1 );
+	_layout->addWidget( _btn_disconnect, 1,2 );
+
+	QValueList<Element*>::Iterator it;
+	for ( it=_widget->_elements.begin(); it!=_widget->_elements.end(); ++it ) {
+		qDebug( "  %p : %s", ( *it ), ( *it )->getPropertyList().join( "," ).latin1() );
+		QStringList tmp = ( *it )->getPropertyList();
+		for ( int i=0; i<tmp.count(); i++ ) {
+			_box_slots->insertItem( QString( "%1 %2" ).arg( int( *it ) ).arg( tmp[ i ] ) );
+			_box_signals->insertItem( QString( "%1 %2" ).arg( int( *it ) ).arg( tmp[ i ] ) );
+		}
+	}
+}
+ConnectionLister::~ConnectionLister() {
 }
 
 

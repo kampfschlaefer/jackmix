@@ -21,12 +21,18 @@
 #ifndef MIXINGMATRIX_PRIVAT_H
 #define MIXINGMATRIX_PRIVAT_H
 
+#include <qwidget.h>
 #include <qvaluelist.h>
+
+class QGridLayout;
+class QPushButton;
+class QListBox;
 
 namespace JackMix {
 namespace MixingMatrix {
 
 class ElementFactory;
+class Widget;
 
 class Global
 {
@@ -55,6 +61,19 @@ public:
 	void debug();
 private:
 	QValueList <ElementFactory*> _factories;
+};
+
+class ConnectionLister : public QWidget
+{
+Q_OBJECT
+public:
+	ConnectionLister( Widget*, QWidget* =0, const char* =0 );
+	~ConnectionLister();
+private:
+	Widget *_widget;
+	QGridLayout *_layout;
+	QPushButton *_btn_connect, *_btn_disconnect;
+	QListBox *_box_signals, *_box_slots;
 };
 
 }; // MixingMatrix

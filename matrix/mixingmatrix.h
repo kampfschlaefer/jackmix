@@ -29,6 +29,7 @@ namespace JackMix {
 namespace MixingMatrix {
 
 class Element;
+class ConnectionLister;
 
 struct Property {
 	Property( QString _name=QString::null, QString _signal=QString::null, QString _slot=QString::null, QString _type=QString::null )
@@ -47,6 +48,7 @@ typedef QMap<QString,Property> Properties;
 
 class Widget : public QFrame
 {
+	friend class ConnectionLister;
 Q_OBJECT
 Q_ENUMS( Mode )
 Q_ENUMS( Direction )
@@ -91,11 +93,17 @@ public:
 	Element* getResponsible( QString in, QString out ) const;
 	int elements() const { return _elements.size(); }
 
+	// Show/Hide the ConnectionLister
+	void toggleConnectionLister( bool );
+
 public slots:
 	void replace( Element* );
 
 	// Fills the empty nodes with 1to1-controls
 	void autoFill();
+
+	// Toggle the ConnectionLister
+	void toggleConnectionLister();
 
 	// For testing of the properties
 	void debugPrint();
@@ -104,6 +112,7 @@ private:
 	Direction _direction;
 	QValueList <Element*> _elements;
 	QStringList _inchannels, _outchannels;
+	ConnectionLister* _connectionlister;
 };
 
 class Element : public QFrame

@@ -19,10 +19,10 @@ INCLUDES = \
 libmixingelements_la_LDFLAGS = $(QT_LDFLAGS)
 
 # the libraries to link against.
-libmixingelements_la_LDADD = \
+libmixingelements_la_LIBADD = \
 	$(top_builddir)/matrix/libmixingmatrix.la \
 	$(top_builddir)/guilib/libjackmix_gui.la \
-	$(top_builddir)/guilib/libjackmix_backend.la \
+	$(top_builddir)/backend/libjackmix_backend.la \
 	$(LIB_QT) $(LIB_XEXT) $(LIB_X11)
 
 # which sources should be compiled

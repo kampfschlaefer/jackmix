@@ -63,11 +63,9 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	_editmenu->setCheckable( true );
 	_editmenu->insertItem( "Autofill", this, SLOT( autofill() ) );
 	_editmenu->insertSeparator();
-	//_editmenu->insertItem( "Add Input...", this, SLOT( addInput() ) );
 	_add_inchannel_action = new QAction( "Add Input...", 0, this );
 	connect( _add_inchannel_action, SIGNAL( activated() ), this, SLOT( addInput() ) );
 	_add_inchannel_action->addTo( _editmenu );
-	//_editmenu->insertItem( "Add Output...", this, SLOT( addOutput() ) );
 	_add_outchannel_action = new QAction( "Add Output...", 0, this );
 	connect( _add_outchannel_action, SIGNAL( activated() ), this, SLOT( addOutput() ) );
 	_add_outchannel_action->addTo( _editmenu );
@@ -88,6 +86,8 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	//_toggleout_action->setToggleAction( true );
 	connect( _toggleout_action, SIGNAL( activated() ), this, SLOT( toggleout() ) );
 	_toggleout_action->addTo( _viewmenu );
+	_showLister = new QAction( "Toggle ConnectionLister", CTRL+Key_L, this );
+	_showLister->addTo( _viewmenu );
 
 	_helpmenu = new QPopupMenu( this );
 	menuBar()->insertItem( "Help", _helpmenu );
@@ -135,9 +135,11 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	BACKEND->addOutput( "out_2" );
 	BACKEND->addOutput( "out_3" );
 
-	_debugPrint = new QAction( "DebugPrint", 0, this );
+	_debugPrint = new QAction( "DebugPrint", CTRL+Key_P, this );
 	connect( _debugPrint, SIGNAL( activated() ), _mixerwidget, SLOT( debugPrint() ) );
 	_debugPrint->addTo( _filemenu );
+
+	connect( _showLister, SIGNAL( activated() ), _mixerwidget, SLOT( toggleConnectionLister() ) );
 }
 
 MainWindow::~MainWindow() {

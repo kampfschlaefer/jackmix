@@ -19,7 +19,7 @@ libmixingmatrix_la_LDFLAGS = $(QT_LDFLAGS)
 
 # the libraries to link against.
 matrix_LDADD = libmixingmatrix.la $(top_builddir)/guilib/libjackmix_gui.la $(LIB_QT) $(LIB_XEXT) $(LIB_X11)
-libmixingmatrix_la_LDADD = $(LIB_QT) $(LIB_XEXT) $(LIB_X11)
+libmixingmatrix_la_LIBADD = $(LIB_QT) $(LIB_XEXT) $(LIB_X11)
 
 # which sources should be compiled for jackmix
 matrix_SOURCES = \
