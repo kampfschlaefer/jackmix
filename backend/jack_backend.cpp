@@ -44,7 +44,7 @@ JackBackend::JackBackend() {
 		::jack_activate( client );
 	}
 	else
-	std::cout << "\n No jack-connection! :-(\n\n";
+	std::cout << "\n No jack-connection! :(\n\n";
 	std::cout << "JackBackend::JackBackend() finished" << std::endl;
 }
 JackBackend::~JackBackend() {

@@ -24,6 +24,7 @@
 #include "jack_backend.h"
 #include "mixingmatrix.h"
 #include "aux_elements.h"
+#include "channelselector.h"
 
 #include <iostream>
 #include <qpopupmenu.h>
@@ -38,7 +39,7 @@
 #include <qmessagebox.h>
 #include <qaction.h>
 
-#include "defaults.xml"
+//#include "defaults.xml"
 
 using namespace JackMix;
 using namespace MixingMatrix;
@@ -62,8 +63,20 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	_editmenu->setCheckable( true );
 	_editmenu->insertItem( "Autofill", this, SLOT( autofill() ) );
 	_editmenu->insertSeparator();
-	_editmenu->insertItem( "Add Input...", this, SLOT( addInput() ) );
-	_editmenu->insertItem( "Add Output...", this, SLOT( addOutput() ) );
+	//_editmenu->insertItem( "Add Input...", this, SLOT( addInput() ) );
+	_add_inchannel_action = new QAction( "Add Input...", 0, this );
+	connect( _add_inchannel_action, SIGNAL( activated() ), this, SLOT( addInput() ) );
+	_add_inchannel_action->addTo( _editmenu );
+	//_editmenu->insertItem( "Add Output...", this, SLOT( addOutput() ) );
+	_add_outchannel_action = new QAction( "Add Output...", 0, this );
+	connect( _add_outchannel_action, SIGNAL( activated() ), this, SLOT( addOutput() ) );
+	_add_outchannel_action->addTo( _editmenu );
+	_remove_inchannel_action = new QAction( "Remove Input...", 0, this );
+	connect( _remove_inchannel_action, SIGNAL( activated() ), this, SLOT( removeInput() ) );
+	_remove_inchannel_action->addTo( _editmenu );
+	_remove_outchannel_action = new QAction( "Remove Output...", 0, this );
+	connect( _remove_outchannel_action, SIGNAL( activated() ), this, SLOT( removeOutput() ) );
+	_remove_outchannel_action->addTo( _editmenu );
 
 	_viewmenu = new QPopupMenu( this );
 	menuBar()->insertItem( "View", _viewmenu );
@@ -101,8 +114,6 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	_mixerwidget->createControl( QStringList()<<"in_3"<<"in_4", QStringList()<<"out_1"<<"out_2" );
 	_mixerwidget->createControl( QStringList()<<"in_5", QStringList()<<"out_1"<<"out_2" );
 	_mixerwidget->createControl( QStringList()<<"in_6", QStringList()<<"out_1"<<"out_2" );
-	//_mixerwidget->createControl( QStringList()<<"in_4", QStringList()<<"out_1" );
-	//_mixerwidget->createControl( QStringList()<<"in_4", QStringList()<<"out_2" );
 	_mixerwidget->autoFill();
 
 	//_inputswidget->createControl( QStringList()<<"in_1"<<"in_2", QStringList()<<"in_1"<<"in_2" );
@@ -205,6 +216,25 @@ void MainWindow::addOutput( QString name ) {
 	_mixerwidget->autoFill();
 	_outputswidget->addoutchannel( name );
 	_outputswidget->autoFill();
+}
+
+void MainWindow::removeInput() {
+qDebug( "MainWindow::removeInput()" );
+	ChannelSelector *tmp = new ChannelSelector( "Delete Inputchannels", "Selecte the inputchannels for deletion:", BACKEND->inchannels(), this );
+	connect( tmp, SIGNAL( selectedChannel( QString ) ), this, SLOT( removeInput( QString ) ) );
+	tmp->show();
+}
+void MainWindow::removeInput( QString n ) {
+qDebug( "MainWindow::removeInput( QString %s )", n.latin1() );
+}
+void MainWindow::removeOutput() {
+qDebug( "MainWindow::removeOutput()" );
+	ChannelSelector *tmp = new ChannelSelector( "Delete Outputchannels", "Selecte the outputchannels for deletion:", BACKEND->outchannels(), this );
+	connect( tmp, SIGNAL( selectedChannel( QString ) ), this, SLOT( removeOutput( QString ) ) );
+	tmp->show();
+}
+void MainWindow::removeOutput( QString n ) {
+qDebug( "MainWindow::removeOutput( QString %s )", n.latin1() );
 }
 
 void MainWindow::autofill() {

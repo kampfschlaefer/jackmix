@@ -8,7 +8,7 @@ SUBDIRS = . designer
 # of the other Makefile.am variables
 lib_LTLIBRARIES = libjackmix_gui.la
 
-check_PROGRAMS = qfloatcontrol_test poti_test slider_test
+check_PROGRAMS = qfloatcontrol_test poti_test slider_test channelselector_test
 
 # set the include path for X, qt and KDE
 INCLUDES         = $(QT_INCLUDES)
@@ -18,7 +18,8 @@ INCLUDES         = $(QT_INCLUDES)
 libjackmix_gui_la_LDFLAGS = $(QT_LDFLAGS) -avoid-version -no-undefined
 poti_test_LDFLAGS = $(QT_LDFLAGS)
 qfloatcontrol_test_LDFLAGS = $(QT_LDFLAGS)
-slieder_test_LDFLAGS = $(QT_LDFLAGS)
+slider_test_LDFLAGS = $(QT_LDFLAGS)
+channelselector_test_LDFLAGS = $(QT_LDFLAGS)
 
 # the libraries to link against.
 #jackmix_guilib_LDADD   = $(LIB_QT) $(JACK_LIBS)
@@ -26,9 +27,11 @@ libjackmix_gui_la_LIBADD = $(LIB_QT)
 poti_test_LDADD = libjackmix_gui.la $(LIB_QT)
 qfloatcontrol_test_LDADD = libjackmix_gui.la $(LIB_QT)
 slider_test_LDADD = libjackmix_gui.la $(LIB_QT)
+channelselector_test_LDADD = libjackmix_gui.la $(LIB_QT)
 
 # which sources should be compiled for jackmix
 libjackmix_gui_la_SOURCES = \
+	channelselector.cpp \
 	slider.cpp \
 	qfloatcontrol.cpp \
 	qpixmapeffect.cpp \
@@ -44,6 +47,7 @@ libjackmix_gui_la_SOURCES = \
 poti_test_SOURCES = poti_test.cpp
 slider_test_SOURCES = slider_test.cpp
 qfloatcontrol_test_SOURCES = qfloatcontrol_test.cpp
+channelselector_test_SOURCES = channelselector_test.cpp
 
 # these are the headers for your project
 #noinst_HEADERS   = jackmix.h jackmixview.h jackmixpref.h

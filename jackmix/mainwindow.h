@@ -47,12 +47,6 @@ public:
 	QBoxLayout* in_layout;
 };
 
-/*class Channellist : public QGrid {
-Q_OBJECT
-public:
-	Channellist( 
-};*/
-
 class MainWindow : public QMainWindow {
 Q_OBJECT
 public:
@@ -71,6 +65,10 @@ private slots:
 	void addInput( QString );
 	void addOutput();
 	void addOutput( QString );
+	void removeInput();
+	void removeInput( QString );
+	void removeOutput();
+	void removeOutput( QString );
 	void about();
 	void aboutQt();
 private:
@@ -78,7 +76,7 @@ private:
 	QPopupMenu *_filemenu, *_editmenu, *_viewmenu, *_settingsmenu, *_helpmenu;
 	MixingMatrix::Widget *_mixerwidget, *_inputswidget, *_outputswidget;
 	MainWindowHelperWidget* _mw;
-	QAction *_select_action, *_togglein_action, *_toggleout_action;
+	QAction *_select_action, *_togglein_action, *_toggleout_action, *_add_inchannel_action, *_add_outchannel_action, *_remove_inchannel_action, *_remove_outchannel_action;
 };
 
 };
