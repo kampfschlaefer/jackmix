@@ -5,13 +5,13 @@
 #include <qslider.h>
 #include <qlayout.h>
 
-QFloatSlider::QFloatSlider( QWidget* p, const char* n ) : QWidget( p,n ) {
+QFloatSlider::QFloatSlider( QWidget* p, const char* n ) : QFrame( p,n ) {
 	init( 0,0,0,0,1,Qt::Horizontal );
 }
-QFloatSlider::QFloatSlider( Orientation o, QWidget* p, const char* n ) : QWidget( p,n ) {
+QFloatSlider::QFloatSlider( Orientation o, QWidget* p, const char* n ) : QFrame( p,n ) {
 	init( 0,0,0,0,1,o );
 }
-QFloatSlider::QFloatSlider( float value, float min, float max, float pagestep, int precision, Orientation o, QWidget* p, const char* n ) : QWidget( p,n ) {
+QFloatSlider::QFloatSlider( float value, float min, float max, float pagestep, int precision, Orientation o, QWidget* p, const char* n ) : QFrame( p,n ) {
 	init( value, min, max, pagestep, precision, o );
 }
 
@@ -19,15 +19,18 @@ QFloatSlider::~QFloatSlider() {
 }
 
 void QFloatSlider::init( float value, float min, float max, float pagestep, int precision, Orientation o ) {
-	QBoxLayout* _layout = new QBoxLayout( this, QBoxLayout::LeftToRight );
+	setFrameStyle( QFrame::Panel|QFrame::Raised );
+	setMargin( 1 );
+	setLineWidth( 2 );
+	QBoxLayout* _layout = new QBoxLayout( this, QBoxLayout::LeftToRight, 2 );
 	_slider = new QSlider( o, this );
-	_layout->activate();
+	_layout->addWidget( _slider );
 	setPrecision( precision );
 	setValue( value );
 	setMinimum( min );
 	setMaximum( max );
 	setPageStep( pagestep );
-	connect( _slider, SIGNAL( valueChanged( int ) ), this, SLOT( valueChanged( int ) ) );
+	connect( _slider, SIGNAL( valueChanged( int ) ), this, SLOT( setValue( int ) ) );
 }
 
 void QFloatSlider::setPrecision( int n ) {

@@ -3,22 +3,33 @@
 #ifndef JACKMIX_JACK_BACKEND_H
 #define JACKMIX_JACK_BACKEND_H
 
-#include <vector>
+//#include <vector>
+#include <qmap.h>
+#include <qstring.h>
+#include <qstringlist.h>
 #include <jack/jack.h>
 
 namespace JackMix {
+
+typedef QMap<QString,jack_port_t*> portsmap;
+typedef portsmap::Iterator ports_it;
 
 class JackBackend {
 public:
 	static JackBackend* backend() { static JackBackend* backend = new JackBackend(); return backend; }
 
-	void addOutput( const char* );
-	void addInput( const char* );
+	void addOutput( QString );
+	void addInput( QString );
 
 	/// sets the volume of channel,output
-	void setVolume( int,int,float );
+	void setVolume( QString,QString,float );
 	/// returns the volume of channel,output
-	float getVolume( int,int );
+	float getVolume( QString,QString );
+
+	/// returns a QStringList with the names of the out-channels
+	QStringList outchannels();
+	/// returns a QStringList with the names of the in-channels
+	QStringList inchannels();
 private:
 	/// Initializes the connection
 	JackBackend();
@@ -26,12 +37,14 @@ private:
 	~JackBackend();
 
 public:
-	std::vector <jack_port_t*> in_ports;
-	std::vector <jack_port_t*> out_ports;
+	portsmap in_ports;
+	portsmap out_ports;
 	::jack_client_t *client;
 	/// First dimension is input-channels, second is output-channels
-	std::vector<std::vector<float> > volumes;
+	QMap<QString,QMap<QString,float> > volumes;
 };
+
+#define BACKEND JackMix::JackBackend::backend()
 
 int process( ::jack_nframes_t, void* );
 

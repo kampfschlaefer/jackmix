@@ -23,6 +23,7 @@ jackmix_SOURCES = \
 	backendwatcher.cpp \
 	mainwindow.cpp \
 	channelwidget.cpp \
+	volumeslider.cpp \
 	qfloatslider.cpp \
 	main.cpp
 

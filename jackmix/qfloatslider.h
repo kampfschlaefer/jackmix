@@ -2,11 +2,11 @@
 #ifndef FLOATSLIDER_H
 #define FLOATSLIDER_H
 
-#include <qwidget.h>
+#include <qframe.h>
 
 class QSlider;
 
-class QFloatSlider : public QWidget {
+class QFloatSlider : public QFrame {
 Q_OBJECT
 public:
 	QFloatSlider( QWidget* =0, const char* =0 );
