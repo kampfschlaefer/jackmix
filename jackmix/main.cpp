@@ -10,7 +10,7 @@ int main( int argc, char** argv ) {
 
 	QApplication *qapp = new QApplication( argc, argv );
 
-	/*JackMix::JackBackend* backend =*/ (void*) JackMix::JackBackend::backend();
+	(void*) JackMix::JackBackend::backend();
 
 	JackMix::MainWindow *mw = new JackMix::MainWindow();
 	mw->show();
@@ -18,6 +18,6 @@ int main( int argc, char** argv ) {
 	qapp->setMainWidget( mw );
 
 	int ret = qapp->exec();
-	//delete backend;
+	(void*) JackMix::JackBackend::backend( true );
 	return ret;
 }
