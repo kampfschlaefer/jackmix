@@ -25,6 +25,7 @@
 
 #include "jack_backend.h"
 #include "volumeslider.h"
+#include "stereovolumeslider.h"
 #include "qtickmarks.h"
 
 #include <iostream>
@@ -62,20 +63,14 @@ VGStereoMasterWidget::VGStereoMasterWidget( VGStereo* group, QWidget* p, const c
 	QVBoxLayout* _layout = new QVBoxLayout( this );
 	_layout->setMargin( 1 );
 	_layout->addWidget( new QLabel( _group->name(), this ), -1, Qt::AlignCenter );
-	QHBoxLayout* _layout2 = new QHBoxLayout( _layout );
-	_layout2->setMargin( 1 );
-	VolumeSlider* tmp;
-	tmp = new VolumeSlider( _group->name() + "_L", 1, BottomToTop, this, false );
-	connect( tmp, SIGNAL( valueChanged( QString, float ) ), this, SLOT( valueChanged( QString, float ) ) );
-	_layout2->addWidget( tmp );
-	_layout2->addWidget( new QTickmarks( -36, 12, BottomToTop, posLeft|posRight, this ) );
-	tmp = new VolumeSlider( _group->name() + "_R", 1, BottomToTop, this, false );
-	connect( tmp, SIGNAL( valueChanged( QString, float ) ), this, SLOT( valueChanged( QString, float ) ) );
-	_layout2->addWidget( tmp );
+	StereoVolumeSlider* tmp2 = new StereoVolumeSlider( _group->name()+"_L", _group->name()+"_R", -36, 12, this );
+	connect( tmp2, SIGNAL( valueChanged( QString,float ) ), this, SLOT( valueChanged( QString,float ) ) );
+	_layout->addWidget( tmp2 );
 }
 VGStereoMasterWidget::~VGStereoMasterWidget() {
 }
 void VGStereoMasterWidget::valueChanged( QString ch, float n ) {
+	//std::cerr << "VGStereoMasterWidget::valueChanged( " << ch << ", " << n << " )" << std::endl;
 	BACKEND->setOutVolume( ch, n );
 }
 

@@ -41,6 +41,13 @@ public:
 	~StereoVolumeSlider();
 signals:
 	void valueChanged( QString, float );
+private slots:
+	void balanceChanged( float );
+	void volumeChanged( float );
+private:
+	void updateVolumes();
+	float _balance, _volume;
+	QString _channel1, _channel2;
 };
 
 };

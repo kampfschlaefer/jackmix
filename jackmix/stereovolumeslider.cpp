@@ -21,13 +21,53 @@
 #include "stereovolumeslider.h"
 #include "stereovolumeslider.moc"
 
+#include "qfloatslider.h"
+#include "qtickmarks.h"
+#include <qlayout.h>
+
 using namespace JackMix;
 
-StereoVolumeSlider::StereoVolumeSlider( QString, QString, float _dbmin, float _dbmax, QWidget* p, const char* n )
+StereoVolumeSlider::StereoVolumeSlider( QString ch1, QString ch2, float _dbmin, float _dbmax, QWidget* p, const char* n )
  : QFrame( p,n )
  , dB2VolCalc( _dbmin, _dbmax )
+ , _balance( 0 )
+ , _volume( 1 )
+ , _channel1( ch1 )
+ , _channel2( ch2 )
 {
+	QVBoxLayout* layout = new QVBoxLayout( this );
+	QFloatSlider* tmp = new QFloatSlider( 0,-1,1,0.1,200, LeftToRight,this );
+	connect( tmp, SIGNAL( valueChanged( float ) ), this, SLOT( balanceChanged( float ) ) );
+	layout->addWidget( tmp );
+	QHBoxLayout* layout2 = new QHBoxLayout( layout );
+	layout2->addWidget( new QTickmarks( dbmin, dbmax, BottomToTop, posRight, this ) );
+	tmp = new QFloatSlider( 0, dbmin, dbmax, 0.1, 100, BottomToTop, this );
+	connect( tmp, SIGNAL( valueChanged( float ) ), this, SLOT( volumeChanged( float ) ) );
+	layout2->addWidget( tmp );
+	layout2->addWidget( new QTickmarks( dbmin, dbmax, BottomToTop, posLeft, this ) );
 }
 StereoVolumeSlider::~StereoVolumeSlider() {
+}
+
+void StereoVolumeSlider::balanceChanged( float n ) {
+	_balance = n;
+	updateVolumes();
+}
+void StereoVolumeSlider::volumeChanged( float n ) {
+	_volume = dbtoamp( n );
+	updateVolumes();
+}
+
+void StereoVolumeSlider::updateVolumes() {
+	float vol1, vol2;
+	if ( _balance > 0 ) {
+		vol1 = _volume * ( 1 - _balance );
+		vol2 = _volume;
+	} else { /// _balance < 0
+		vol1 = _volume;
+		vol2 = _volume * ( 1 + _balance );
+	}
+	emit valueChanged( _channel1, vol1 );
+	emit valueChanged( _channel2, vol2 );
 }
 
