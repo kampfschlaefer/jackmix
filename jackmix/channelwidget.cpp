@@ -26,10 +26,12 @@
 #include <qstringlist.h>
 #include <qlayout.h>
 #include <qlabel.h>
+#include <iostream>
 
 using namespace JackMix;
 
 ChannelWidget::ChannelWidget( QString name, QWidget* p, const char* n ) : QFrame( p,n ), _name( name ) {
+	std::cerr << "ChannelWidget::ChannelWidget( " << name << ", " << p << ", n )" << std::endl;
 	setFrameStyle( QFrame::Panel|QFrame::Raised );
 	setLineWidth( 1 );
 	setMargin( 1 );
@@ -43,16 +45,23 @@ ChannelWidget::ChannelWidget( QString name, QWidget* p, const char* n ) : QFrame
 		tmp->setAlignment( Qt::AlignCenter );
 		tmp->setFont( QFont( "", 14, QFont::Bold ) );;
 		_layout->addWidget( tmp, 0 );
+		this->show();
 	}
 	BACKEND->addInput( _name );
+	QWidget* tmp;
 	for ( int i=0; i<VolumeGroupFactory::the()->groups(); i++ ) {
-		_layout->addWidget( VolumeGroupFactory::the()->group( i )->channelWidget( _name, this ), 100 );
+		//std::cerr << "ChannelWidget::ChannelWidget " << i << std::endl;
+		tmp = VolumeGroupFactory::the()->group( i )->channelWidget( _name, this );
+		_layout->addWidget( tmp, 100 );
+		tmp->show();
 	}
 }
 ChannelWidget::~ChannelWidget() {
+	std::cerr << "ChannelWidget::~ChannelWidget()" << std::endl;
 }
 
 void ChannelWidget::valueChanged( QString out, float n ) {
+	std::cerr << "ChannelWidget::valueChanged( " << out << ", " << n << " )" << std::endl;
 	BACKEND->setVolume( _name, out, n );
 }
 

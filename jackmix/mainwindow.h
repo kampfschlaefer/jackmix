@@ -24,6 +24,8 @@
 #include <qmainwindow.h>
 #include <qdockwindow.h>
 
+class QHBox;
+
 namespace JackMix {
 
 class MainWindow : public QMainWindow {
@@ -31,6 +33,10 @@ Q_OBJECT
 public:
 	MainWindow( QWidget* =0, const char* =0 );
 	~MainWindow();
+public slots:
+	void addInput();
+private:
+	QHBox* mw;
 };
 
 class MasterWidgets : public QDockWindow {

@@ -31,6 +31,7 @@
 #include <qmenubar.h>
 #include <qhbox.h>
 #include <qlayout.h>
+#include <qinputdialog.h>
 
 using namespace JackMix;
 
@@ -39,21 +40,32 @@ MainWindow::MainWindow( QWidget* p, const char* n ) : QMainWindow( p,n ) {
 	menuBar()->insertItem( "File", file );
 	file->insertItem( "Quit", this, SLOT( close() ), Key_Q );
 
+	QPopupMenu *edit = new QPopupMenu( this );
+	menuBar()->insertItem( "Edit", edit );
+	edit->insertItem( "Add Input", this, SLOT( addInput() ) );
+
 	void* tmp;
 	tmp = new VGAux( "aux", 3, this );
 	tmp = new VGStereo( "stereo", this );
 
-	QHBox *mw = new QHBox( this );
+	mw = new QHBox( this );
 	this->setCentralWidget( mw );
 	mw->setSpacing( 3 );
 	tmp = new ChannelWidget( "in_1", mw );
 	tmp = new ChannelWidget( "in_2", mw );
-	tmp = new ChannelWidget( "in_3", mw );
-	tmp = new ChannelWidget( "in_4", mw );
+//	tmp = new ChannelWidget( "in_3", mw );
+//	tmp = new ChannelWidget( "in_4", mw );
 
 	addDockWindow( new MasterWidgets( this, "MasterControls" ), DockRight );
 }
 MainWindow::~MainWindow() {
+}
+
+void MainWindow::addInput() {
+	void* tmp;
+	QString name = QInputDialog::getText( "Name", "Name for the Input" );
+	if ( !name.isEmpty() )
+		tmp = new ChannelWidget( name, mw );
 }
 
 MasterWidgets::MasterWidgets( QWidget* p, const char* n ) : QDockWindow( p,n ) {
