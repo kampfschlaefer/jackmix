@@ -24,6 +24,7 @@ jackmix_SOURCES = \
 	mainwindow.cpp \
 	channelwidget.cpp \
 	volumeslider.cpp \
+	stereovolumeslider.cpp \
 	volumegroup.cpp \
 	vg_aux.cpp \
 	vg_stereo.cpp \
