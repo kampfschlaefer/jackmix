@@ -54,6 +54,11 @@ void JackBackend::addInput( QString name ) {
 	in_ports.insert( name, jack_port_register ( client, name.latin1(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0 ) );
 }
 
+void JackBackend::removeOutput( QString name ) {
+	jack_port_unregister( client, out_ports[ name ] );
+	out_ports.remove( name );
+}
+
 void JackBackend::setVolume( QString channel, QString output, float volume ) {
 	//std::cerr << "JackBackend::setVolume( " << channel << ", " << output << ", " << volume << " )" << std::endl;
 	volumes[ channel ][ output ] = volume;

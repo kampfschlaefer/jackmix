@@ -21,7 +21,6 @@
 #ifndef JACKMIX_JACK_BACKEND_H
 #define JACKMIX_JACK_BACKEND_H
 
-//#include <vector>
 #include <qmap.h>
 #include <qstring.h>
 #include <qstringlist.h>
@@ -39,6 +38,7 @@ public:
 
 	void addOutput( QString );
 	void addInput( QString );
+	void removeOutput( QString );
 
 	/// sets the volume of channel,output
 	void setVolume( QString,QString,float );
