@@ -28,6 +28,7 @@ matrix_SOURCES = \
 	main.cpp
 
 libmixingmatrix_la_SOURCES = \
+	connectionlister.cpp \
 	mixingmatrix.cpp
 
 # let automoc handle all of the meta source files (moc)

@@ -89,19 +89,19 @@ Mono2StereoElement::Mono2StereoElement( QStringList inchannel, QStringList outch
 	QPushButton* _btn_replace = new QPushButton( "R", this );
 	_layout->addWidget( _btn_replace, 0,1 );
 	connect( _btn_replace, SIGNAL( clicked() ), this, SLOT( slot_replace() ) );
-	QPushButton* _btn_print = new QPushButton( "P", this );
+	QPushButton* _btn_print = new QPushButton( "p", this );
 	_layout->addWidget( _btn_print, 1,0 );
 	connect( _btn_print, SIGNAL( clicked() ), this, SLOT( printSignals() ) );
+	QPushButton* _btn_slave = new QPushButton( "S", this );
+	_layout->addWidget( _btn_slave, 1,1 );
+	connect( _btn_slave, SIGNAL( clicked() ), this, SLOT( slave() ) );
 
-	QFloatPoti* _balance = new QFloatPoti( _balance_value, -1, 1, 100, QColor( 0,0,255 ), this );
+	/*QFloatPoti**/ _balance = new QFloatPoti( _balance_value, -1, 1, 100, QColor( 0,0,255 ), this );
 	_layout->addMultiCellWidget( _balance, 2,2, 0,1 );
 	connect( _balance, SIGNAL( valueChanged( float ) ), this, SLOT( balance( float ) ) );
-	JackMix::GUI::Slider* _volume = new JackMix::GUI::Slider( amptodb( _volume_value ), dbmin, dbmax, 1, 3, this );
+	/*JackMix::GUI::Slider* */_volume = new JackMix::GUI::Slider( amptodb( _volume_value ), dbmin, dbmax, 1, 3, this );
 	_layout->addMultiCellWidget( _volume, 3,3, 0,1 );
 	connect( _volume, SIGNAL( valueChanged( float ) ), this, SLOT( volume( float ) ) );
-
-	addProperty( Property( "volume", "volume_changed", "volume", "float" ) );
-	addProperty( Property( "panorama", "panorama_changed", "panorama", "float" ) );
 }
 Mono2StereoElement::~Mono2StereoElement() {
 }
@@ -112,11 +112,15 @@ void Mono2StereoElement::balance( float n ) {
 	//qDebug( "Mono2StereoElement::balance( float %f )", n );
 	_balance_value = n;
 	calculateVolumes();
+	_balance->setValue( n );
+	emit valueChanged( this, QString( "balance" ) );
 }
 void Mono2StereoElement::volume( float n ) {
 	//qDebug( "Mono2StereoElement::volume( float %f )", n );
 	_volume_value = n;
 	calculateVolumes();
+	_volume->value( n );
+	emit valueChanged( this, QString( "volume" ) );
 }
 
 void Mono2StereoElement::calculateVolumes() {
@@ -129,6 +133,10 @@ void Mono2StereoElement::calculateVolumes() {
 		right = dbtoamp( _volume_value )*( 1+_balance_value );
 	BACKEND->setVolume( _inchannel, _outchannel1, left );
 	BACKEND->setVolume( _inchannel, _outchannel2, right );
+}
+
+void Mono2StereoElement::slave() {
+	emit connectSlave( this, QString( "volume" ) );
 }
 
 void Mono2StereoElement::printSignals() {
@@ -183,19 +191,16 @@ Stereo2StereoElement::Stereo2StereoElement( QStringList inchannels, QStringList 
 	_layout->addWidget( _btn_replace, 0,1 );
 	connect( _btn_replace, SIGNAL( clicked() ), this, SLOT( slot_replace() ) );
 	_layout->setRowStretch( 0, -100 );
-	JackMix::GUI::Slider* _balance_widget = new JackMix::GUI::Slider( _balance_value, -1, 1, 2, 0.1, this, "%1" );
+	/*JackMix::GUI::Slider* */_balance_widget = new JackMix::GUI::Slider( _balance_value, -1, 1, 2, 0.1, this, "%1" );
 	_layout->addMultiCellWidget( _balance_widget, 1,1, 0,1 );
 	_layout->setRowStretch( 1, -100 );
 	connect( _balance_widget, SIGNAL( valueChanged( float ) ), this, SLOT( balance( float ) ) );
-	JackMix::GUI::Slider* _volume_widget = new JackMix::GUI::Slider( amptodb( _volume_value ), dbmin, dbmax, 1, 3, this );
+	/*JackMix::GUI::Slider* */_volume_widget = new JackMix::GUI::Slider( amptodb( _volume_value ), dbmin, dbmax, 1, 3, this );
 	_layout->addMultiCellWidget( _volume_widget, 2,2, 0,1 );
 	_layout->setRowStretch( 2, 1000 );
 	connect( _volume_widget, SIGNAL( valueChanged( float ) ), this, SLOT( volume( float ) ) );
 	BACKEND->setVolume( _inchannel1, _outchannel2, 0 );
 	BACKEND->setVolume( _inchannel2, _outchannel1, 0);
-
-	addProperty( Property( "volume", "volume_changed", "volume", "float" ) );
-//	addProperty( Property( "balance", "balance_changed", "balance", "float" ) );
 }
 Stereo2StereoElement::~Stereo2StereoElement() {
 }
@@ -205,12 +210,16 @@ void Stereo2StereoElement::slot_toggle() { select( !isSelected() ); }
 void Stereo2StereoElement::balance( float n ) {
 	//qDebug( "Mono2StereoElement::balance( float %f )", n );
 	_balance_value = n;
+	_balance_widget->value( n );
 	calculateVolumes();
+	emit valueChanged( this, QString( "balance" ) );
 }
 void Stereo2StereoElement::volume( float n ) {
 	//qDebug( "Mono2StereoElement::volume( float %f )", n );
 	_volume_value = n;
+	_volume_widget->value( n );
 	calculateVolumes();
+	emit valueChanged( this, QString( "volume" ) );
 }
 
 void Stereo2StereoElement::calculateVolumes() {

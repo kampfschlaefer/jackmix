@@ -102,17 +102,39 @@ public slots:
 	// Fills the empty nodes with 1to1-controls
 	void autoFill();
 
+	// Connect a given slave to a master
+	void connectSlave( Element*, QString );
+	// Connect a given master to a slave
+	void connectMaster( Element*, QString );
+	// Connect a given master to a given slave
+	void connectMasterSlave( Element*, QString, Element*, QString );
+
 	// Toggle the ConnectionLister
 	void toggleConnectionLister();
 
 	// For testing of the properties
 	void debugPrint();
+
+private slots:
+	void valueChanged( Element*, QString );
 private:
 	enum Mode _mode;
 	Direction _direction;
 	QValueList <Element*> _elements;
 	QStringList _inchannels, _outchannels;
 	ConnectionLister* _connectionlister;
+	struct ElementSlotSignalPair {
+		ElementSlotSignalPair( Element* n=0, QString s=0 ) : element( n ), slot( s ) {}
+		Element* element;
+		QString slot;
+		bool operator< ( const ElementSlotSignalPair n ) const {
+			return ( ( element < n.element ) || ( slot < n.slot ) );
+		}
+		bool operator== ( const ElementSlotSignalPair n ) const {
+			return ( ( element == n.element ) && ( slot == n.slot ) );
+		}
+	};
+	QMap <ElementSlotSignalPair,ElementSlotSignalPair> _connections;
 };
 
 class Element : public QFrame
@@ -152,9 +174,9 @@ public:
 	//QWidget* getNameWidget( QWidget* );
 
 	// Properties
-	Properties getProperties();
+	//Properties getProperties();
 	QStringList getPropertyList();
-	Property getProperty( QString );
+	//Property getProperty( QString );
 public slots:
 	void select( bool );
 public:
@@ -175,10 +197,14 @@ public:
 
 signals:
 	void replace( Element* );
+	void connectSlave( Element*, QString );
+
+	// Informs, that Element* n, Property s has changed.
+	void valueChanged( Element* n, QString s );
 
 protected:
 	// Adding Properties isn't allowed from the outside of the Element. This wouldn't make sence...
-	void addProperty( Property );
+	//void addProperty( Property );
 
 	// Internal pointer
 	const Widget* parent() { return _parent; }

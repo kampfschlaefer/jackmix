@@ -48,6 +48,7 @@ signals:
 	void valueChanged( float );
 private:
 	float _value, _pagestep;
+	bool _value_inupdate;
 	int _precision;
 	QString _valuestring;
 };

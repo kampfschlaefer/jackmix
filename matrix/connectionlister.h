@@ -18,8 +18,8 @@
 
 */
 
-#ifndef MIXINGMATRIX_PRIVAT_H
-#define MIXINGMATRIX_PRIVAT_H
+#ifndef CONNECTIONLISTER_H
+#define CONNECTIONLISTER_H
 
 #include <qwidget.h>
 #include <qvaluelist.h>
@@ -34,33 +34,19 @@ namespace MixingMatrix {
 class ElementFactory;
 class Widget;
 
-class Global
+class Global;
+
+class ConnectionLister : public QWidget
 {
-private:
-	Global();
-	~Global();
+Q_OBJECT
 public:
-	static Global* the();
-
-	void registerFactory( ElementFactory* );
-	void unregisterFactory( ElementFactory* );
-
-	/**
-	 * Returns the names of the Controls for the given number of in
-	 * and out channels
-	 */
-	QStringList canCreate( int in, int out );
-
-	/**
-	 * Create a control of the given type and for the given in and
-	 * out channels.
-	 * Return true on success else false.
-	 */
-	bool create( QString type, QStringList ins, QStringList outs, Widget* parent, const char* =0 );
-
-	void debug();
+	ConnectionLister( Widget*, QWidget* =0, const char* =0 );
+	~ConnectionLister();
 private:
-	QValueList <ElementFactory*> _factories;
+	Widget *_widget;
+	QGridLayout *_layout;
+	QPushButton *_btn_connect, *_btn_disconnect;
+	QListBox *_box_signals, *_box_slots;
 };
 
 }; // MixingMatrix

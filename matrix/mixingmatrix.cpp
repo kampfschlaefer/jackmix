@@ -21,7 +21,8 @@
 #include "mixingmatrix.h"
 #include "mixingmatrix_privat.h"
 #include "mixingmatrix.moc"
-#include "mixingmatrix_privat.moc"
+//#include "mixingmatrix_privat.moc"
+#include "connectionlister.h"
 
 #include "qlayout.h"
 #include "qlistbox.h"
@@ -58,6 +59,8 @@ Widget::~Widget() {
 void Widget::addElement( Element* n ) {
 	_elements.push_back( n );
 	connect( n, SIGNAL( replace( Element* ) ), this, SLOT( replace( Element* ) ) );
+	connect( n, SIGNAL( valueChanged( Element*, QString ) ), this, SLOT( valueChanged( Element*, QString ) ) );
+	connect( n, SIGNAL( connectSlave( Element*, QString ) ), this, SLOT( connectSlave( Element*, QString ) ) );
 }
 void Widget::removeElement( Element* n ) { _elements.remove( n ); }
 
@@ -205,6 +208,24 @@ void Widget::addoutchannel( QString name ) {
 	this->updateGeometry();
 }
 
+void Widget::connectSlave( Element* slave, QString slot ) {
+	qDebug( "Widget::connectSlave( %p, %s ) [ ! simple ! ]", slave, slot.latin1() );
+	if ( !_elements[ 0 ]->metaObject()->findProperty( slot.latin1() ) ) {
+		connectMasterSlave( _elements[ 0 ], slot, slave, slot );
+	}
+}
+void Widget::connectMaster( Element* master, QString signal ) {
+	qDebug( "Widget::connectMaster( %p, %s ) [ ! defunct ! ]", master, signal.latin1() );
+}
+void Widget::connectMasterSlave( Element* master, QString signal, Element* slave, QString slot ) {
+	qDebug( "Widget::connectMasterSlave( %p, %s, %p, %s )", master, signal.latin1(), slave, slot.latin1() );
+	if ( ! master->metaObject()->findProperty( signal ) && ! slave->metaObject()->findProperty( slot ) ) {
+		ElementSlotSignalPair sender( master, signal );
+		ElementSlotSignalPair receiver( slave, slot );
+		_connections.insert( receiver,sender );
+	}
+}
+
 void Widget::toggleConnectionLister( bool n ) {
 	if ( !_connectionlister )
 		_connectionlister = new ConnectionLister( this, 0 );
@@ -216,6 +237,16 @@ void Widget::toggleConnectionLister() {
 	_connectionlister->setShown( !_connectionlister->isShown() );
 }
 
+void Widget::valueChanged( Element* master, QString signal ) {
+	ElementSlotSignalPair m( master, signal );
+	QMap<ElementSlotSignalPair,ElementSlotSignalPair>::Iterator it;
+	for ( it = _connections.begin(); it != _connections.end(); ++it )
+		if ( it.data() == m ) {
+			//qDebug( "Widget::valueChanged( %p, %s ) connections=%i", master, signal.latin1(), _connections.size() );
+			//qDebug( " * Connection found!\n   Element: %p %s", ( *it ).element, ( *it ).slot.latin1() );
+			it.key().element->setProperty( it.key().slot, m.element->property( m.slot ) );
+		}
+}
 
 void Widget::debugPrint() {
 	qDebug( "\nWidget::debugPrint()" );
@@ -310,22 +341,19 @@ QStringList Element::followersList() const {
 	return tmp;
 }
 
-Properties Element::getProperties() {
+/*Properties Element::getProperties() {
 	return _properties;
-}
+}*/
 QStringList Element::getPropertyList() {
-	QStringList tmp;
-	Properties::Iterator it;
-	for ( it = _properties.begin(); it != _properties.end(); ++it )
-		tmp << it.key();
+	QStringList tmp = QStringList::fromStrList( metaObject()->propertyNames() );
 	return tmp;
 }
-void Element::addProperty( Property n ) {
+/*void Element::addProperty( Property n ) {
 	_properties[ n.name ] = n;
 }
 Property Element::getProperty( QString n ) {
 	return _properties[ n ];
-}
+}*/
 
 
 ElementFactory::ElementFactory() {
@@ -380,34 +408,6 @@ bool Global::create( QString type, QStringList ins, QStringList outs, Widget* pa
 void Global::debug() {
 	for ( uint i=0; i<_factories.size(); i++ )
 		qDebug( "The factory %p can create '%s'", _factories[ i ], _factories[ i ]->canCreate().join( " " ).latin1() );
-}
-
-ConnectionLister::ConnectionLister( Widget* w, QWidget* p, const char* n )
-	: QWidget( p,n )
-	, _widget( w )
-	, _layout( new QGridLayout( this, 2,3, 5,5 ) )
-	, _btn_connect( new QPushButton( "Connect", this ) )
-	, _btn_disconnect( new QPushButton( "Disconnect", this ) )
-	, _box_signals( new QListBox( this ) )
-	, _box_slots( new QListBox( this ) )
-{
-	qDebug( "ConnectionLister::ConnectionLister()" );
-	_layout->addWidget( _box_slots, 0,0 );
-	_layout->addWidget( _box_signals, 0,2 );
-	_layout->addWidget( _btn_connect, 1,1 );
-	_layout->addWidget( _btn_disconnect, 1,2 );
-
-	QValueList<Element*>::Iterator it;
-	for ( it=_widget->_elements.begin(); it!=_widget->_elements.end(); ++it ) {
-		qDebug( "  %p : %s", ( *it ), ( *it )->getPropertyList().join( "," ).latin1() );
-		QStringList tmp = ( *it )->getPropertyList();
-		for ( uint i=0; i<tmp.count(); i++ ) {
-			_box_slots->insertItem( QString( "%1 %2" ).arg( int( *it ) ).arg( tmp[ i ] ) );
-			_box_signals->insertItem( QString( "%1 %2" ).arg( int( *it ) ).arg( tmp[ i ] ) );
-		}
-	}
-}
-ConnectionLister::~ConnectionLister() {
 }
 
 

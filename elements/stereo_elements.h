@@ -24,7 +24,14 @@
 #include <mixingmatrix.h>
 #include <dbvolcalc.h>
 
+class QFloatPoti;
+
 namespace JackMix {
+
+	namespace GUI {
+		class Slider;
+	}
+
 namespace MixerElements {
 
 class Mono2StereoElement;
@@ -36,8 +43,8 @@ class Stereo2StereoElement;
 class Mono2StereoElement : public JackMix::MixingMatrix::Element, public dB2VolCalc
 {
 Q_OBJECT
-//Q_PROPERTY( double volume READ volume );
-//Q_PROPERTY( double panorama READ panorama );
+Q_PROPERTY( double volume READ volume WRITE volume );
+Q_PROPERTY( double panorama READ panorama );
 public:
 	Mono2StereoElement( QStringList, QStringList, MixingMatrix::Widget*, const char* =0 );
 	~Mono2StereoElement();
@@ -54,14 +61,18 @@ public slots:
 	void set_panorama( double n ) { balance( n ); }
 	void balance( float );
 	void volume( float );
+	void volume( double n ) { volume( float( n ) ); }
 private slots:
 	void slot_toggle();
 	void slot_replace() { emit replace( this ); }
 	void calculateVolumes();
+	void slave();
 
 	void printSignals();
 private:
 	QString _inchannel, _outchannel1, _outchannel2;
+	::QFloatPoti *_balance;
+	JackMix::GUI::Slider *_volume;
 	float _balance_value, _volume_value;
 };
 
@@ -71,7 +82,7 @@ private:
 class Stereo2StereoElement : public JackMix::MixingMatrix::Element, public dB2VolCalc
 {
 Q_OBJECT
-//Q_PROPERTY( double volume READ getVolume )
+Q_PROPERTY( double volume READ getVolume WRITE volume )
 public:
 	Stereo2StereoElement( QStringList, QStringList, MixingMatrix::Widget*, const char* =0 );
 	~Stereo2StereoElement();
@@ -80,6 +91,8 @@ public:
 	int outchannels() const { return 2; }
 
 	double getVolume() const { return _volume_value; }
+
+	void volume( double n ) { volume( float( n ) ); }
 signals:
 	void volume_changed( float );
 private slots:
@@ -91,6 +104,7 @@ private slots:
 private:
 	QString _inchannel1, _inchannel2, _outchannel1, _outchannel2;
 	float _balance_value, _volume_value;
+	JackMix::GUI::Slider *_volume_widget, *_balance_widget;
 };
 
 }; // MixerElements

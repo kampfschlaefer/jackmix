@@ -30,6 +30,7 @@ Slider::Slider( float value, float min, float max, int precision, float pagestep
 	: QWidget( p,n )
 	, dB2VolCalc( min, max )
 	, _value( value ), _pagestep( pagestep )
+	, _value_inupdate( false )
 	, _precision( precision )
 	, _valuestring( valuestring )
 {
@@ -40,15 +41,15 @@ Slider::~Slider() {
 }
 
 void Slider::value( float n ) {
-	static bool inupdate=false;
-	if ( !inupdate ) {
+	if ( !_value_inupdate ) {
+	//qDebug( "Slider::value( float %f )", n );
 		if ( n>dbmax ) n=dbmax;
 		if ( n<dbmin ) n=dbmin;
 		_value = n;
 		repaint();
-		inupdate=true;
+		_value_inupdate=true;
 		emit valueChanged( _value );
-		inupdate=false;
+		_value_inupdate=false;
 	}
 }
 

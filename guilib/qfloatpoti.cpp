@@ -27,11 +27,12 @@
 
 class QFloatPoti_private {
 public:
-	QFloatPoti_private() : poti( 0 ), min( 0 ), max( 1 ), value( 0.5 ), precision( 100 ) {
+	QFloatPoti_private() : poti( 0 ), min( 0 ), max( 1 ), value( 0.5 ), precision( 100 ), inupdate( false ) {
 	}
 	QPoti* poti;
 	float min, max, value;
 	int precision;
+	bool inupdate;
 
 	void setMinMax() {
 		poti->setRange( int( min*precision ), int( max*precision ) );
@@ -83,14 +84,18 @@ void QFloatPoti::setMaximum( float n ) {
 }
 
 void QFloatPoti::setValue( float n ) {
-	if ( n > d->max )
-		d->value = d->max;
-	else
-		if ( n < d->min )
-			d->value = d->min;
+	if ( !d->inupdate ) {
+		d->inupdate = true;
+		if ( n > d->max )
+			d->value = d->max;
 		else
-			d->value = n;
-	d->poti->setValue( int( d->value * d->precision ) );
+			if ( n < d->min )
+				d->value = d->min;
+			else
+				d->value = n;
+		d->poti->setValue( int( d->value * d->precision ) );
+		d->inupdate = false;
+	}
 }
 
 void QFloatPoti::setColor( QColor n ) {
