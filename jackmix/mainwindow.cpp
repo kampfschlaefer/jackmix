@@ -20,8 +20,7 @@ MainWindow::MainWindow( QWidget* p, const char* n ) : QMainWindow( p,n ) {
 	file->insertItem( "Quit", this, SLOT( close() ), Key_Q );
 
 	void* tmp;
-	//tmp = new VolumeGroup( "out", 2, this );
-	tmp = new VGAux( "aux", 5, this );
+	tmp = new VGAux( "aux", 3, this );
 	tmp = new VGStereo( "stereo", this );
 
 	QHBox *mw = new QHBox( this );
