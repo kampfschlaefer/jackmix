@@ -83,11 +83,9 @@ void VGStereoMasterWidget::valueChanged( QString ch, float n ) {
 VGStereoChannelWidget::VGStereoChannelWidget( QString in, VolumeGroup* g, QWidget* p, const char* n )
  : VolumeGroupChannelWidget( in, g, p,n )
 {
-	setMargin( 2 );
-	setLineWidth( 1 );
 	setFrameStyle( QFrame::Panel|QFrame::Raised );
 	QVBoxLayout* _layout = new QVBoxLayout( this );
-	_layout->setMargin( 2 );
+	_layout->setMargin( 10 );
 	_layout->addWidget( new QLabel( group()->name() + " L & R", this ), -1, Qt::AlignCenter );
 	QHBoxLayout* _layout2 = new QHBoxLayout( _layout );
 	_layout->setStretchFactor( _layout2, 100 );

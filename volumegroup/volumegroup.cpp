@@ -83,15 +83,27 @@ VolumeGroupMasterWidget::VolumeGroupMasterWidget( VolumeGroup* group, QWidget* p
 VolumeGroupMasterWidget::~VolumeGroupMasterWidget() {
 }
 
+/*#include <qpixmap.h>
+#include <qpixmapeffect.h>
+#include <qpainter.h>*/
+
 VolumeGroupChannelWidget::VolumeGroupChannelWidget( QString in, VolumeGroup* group, QWidget* p, const char* n )
  : QFrame( p,n )
  , _in( in )
  , _group( group )
 {
-	setMargin( 1 );
+	setMargin( 10 );
 	setLineWidth( 1 );
 	setFrameStyle( QFrame::Panel|QFrame::Raised );
 }
 VolumeGroupChannelWidget::~VolumeGroupChannelWidget() {
+}
+
+void VolumeGroupChannelWidget::paintEvent( QPaintEvent* ) {
+/*std::cerr << "VolumeGroupChannelWidget::paintEvent()" << std::endl;
+	QPainter p( this );
+	QPixmap bg( this->size() );
+	QPixmapEffect::gradient( bg, colorGroup().light(), colorGroup().dark(), QPixmapEffect::DiagonalGradient );
+	p.drawPixmap( this->rect(), bg );*/
 }
 

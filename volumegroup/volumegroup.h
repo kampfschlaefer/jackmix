@@ -132,6 +132,7 @@ public:
 
 	VolumeGroup* group() const { return _group; }
 
+	void paintEvent( QPaintEvent* );
 protected:
 	QString inchannel() const { return _in; }
 
