@@ -63,8 +63,6 @@ public slots:
 	void volume( float );
 	void volume( double n ) { volume( float( n ) ); }
 private slots:
-	void slot_toggle();
-	void slot_replace() { emit replace( this ); }
 	void calculateVolumes();
 	void slave();
 	void deslave();
@@ -95,11 +93,10 @@ public:
 signals:
 	void volume_changed( float );
 private slots:
-	void slot_toggle();
-	void slot_replace() { emit replace( this ); }
 	void balance( float );
 	void volume( float );
 	void calculateVolumes();
+	void disconnectM();
 private:
 	QString _inchannel1, _inchannel2, _outchannel1, _outchannel2;
 	float _balance_value, _volume_value;

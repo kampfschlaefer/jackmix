@@ -22,6 +22,7 @@
 #include "slider.moc"
 
 #include <qpainter.h>
+#include <qstyle.h>
 
 using namespace JackMix;
 using namespace GUI;
@@ -75,8 +76,9 @@ void Slider::paintEvent( QPaintEvent* ) {
 	}
 
 	if ( hasFocus() ) {
-		p.setPen( QPen( QPen::DotLine ) );
-		p.drawRect( -w/2-2, -h/2, w+4, h );
+		//p.setPen( QPen( QPen::DotLine ) );
+		//p.drawRect( -w/2-2, -h/2, w+4, h );
+		style().drawPrimitive( QStyle::PE_FocusRect, &p, QRect( -w/2-2, -h/2, w+4, h ), colorGroup() );
 	}
 
 	float pos = dbtondb( _value )*w-w/2;

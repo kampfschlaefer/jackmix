@@ -27,6 +27,9 @@
 #include "qlayout.h"
 #include "qlistbox.h"
 #include "qpushbutton.h"
+#include "qpopupmenu.h"
+#include "qaction.h"
+#include "qcursor.h"
 
 namespace JackMix {
 namespace MixingMatrix {
@@ -62,6 +65,7 @@ void Widget::addElement( Element* n ) {
 	connect( n, SIGNAL( valueChanged( Element*, QString ) ), this, SLOT( valueChanged( Element*, QString ) ) );
 	connect( n, SIGNAL( connectSlave( Element*, QString ) ), this, SLOT( connectSlave( Element*, QString ) ) );
 	connect( n, SIGNAL( disconnectSlave( Element*, QString ) ), this, SLOT( disconnectSlave( Element*, QString ) ) );
+	connect( n, SIGNAL( disconnectMaster( Element*, QString ) ), this, SLOT( disconnectMaster( Element*, QString ) ) );
 }
 void Widget::removeElement( Element* n ) { _elements.remove( n ); }
 
@@ -79,6 +83,8 @@ qDebug( " and %i selected followers.", n->followers( n->neighbors() ) );
 			Element* tmp = getResponsible( ( *jt ),( *it ) );
 			qDebug( "About to delete %p", tmp );
 			if ( tmp ) {
+				disconnectMaster( tmp, 0 );
+				disconnectSlave( tmp, 0 );
 				removeElement( tmp );
 				delete tmp;
 			}
@@ -223,11 +229,33 @@ void Widget::connectMasterSlave( Element* master, QString signal, Element* slave
 	if ( ! master->metaObject()->findProperty( signal ) && ! slave->metaObject()->findProperty( slot ) ) {
 		ElementSlotSignalPair sender( master, signal );
 		ElementSlotSignalPair receiver( slave, slot );
-		_connections.insert( receiver,sender );
+		if ( receiver == sender )
+			qWarning( "Tried to connect a property with itself! Cancelling this..." );
+		else
+			_connections.insert( receiver,sender );
 	}
 }
 void Widget::disconnectSlave( Element* slave, QString slot ) {
+	qDebug( "Widget::disconnectSlave( %p, %s )", slave, slot.latin1() );
+	//if ( _connections.contains( ElementSlotSignalPair( slave, slot ) ) )
+	//	qDebug( "  _connections contains this pair" );
 	_connections.remove( ElementSlotSignalPair( slave, slot ) );
+	QMap<ElementSlotSignalPair,ElementSlotSignalPair>::Iterator it;
+	for ( it = _connections.begin(); it != _connections.end(); ++it ) {
+		qDebug( "Trying slave (%p,%s)", it.key().element, it.key().slot.latin1() );
+		if ( it.key() == ElementSlotSignalPair( slave, slot ) ) {
+			qDebug( "\nSecond try: remove connection!\n" );
+			_connections.remove( it );
+		}
+	}
+}
+void Widget::disconnectMaster( Element* master, QString signal ) {
+	qDebug( "Widget::disconnectMaster( %p, %s )", master, signal.latin1() );
+	QMap<ElementSlotSignalPair,ElementSlotSignalPair>::Iterator it;
+	for ( it = _connections.begin(); it != _connections.end(); ++it ) {
+		if ( it.data() == ElementSlotSignalPair( master, signal ) )
+			_connections.remove( it );
+	}
 }
 
 void Widget::toggleConnectionLister( bool n ) {
@@ -269,12 +297,14 @@ Element::Element( QStringList in, QStringList out, Widget* p, const char* n )
 	, _out( out )
 	, _selected( false )
 	, _parent( p )
+	, _menu( new QPopupMenu( this ) )
 {
 	//qDebug( "MixingMatrix::Element::Element( QStringList '%s', QStringList '%s' )", in.join(",").latin1(), out.join(",").latin1() );
 	_parent->addElement( this );
 	setMargin( 2 );
 	setFrameStyle( QFrame::Raised|QFrame::StyledPanel );
 	setLineWidth( 2 );
+	//qDebug( "Element::Element() Properties: %s", QStringList::fromStrList( metaObject()->propertyNames() ).join( "," ).latin1() );
 }
 Element::~Element() {
 	//qDebug( "MixingMatrix::Element::~Element()" );
@@ -345,20 +375,14 @@ QStringList Element::followersList() const {
 	return tmp;
 }
 
-/*Properties Element::getProperties() {
-	return _properties;
-}*/
 QStringList Element::getPropertyList() {
 	QStringList tmp = QStringList::fromStrList( metaObject()->propertyNames() );
 	return tmp;
 }
-/*void Element::addProperty( Property n ) {
-	_properties[ n.name ] = n;
-}
-Property Element::getProperty( QString n ) {
-	return _properties[ n ];
-}*/
 
+void Element::showMenu() {
+	_menu->exec( QCursor::pos() );
+}
 
 ElementFactory::ElementFactory() {
 	Global::the()->registerFactory( this );

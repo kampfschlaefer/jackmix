@@ -31,6 +31,7 @@
 #include <qobjectlist.h>
 #include <qlabel.h>
 #include <qvariant.h>
+#include <qaction.h>
 
 using namespace JackMix;
 using namespace MixerElements;
@@ -85,10 +86,10 @@ Mono2StereoElement::Mono2StereoElement( QStringList inchannel, QStringList outch
 
 	QPushButton* _btn_select = new QPushButton( "S", this );
 	_layout->addWidget( _btn_select, 0,0 );
-	connect( _btn_select, SIGNAL( clicked() ), this, SLOT( slot_toggle() ) );
+	connect( _btn_select, SIGNAL( clicked() ), this, SLOT( slot_simple_select() ) );
 	QPushButton* _btn_replace = new QPushButton( "R", this );
 	_layout->addWidget( _btn_replace, 0,1 );
-	connect( _btn_replace, SIGNAL( clicked() ), this, SLOT( slot_replace() ) );
+	connect( _btn_replace, SIGNAL( clicked() ), this, SLOT( slot_simple_replace() ) );
 	QPushButton* _btn_deslave = new QPushButton( "dC", this );
 	_layout->addWidget( _btn_deslave, 1,0 );
 	connect( _btn_deslave, SIGNAL( clicked() ), this, SLOT( deslave() ) );
@@ -106,7 +107,6 @@ Mono2StereoElement::Mono2StereoElement( QStringList inchannel, QStringList outch
 Mono2StereoElement::~Mono2StereoElement() {
 }
 
-void Mono2StereoElement::slot_toggle() { select( !isSelected() ); }
 
 void Mono2StereoElement::balance( float n ) {
 	//qDebug( "Mono2StereoElement::balance( float %f )", n );
@@ -163,29 +163,37 @@ Stereo2StereoElement::Stereo2StereoElement( QStringList inchannels, QStringList 
 		_volume_value = right;
 		_balance_value = left-right;
 	}
-	QGridLayout* _layout = new QGridLayout( this, 3,2, 3 );
-	QPushButton* _btn_select = new QPushButton( "S", this );
-	_layout->addWidget( _btn_select, 0,0 );
-	connect( _btn_select, SIGNAL( clicked() ), this, SLOT( slot_toggle() ) );
-	QPushButton* _btn_replace = new QPushButton( "R", this );
-	_layout->addWidget( _btn_replace, 0,1 );
-	connect( _btn_replace, SIGNAL( clicked() ), this, SLOT( slot_replace() ) );
-	_layout->setRowStretch( 0, -100 );
-	/*JackMix::GUI::Slider* */_balance_widget = new JackMix::GUI::Slider( _balance_value, -1, 1, 2, 0.1, this, "%1" );
-	_layout->addMultiCellWidget( _balance_widget, 1,1, 0,1 );
-	_layout->setRowStretch( 1, -100 );
+	QGridLayout* _layout = new QGridLayout( this, 2,1, 3 );
+	QPushButton* _btn_menu = new QPushButton( "Menü", this );
+	_layout->addWidget( _btn_menu, 0,0 );
+	connect( _btn_menu, SIGNAL( clicked() ), this, SLOT( showMenu() ) );
+	_layout->setRowStretch( 0, 0 );
+	_balance_widget = new JackMix::GUI::Slider( _balance_value, -1, 1, 2, 0.1, this, "%1" );
+	_layout->addMultiCellWidget( _balance_widget, 1,1, 0,0 );
+	_layout->setRowStretch( 1, 0 );
 	connect( _balance_widget, SIGNAL( valueChanged( float ) ), this, SLOT( balance( float ) ) );
-	/*JackMix::GUI::Slider* */_volume_widget = new JackMix::GUI::Slider( amptodb( _volume_value ), dbmin, dbmax, 1, 3, this );
-	_layout->addMultiCellWidget( _volume_widget, 2,2, 0,1 );
+	_volume_widget = new JackMix::GUI::Slider( amptodb( _volume_value ), dbmin, dbmax, 1, 3, this );
+	_layout->addMultiCellWidget( _volume_widget, 2,2, 0,0 );
 	_layout->setRowStretch( 2, 1000 );
 	connect( _volume_widget, SIGNAL( valueChanged( float ) ), this, SLOT( volume( float ) ) );
 	BACKEND->setVolume( _inchannel1, _outchannel2, 0 );
 	BACKEND->setVolume( _inchannel2, _outchannel1, 0);
+
+	QAction *toggle = new QAction( "Toggle Selection", 0, this );
+	connect( toggle, SIGNAL( activated() ), this, SLOT( slot_simple_select() ) );
+	toggle->addTo( menu() );
+	QAction *replace = new QAction( "Replace", 0, this );
+	connect( replace, SIGNAL( activated() ), this, SLOT( slot_simple_replace() ) );
+	replace->addTo( menu() );
+	menu()->insertSeparator();
+	QAction *disconnectM = new QAction( "Disconnect Master: volume", 0, this );
+	connect( disconnectM, SIGNAL( activated() ), this, SLOT( disconnectM() ) );
+	disconnectM->addTo( menu() );
 }
 Stereo2StereoElement::~Stereo2StereoElement() {
 }
 
-void Stereo2StereoElement::slot_toggle() { select( !isSelected() ); }
+void Stereo2StereoElement::disconnectM() { emit disconnectMaster( this, "volume" ); }
 
 void Stereo2StereoElement::balance( float n ) {
 	//qDebug( "Mono2StereoElement::balance( float %f )", n );

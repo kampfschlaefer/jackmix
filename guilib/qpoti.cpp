@@ -144,8 +144,8 @@ QSize QPoti::sizeHint() const
 
 QSize QPoti::minimumSizeHint() const
 {
-	int width = 30;
-	int height = 30;
+	int width = 20;
+	int height = 20;
 	if( m_bLabel )
 	{
 		QFontMetrics metrics( font() );

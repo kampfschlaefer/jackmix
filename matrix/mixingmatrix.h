@@ -24,6 +24,8 @@
 #include <qframe.h>
 #include <qvaluelist.h>
 #include <qmap.h>
+#include <qpopupmenu.h>
+#include <qaction.h>
 
 namespace JackMix {
 namespace MixingMatrix {
@@ -111,6 +113,8 @@ public slots:
 
 	// Disconnect a given slave from its master
 	void disconnectSlave( Element*, QString );
+	// Disconnect a given master from all its slaves
+	void disconnectMaster( Element*, QString );
 
 	// Toggle the ConnectionLister
 	void toggleConnectionLister();
@@ -134,6 +138,10 @@ private:
 			return ( ( element < n.element ) || ( slot < n.slot ) );
 		}
 		bool operator== ( const ElementSlotSignalPair n ) const {
+			if ( ( element == n.element ) && ( n.slot == 0 ) )
+				return true;
+			if ( ( n.element == 0 ) && ( slot == n.slot ) )
+				return true;
 			return ( ( element == n.element ) && ( slot == n.slot ) );
 		}
 	};
@@ -177,12 +185,8 @@ public:
 	//QWidget* getNameWidget( QWidget* );
 
 	// Properties
-	//Properties getProperties();
 	QStringList getPropertyList();
-	//Property getProperty( QString );
-public slots:
-	void select( bool );
-public:
+
 	/**
 	 * Do the things you need to do in the subclasses when the
 	 * selected state changes.
@@ -198,25 +202,37 @@ public:
 	int followers( int ) const;
 	QStringList followersList() const;
 
+public slots:
+	void select( bool );
+	void showMenu();
+
 signals:
 	void replace( Element* );
 	void connectSlave( Element*, QString );
 	void disconnectSlave( Element*, QString );
+	void disconnectMaster( Element*, QString );
 
 	// Informs, that Element* n, Property s has changed.
 	void valueChanged( Element* n, QString s );
 
 protected:
-	// Adding Properties isn't allowed from the outside of the Element. This wouldn't make sence...
-	//void addProperty( Property );
-
 	// Internal pointer
 	const Widget* parent() { return _parent; }
+	// The contextmenu of the Element. Should be filled by the client...
+	QPopupMenu* menu() { return _menu; }
+
+protected slots:
+	// Use this slot if you don't want to do something before replacement.
+	void slot_simple_replace() { emit replace( this ); }
+	// Use this slot if you want a simple selection toggle
+	void slot_simple_select() { select( !isSelected() ); }
+
 private:
 	QStringList _in, _out;
 	bool _selected;
 	Properties _properties;
 	Widget* _parent;
+	QPopupMenu *_menu;
 };
 
 
