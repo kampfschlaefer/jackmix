@@ -26,6 +26,7 @@
 #include <qvaluelist.h>
 
 class QHBox;
+class QSettings;
 
 namespace JackMix {
 
@@ -43,12 +44,14 @@ public slots:
 	void addOutput();
 	void removeInput( ChannelWidget* );
 private slots:
-	void init();
+	void init( QString );
+	void closeEvent( QCloseEvent* );
 private:
 	void newChannel( ChannelWidget* );
 	QHBox* mw;
 	QValueList<ChannelWidget*> _channelwidgets;
 	MasterWidgets* _master;
+	QSettings* _settings;
 };
 
 class MasterWidgets : public QDockWindow {

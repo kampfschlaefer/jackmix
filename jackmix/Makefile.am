@@ -22,6 +22,7 @@ jackmix_LDADD = $(top_builddir)/guilib/libjackmix_gui.la $(top_builddir)/backend
 jackmix_SOURCES = \
 	mainwindow.cpp \
 	channelwidget.cpp \
+	xmlinterface.cpp \
 	main.cpp
 
 # these are the headers for your project

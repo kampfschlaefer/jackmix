@@ -18,40 +18,11 @@
 
 */
 
-#ifndef JACK_CHANNELWIDGET_H
-#define JACK_CHANNELWIDGET_H
+#include "xmlinterface.h"
+#include "xmlinterface.moc"
 
-#include <qframe.h>
-#include <qstring.h>
-#include <qptrlist.h>
-#include <qdom.h>
-
-namespace JackMix {
-
-class VolumeGroup;
-class VolumeGroupChannelWidget;
-
-class ChannelWidget : public QFrame {
-Q_OBJECT
-public:
-	ChannelWidget( QString name, QWidget*, const char* =0 );
-	ChannelWidget( QDomElement, QWidget*, const char* =0 );
-	~ChannelWidget();
-
-	QDomElement toXML();
-public slots:
-	void newVG( VolumeGroup* );
-	void removeVG( VolumeGroup* );
-private slots:
-	void valueChanged( QString, float );
-	void remove();
-private:
-	void init();
-	QString _name;
-	QPtrList<VolumeGroupChannelWidget> _groupwidgets;
-};
-
-};
-
-#endif
+XMLInterface::XMLInterface( QObject*p, const char* n ) : QObject( p,n ) {
+}
+XMLInterface::~XMLInterface() {
+}
 
