@@ -17,24 +17,24 @@ public:
 	virtual ~VGStereo();
 
 	/// returns the masterwidget. The argument is used the first time for parenting the widget.
-//	virtual VolumeGroupMasterWidget* masterWidget( QWidget* );
+	VolumeGroupMasterWidget* masterWidget( QWidget* );
 	/**
 		returns a new channelwidget.
 		\param the name of the input channel
 		\param The parent for the widget
 	*/
-	virtual VolumeGroupChannelWidget* channelWidget( QString, QWidget* );
+	VolumeGroupChannelWidget* channelWidget( QString, QWidget* );
 
 };
 
-/*class VolumeGroupMasterWidget : public QFrame {
+class VGStereoMasterWidget : public VolumeGroupMasterWidget {
 Q_OBJECT
 public:
-	VolumeGroupMasterWidget( VolumeGroup*, QWidget* =0, const char* =0 );
-	~VolumeGroupMasterWidget();
-private:
-	VolumeGroup* _group;
-};*/
+	VGStereoMasterWidget( VGStereo*, QWidget* =0, const char* =0 );
+	~VGStereoMasterWidget();
+private slots:
+	void valueChanged( QString, float );
+};
 
 class VGStereoChannelWidget : public VolumeGroupChannelWidget {
 Q_OBJECT

@@ -22,25 +22,38 @@ std::cerr << "VGStereo::VGStereo( " << name() << ", " << p << ", n )" << std::en
 VGStereo::~VGStereo() {
 }
 
-/*VolumeGroupMasterWidget* VGStereo::masterWidget( QWidget* parent ) {
+VolumeGroupMasterWidget* VGStereo::masterWidget( QWidget* parent ) {
 	if ( !_masterwidget )
-		_masterwidget = new VolumeGroupMasterWidget( this, parent );
+		_masterwidget = new VGStereoMasterWidget( this, parent );
 	return _masterwidget;
-}*/
+}
 VolumeGroupChannelWidget* VGStereo::channelWidget( QString name, QWidget* parent ) {
 	return new VGStereoChannelWidget( name, this, parent );
 }
 
-//int VGStereo::channels() { return _channels; }
 
-/*VolumeGroupMasterWidget::VolumeGroupMasterWidget( VolumeGroup* group, QWidget* p, const char* n )
- : QFrame( p,n )
- , _group( group )
+VGStereoMasterWidget::VGStereoMasterWidget( VGStereo* group, QWidget* p, const char* n )
+ : VolumeGroupMasterWidget( group, p,n )
 {
+	setMargin( 1 );
+	setLineWidth( 1 );
+	setFrameStyle( QFrame::Panel|QFrame::Raised );
+	QHBoxLayout* _layout = new QHBoxLayout( this );
+	_layout->setMargin( 1 );
+	VolumeSlider* tmp;
+	tmp = new VolumeSlider( _group->name() + "_L", 1, BottomToTop, this );
+	connect( tmp, SIGNAL( valueChanged( QString, float ) ), this, SLOT( valueChanged( QString, float ) ) );
+	_layout->addWidget( tmp );
+	tmp = new VolumeSlider( _group->name() + "_R", 1, BottomToTop, this );
+	connect( tmp, SIGNAL( valueChanged( QString, float ) ), this, SLOT( valueChanged( QString, float ) ) );
+	_layout->addWidget( tmp );
 }
-VolumeGroupMasterWidget::~VolumeGroupMasterWidget() {
+VGStereoMasterWidget::~VGStereoMasterWidget() {
 }
-*/
+void VGStereoMasterWidget::valueChanged( QString ch, float n ) {
+	BACKEND->setOutVolume( ch, n );
+}
+
 
 VGStereoChannelWidget::VGStereoChannelWidget( QString in, VolumeGroup* group, QWidget* p, const char* n )
  : VolumeGroupChannelWidget( in, group, p,n )
@@ -50,14 +63,14 @@ VGStereoChannelWidget::VGStereoChannelWidget( QString in, VolumeGroup* group, QW
 	setFrameStyle( QFrame::Panel|QFrame::Raised );
 	QVBoxLayout* _layout = new QVBoxLayout( this );
 	_layout->setMargin( 2 );
-	_layout->addWidget( new QLabel( _group->name(), this ) );
+	_layout->addWidget( new QLabel( _group->name() + " L & R", this ) );
 	QHBoxLayout* _layout2 = new QHBoxLayout( _layout );
 	VolumeSlider* tmp;
-	tmp = new VolumeSlider( "L", 1, BottomToTop, this );
+	tmp = new VolumeSlider( _group->name()+"_L", 1, BottomToTop, this, false );
 	connect( tmp, SIGNAL( valueChanged( QString,float ) ), this, SLOT( valueChanged( QString,float ) ) );
 	_layout2->addWidget( tmp );
 	_layout2->addWidget( new QTickmarks( -36, 12, BottomToTop, posLeft|posRight, this ) );
-	tmp = new VolumeSlider( "R", 1, BottomToTop, this );
+	tmp = new VolumeSlider( _group->name()+"_R", 1, BottomToTop, this, false );
 	connect( tmp, SIGNAL( valueChanged( QString,float ) ), this, SLOT( valueChanged( QString,float ) ) );
 	_layout2->addWidget( tmp );
 }
@@ -65,6 +78,6 @@ VGStereoChannelWidget::~VGStereoChannelWidget() {
 }
 void VGStereoChannelWidget::valueChanged( QString channel, float value ) {
 	//std::cerr << "VGStereoChannelWidget::valueChanged( " << channel << ", " << value << " )" << std::endl;
-	BACKEND->setVolume( _in, _group->name() + "_" + channel, value );
+	BACKEND->setVolume( _in, channel, value );
 }
 

@@ -23,22 +23,35 @@ std::cerr << "VGAux::VGAux( " << name() << ", " << channels() << ", " << p << ",
 VGAux::~VGAux() {
 }
 
-/*VolumeGroupMasterWidget* VolumeGroup::masterWidget( QWidget* parent ) {
+VolumeGroupMasterWidget* VGAux::masterWidget( QWidget* parent ) {
 	if ( !_masterwidget )
 		_masterwidget = new VGAuxMasterWidget( this, parent );
 	return _masterwidget;
-}*/
+}
 VolumeGroupChannelWidget* VGAux::channelWidget( QString name, QWidget* parent ) {
 	return new VGAuxChannelWidget( name, this, parent );
 }
 
-/*VolumeGroupMasterWidget::VolumeGroupMasterWidget( VolumeGroup* group, QWidget* p, const char* n )
- : QFrame( p,n )
- , _group( group )
+VGAuxMasterWidget::VGAuxMasterWidget( VGAux* group, QWidget* p, const char* n )
+ : VolumeGroupMasterWidget( group, p,n )
 {
+	setMargin( 1 );
+	setLineWidth( 1 );
+	setFrameStyle( QFrame::Panel|QFrame::Raised );
+	QVBoxLayout* _layout = new QVBoxLayout( this );
+	_layout->setMargin( 1 );
+	VolumeSlider* tmp;
+	for ( int i=0; i<_group->channels(); i++ ) {
+		tmp = new VolumeSlider( _group->name() + "_" + QString::number( i ), 1, LeftToRight, this );
+		connect( tmp, SIGNAL( valueChanged( QString,float ) ), this, SLOT( newValue( QString,float ) ) );
+		_layout->addWidget( tmp );
+	}
 }
-VolumeGroupMasterWidget::~VolumeGroupMasterWidget() {
-}*/
+VGAuxMasterWidget::~VGAuxMasterWidget() {
+}
+void VGAuxMasterWidget::newValue( QString ch, float n ) {
+	BACKEND->setOutVolume( ch, n );
+}
 
 
 VGAuxChannelWidget::VGAuxChannelWidget( QString in, VGAux* group, QWidget* p, const char* n )

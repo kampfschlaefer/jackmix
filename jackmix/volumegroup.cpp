@@ -33,11 +33,11 @@ VolumeGroup::VolumeGroup( QString name, int channels, QObject* p, const char* n 
 VolumeGroup::~VolumeGroup() {
 }
 
-VolumeGroupMasterWidget* VolumeGroup::masterWidget( QWidget* parent ) {
+/*VolumeGroupMasterWidget* VolumeGroup::masterWidget( QWidget* parent ) {
 	if ( !_masterwidget )
 		_masterwidget = new VolumeGroupMasterWidget( this, parent );
 	return _masterwidget;
-}
+}*/
 /*VolumeGroupChannelWidget* VolumeGroup::channelWidget( QString name, QWidget* parent ) {
 	return new VolumeGroupChannelWidget( name, this, parent );
 }*/

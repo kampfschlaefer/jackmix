@@ -19,30 +19,23 @@ public:
 	~VGAux();
 
 	/// returns the masterwidget. The argument is used the first time for parenting the widget.
-	//VolumeGroupMasterWidget* masterWidget( QWidget* );
+	VolumeGroupMasterWidget* masterWidget( QWidget* );
 	/**
 		returns a new channelwidget.
 		\param the name of the input channel
 		\param The parent for the widget
 	*/
 	VolumeGroupChannelWidget* channelWidget( QString, QWidget* );
-
-//	int channels();
-//	QString name() { return _name; }
-private:
-/*	VolumeGroupMasterWidget* _masterwidget;
-	QString _name;
-	int _channels;*/
 };
 
-/*class VolumeGroupMasterWidget : public QFrame {
+class VGAuxMasterWidget : public VolumeGroupMasterWidget {
 Q_OBJECT
 public:
-	VolumeGroupMasterWidget( VolumeGroup*, QWidget* =0, const char* =0 );
-	~VolumeGroupMasterWidget();
-private:
-	VolumeGroup* _group;
-};*/
+	VGAuxMasterWidget( VGAux*, QWidget* =0, const char* =0 );
+	~VGAuxMasterWidget();
+private slots:
+	void newValue( QString, float );
+};
 
 class VGAuxChannelWidget : public VolumeGroupChannelWidget {
 Q_OBJECT

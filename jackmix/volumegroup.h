@@ -34,7 +34,7 @@ public:
 	virtual ~VolumeGroup();
 
 	/// returns the masterwidget. The argument is used the first time for parenting the widget.
-	virtual VolumeGroupMasterWidget* masterWidget( QWidget* );
+	virtual VolumeGroupMasterWidget* masterWidget( QWidget* ) =0;
 	/**
 		returns a new channelwidget.
 		\param the name of the input channel
@@ -47,7 +47,7 @@ public:
 private:
 	QString _name;
 	int _channels;
-private:
+protected:
 	VolumeGroupMasterWidget* _masterwidget;
 };
 
