@@ -1,0 +1,16 @@
+Begin4
+Title:          JackMix -- Some description
+Version:        0.1
+Entered-date:   YYYY-MM-DD
+Description:    
+Keywords:       KDE3 Qt
+Author:         Arnold Krille <arnold@arnoldarts.de>
+Maintained-by:  Arnold Krille <arnold@arnoldarts.de>
+Home-page:      
+Alternate-site: 
+Primary-site:   ftp://ftp.kde.org/pub/kde/unstable/apps/utils
+                xxxxxx  jackmix-0.1.tar.gz
+                xxx     jackmix-0.1.lsm
+Platform:       Linux. Needs KDE 2.x
+Copying-policy: GPL
+End
