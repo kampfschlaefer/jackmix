@@ -85,21 +85,17 @@ std::cerr << "MainWindow::addInput()" << std::endl;
 void MainWindow::addOutput() {
 	VGSelectDialog *tmp = new VGSelectDialog( 0 );
 	if ( tmp->exec() == QDialog::Accepted ) {
-/*		for ( uint i=0; i<_channelwidgets.count(); i++ ) {
-			_channelwidgets[ i ]->newVG( tmp->newVG() );
-		}*/
+		_master->newVG( tmp->newVG() );
 	}
-	_master->newVG( tmp->newVG() );
 }
 void MainWindow::removeInput( ChannelWidget* n ) {
-std::cerr << "MainWindow::removeInput( " << n << " )" << std::endl;
+	//std::cerr << "MainWindow::removeInput( " << n << " )" << std::endl;
 	std::cerr << ( ( _channelwidgets.remove( n ) )?"true":"false" ) << std::endl;
 	delete n;
 }
 
 void MainWindow::newChannel( ChannelWidget* n ) {
 	_channelwidgets.append( n );
-//	connect( n, SIGNAL( remove( ChannelWidget* ) ), this, SLOT( removeInput( ChannelWidget* ) ) );
 }
 
 
@@ -112,7 +108,7 @@ MasterWidgets::~MasterWidgets() {
 }
 
 void MasterWidgets::newVG( VolumeGroup* n ) {
-std::cerr << "MasterWidgets::newVG( " << n << " )" << std::endl;
+	//std::cerr << "MasterWidgets::newVG( " << n << " )" << std::endl;
 	QBoxLayout* _layout = boxLayout();
 	_layout->addWidget( n->masterWidget( this ) );
 	n->masterWidget( this )->show();
