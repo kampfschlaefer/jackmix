@@ -47,11 +47,6 @@ public:
 		\param The parent for the widget
 	*/
 	VolumeGroupChannelWidget* channelWidget( QString, QWidget* );
-	void removeChannelWidget( VolumeGroupChannelWidget* );
-public:
-	void removeVG();
-private:
-	QPtrList<VGAuxChannelWidget> _channelwidgets;
 };
 
 };

@@ -62,6 +62,8 @@ std::cerr << "Create PushButton" << std::endl;
 	for ( int i=0; i<VolumeGroupFactory::the()->groups(); i++ )
 		newVG( VolumeGroupFactory::the()->group( i ) );
 
+	connect( VolumeGroupFactory::the(), SIGNAL( sNewVG( VolumeGroup* ) ), this, SLOT( newVG( VolumeGroup* ) ) );
+	connect( VolumeGroupFactory::the(), SIGNAL( sRemoveVG( VolumeGroup* ) ), this, SLOT( removeVG( VolumeGroup* ) ) );
 	this->show();
 }
 ChannelWidget::~ChannelWidget() {
@@ -82,16 +84,20 @@ void ChannelWidget::newVG( VolumeGroup* n ) {
 	_groupwidgets.append( tmp );
 }
 
-/*void ChannelWidget::removeVG( VolumeGroup* n ) {
-	
-}*/
+void ChannelWidget::removeVG( VolumeGroup* n ) {
+	std::cerr << "ChannelWidget::removeVG( " << n << " )" << std::endl;
+	for ( uint i=0; i<_groupwidgets.count(); i++ ) {
+		if ( _groupwidgets.at( i )->group() == n ) {
+			delete _groupwidgets.at( i );
+			_groupwidgets.remove( i );
+		}
+	}
+}
 
 void ChannelWidget::remove() {
 	std::cerr << "ChannelWidget::remove()" << std::endl;
-	for ( uint i=0; i<_groupwidgets.count(); i++ ) {
-		_groupwidgets.at( i )->group()->removeChannelWidget( _groupwidgets.at( i ) );
-		_groupwidgets.remove();
-	}
-	emit remove( this );
+	_groupwidgets.setAutoDelete( true );
+	_groupwidgets.clear();
+	delete this;
 }
 

@@ -41,8 +41,6 @@ public:
 	~VGAuxChannelWidget();
 private slots:
 	void valueChanged( QString, float );
-private:
-	QString _in;
 };
 
 };

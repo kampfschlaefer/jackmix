@@ -41,8 +41,13 @@ std::cerr << "VGAux::VGAux( " << name() << ", " << channels() << ", " << p << ",
 	for ( int i=0; i<channels(); i++ ) {
 		BACKEND->addOutput( name() + "_" + QString::number( i ) );
 	}
+	VolumeGroupFactory::the()->registerGroup( this );
 }
 VGAux::~VGAux() {
+	std::cerr << "VGAux::~VGAux()" << std::endl;
+	for ( int i=0; i<channels(); i++ ) {
+		BACKEND->removeOutput( name() + "_" + QString::number( i ) );
+	}
 }
 
 VolumeGroupMasterWidget* VGAux::masterWidget( QWidget* parent ) {
@@ -52,33 +57,11 @@ VolumeGroupMasterWidget* VGAux::masterWidget( QWidget* parent ) {
 }
 VolumeGroupChannelWidget* VGAux::channelWidget( QString name, QWidget* parent ) {
 std::cerr << "VGAux::channelWidget( " << name << ", " << parent << " )" << std::endl;
-	VGAuxChannelWidget *tmp = new VGAuxChannelWidget( name, this, parent );
-	_channelwidgets.append( tmp );
-	return tmp;
-}
-void VGAux::removeChannelWidget( VolumeGroupChannelWidget* n ) {
-	_channelwidgets.find( static_cast<VGAuxChannelWidget*>( n ) );
-	_channelwidgets.remove();
-	delete n;
-}
-void VGAux::removeVG() {
-std::cerr << "VGAux::removeVG() removing widgets" << std::endl;
-//	for ( QPtrList<VGAuxChannelWidget*>::iterator tmp = _channelwidgets.begin(); tmp != _channelwidgets.end(); tmp++ )
-//		delete *tmp;
-	_channelwidgets.setAutoDelete( true );
-	while ( _channelwidgets.count() > 0 ) _channelwidgets.removeLast();
-	delete _masterwidget;
-	std::cerr << "VGAux::removeVG() remove channels" << std::endl;
-	for ( int i=0; i<channels(); i++ ) {
-		BACKEND->removeOutput( name() + "_" + QString::number( i ) );
-	}
-	std::cerr << "VGAux::removeVG() unregister & delete" << std::endl;
-	VolumeGroupFactory::the()->unregisterGroup( this );
-	delete this;
+	return new VGAuxChannelWidget( name, this, parent );
 }
 
-VGAuxMasterWidget::VGAuxMasterWidget( VGAux* group, QWidget* p, const char* n )
- : VolumeGroupMasterWidget( group, p,n )
+VGAuxMasterWidget::VGAuxMasterWidget( VGAux* g, QWidget* p, const char* n )
+ : VolumeGroupMasterWidget( g, p,n )
 {
 	setMargin( 1 );
 	setLineWidth( 1 );
@@ -87,8 +70,8 @@ VGAuxMasterWidget::VGAuxMasterWidget( VGAux* group, QWidget* p, const char* n )
 	layout()->addItem( _layout );
 	_layout->setMargin( 1 );
 	VolumeSlider* tmp;
-	for ( int i=0; i<_group->channels(); i++ ) {
-		tmp = new VolumeSlider( _group->name() + "_" + QString::number( i ), 1, LeftToRight, this );
+	for ( int i=0; i<group()->channels(); i++ ) {
+		tmp = new VolumeSlider( group()->name() + "_" + QString::number( i ), 1, LeftToRight, this );
 		connect( tmp, SIGNAL( valueChanged( QString,float ) ), this, SLOT( newValue( QString,float ) ) );
 		_layout->addWidget( tmp );
 	}
@@ -100,8 +83,8 @@ void VGAuxMasterWidget::newValue( QString ch, float n ) {
 }
 
 
-VGAuxChannelWidget::VGAuxChannelWidget( QString in, VGAux* group, QWidget* p, const char* n )
- : VolumeGroupChannelWidget( in, group, p,n )
+VGAuxChannelWidget::VGAuxChannelWidget( QString in, VGAux* g, QWidget* p, const char* n )
+ : VolumeGroupChannelWidget( in, g, p,n )
 {
 	setMargin( 1 );
 	setLineWidth( 1 );
@@ -109,8 +92,8 @@ VGAuxChannelWidget::VGAuxChannelWidget( QString in, VGAux* group, QWidget* p, co
 	QVBoxLayout* _layout = new QVBoxLayout( this );
 	_layout->setMargin( 1 );
 	VolumeSlider* tmp;
-	for ( int i=0; i<_group->channels(); i++ ) {
-		tmp = new VolumeSlider( _group->name() + "_" + QString::number( i ), 1, LeftToRight, this );
+	for ( int i=0; i<group()->channels(); i++ ) {
+		tmp = new VolumeSlider( group()->name() + "_" + QString::number( i ), 1, LeftToRight, this );
 		connect( tmp, SIGNAL( valueChanged( QString,float ) ), this, SLOT( valueChanged( QString,float ) ) );
 		_layout->addWidget( tmp );
 		_layout->addWidget( new QTickmarks( -36, 12, LeftToRight, posLeft, this, 7 ) );
@@ -120,6 +103,6 @@ VGAuxChannelWidget::~VGAuxChannelWidget() {
 }
 void VGAuxChannelWidget::valueChanged( QString channel, float value ) {
 	//std::cerr << "VolumeGroupChannelWidget::valueChanged( " << channel << ", " << value << " )" << std::endl;
-	BACKEND->setVolume( _in, channel, value );
+	BACKEND->setVolume( inchannel(), channel, value );
 }
 

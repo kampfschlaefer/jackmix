@@ -79,17 +79,15 @@ std::cerr << "MainWindow::addInput()" << std::endl;
 	//std::cerr << "MainWindow::addInput() after dialog" << std::endl;
 	if ( !name.isEmpty() ) {
 		newChannel( new ChannelWidget( name, mw ) );
-//		_channelwidgets.append( tmp );
-//		connect( tmp, SIGNAL( remove( ChannelWidget* ) ), this, SLOT( removeInput( ChannelWidget* ) ) );
 	}
 	//std::cerr << "MainWindow::addInput() finished..." << std::endl;
 }
 void MainWindow::addOutput() {
 	VGSelectDialog *tmp = new VGSelectDialog( 0 );
 	if ( tmp->exec() == QDialog::Accepted ) {
-		for ( uint i=0; i<_channelwidgets.count(); i++ ) {
+/*		for ( uint i=0; i<_channelwidgets.count(); i++ ) {
 			_channelwidgets[ i ]->newVG( tmp->newVG() );
-		}
+		}*/
 	}
 	_master->newVG( tmp->newVG() );
 }
@@ -101,7 +99,7 @@ std::cerr << "MainWindow::removeInput( " << n << " )" << std::endl;
 
 void MainWindow::newChannel( ChannelWidget* n ) {
 	_channelwidgets.append( n );
-	connect( n, SIGNAL( remove( ChannelWidget* ) ), this, SLOT( removeInput( ChannelWidget* ) ) );
+//	connect( n, SIGNAL( remove( ChannelWidget* ) ), this, SLOT( removeInput( ChannelWidget* ) ) );
 }
 
 

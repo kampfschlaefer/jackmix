@@ -31,11 +31,16 @@ class VolumeGroup;
 class VolumeGroupMasterWidget;
 class VolumeGroupChannelWidget;
 
-class VolumeGroupFactory {
+class VolumeGroupFactory : public QObject {
+Q_OBJECT
 private:
 	VolumeGroupFactory();
 	~VolumeGroupFactory();
 	QPtrList <VolumeGroup> _groups;
+signals:
+	/// Is emitted
+	void sNewVG( VolumeGroup* );
+	void sRemoveVG( VolumeGroup* );
 public:
 	static VolumeGroupFactory* the();
 	void registerGroup( VolumeGroup* );
@@ -48,56 +53,89 @@ class VolumeGroup : public QObject {
 Q_OBJECT
 public:
 	/**
-		\param QString name of the group
-		\param int number of channels
-	*/
+	 * What implementers have to do:
+	 *   - Create the needed Channels
+	 *   - VolumeGroupFactory::the()->registerGroup( this );
+	 *
+	 * \param QString name of the group
+	 * \param int number of channels
+	 */
 	VolumeGroup( QString, int, QObject* =0, const char* =0 );
+	/**
+	 * What implementers have to do:
+	 *   - Delete the channels
+	 */
 	virtual ~VolumeGroup();
 
-	/// returns the masterwidget. The argument is used the first time for parenting the widget.
+	/**
+	 * returns the masterwidget.
+	 * The argument is used the first time for parenting the widget.
+	 */
 	virtual VolumeGroupMasterWidget* masterWidget( QWidget* ) =0;
 	/**
-		returns a new channelwidget.
-		\param the name of the input channel
-		\param The parent for the widget
-	*/
+	 * returns a new channelwidget.
+	 * \param the name of the input channel
+	 * \param The parent for the widget
+	 */
 	virtual VolumeGroupChannelWidget* channelWidget( QString, QWidget* ) =0;
-	virtual void removeChannelWidget( VolumeGroupChannelWidget* ) =0;
 
-	int channels();
+	int channels() const { return _channels; }
 	QString name() const { return _name; }
-//protected:
-	/*
-		in this function you have to remove every widget and than call
-		VolumeGroupFactory::the()->unregisterGroup( this );
-	*/
-	virtual void removeVG() =0;
+
+public slots:
+	/**
+	 * Is called to remove the VG.
+	 */
+	void remove();
+
+protected:
+	VolumeGroupMasterWidget* _masterwidget;
+
 private:
 	QString _name;
 	int _channels;
-protected:
-	VolumeGroupMasterWidget* _masterwidget;
 };
 
 class VolumeGroupMasterWidget : public QFrame {
 Q_OBJECT
 public:
+	/**
+	 * Creates the needed Layout and sets the group.
+	 * It also creates the buttons all groups have ( remove ).
+	 *
+	 * What implementers have to do:
+	 *   - Add the needed widgets to the layout()
+	 */
 	VolumeGroupMasterWidget( VolumeGroup*, QWidget* =0, const char* =0 );
-	~VolumeGroupMasterWidget();
-public slots:
-	void removeVG();
-protected:
+	/**
+	 * Destructor
+	 */
+	virtual ~VolumeGroupMasterWidget();
+
+	VolumeGroup* group() const { return _group; }
+
+private:
 	VolumeGroup* _group;
 };
 
 class VolumeGroupChannelWidget : public QFrame {
 Q_OBJECT
 public:
+	/**
+	 * Creates the Widget.
+	 */
 	VolumeGroupChannelWidget( QString, VolumeGroup*, QWidget*, const char* =0 );
+	/**
+	 * Destructor
+	 */
 	virtual ~VolumeGroupChannelWidget();
-	QString groupname() { return _group->name(); }
+
 	VolumeGroup* group() const { return _group; }
+
 protected:
+	QString inchannel() const { return _in; }
+
+private:
 	QString _in;
 	VolumeGroup* _group;
 };

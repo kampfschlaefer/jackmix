@@ -35,11 +35,9 @@ Q_OBJECT
 public:
 	ChannelWidget( QString name, QWidget* =0, const char* =0 );
 	~ChannelWidget();
-signals:
-	void remove( ChannelWidget* );
 public slots:
 	void newVG( VolumeGroup* );
-//	void removeVG( VolumeGroup* );
+	void removeVG( VolumeGroup* );
 private slots:
 	void valueChanged( QString, float );
 	void remove();

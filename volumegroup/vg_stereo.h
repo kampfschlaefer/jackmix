@@ -37,7 +37,7 @@ public:
 		\param int number of channels
 	*/
 	VGStereo( QString, QObject* =0, const char* =0 );
-	virtual ~VGStereo();
+	~VGStereo();
 
 	/// returns the masterwidget. The argument is used the first time for parenting the widget.
 	VolumeGroupMasterWidget* masterWidget( QWidget* );
@@ -47,11 +47,6 @@ public:
 		\param The parent for the widget
 	*/
 	VolumeGroupChannelWidget* channelWidget( QString, QWidget* );
-	void removeChannelWidget( VolumeGroupChannelWidget* );
-
-	void removeVG();
-private:
-	QPtrList<VGStereoChannelWidget> _channelwidgets;
 };
 
 };

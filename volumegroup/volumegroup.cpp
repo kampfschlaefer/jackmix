@@ -39,42 +39,48 @@ VolumeGroupFactory* VolumeGroupFactory::the() {
 	return factory;
 }
 void VolumeGroupFactory::registerGroup( VolumeGroup* n ) {
+std::cerr << "VolumeGroupFactory::registerGroup( " << n << " )" << std::endl;
 	_groups.append( n );
+	emit sNewVG( n );
 }
 void VolumeGroupFactory::unregisterGroup( VolumeGroup* n ) {
-	//std::cerr << "VolumeGroupFactory::unregisterGroup( " << n << " )" << std::endl;
+std::cerr << "VolumeGroupFactory::unregisterGroup( " << n << " )" << std::endl;
 	_groups.remove( n );
-	//std::cerr << "VolumeGroupFactory::unregisterGroup() finished." << std::endl;
-//	delete n;
+	emit sRemoveVG( n );
+	delete n;
+std::cerr << "VolumeGroupFactory::unregisterGroup() finished." << std::endl;
 }
 
 VolumeGroup::VolumeGroup( QString name, int channels, QObject* p, const char* n )
  : QObject( p,n )
+ , _masterwidget( 0 )
  , _name( name )
  , _channels( channels )
- , _masterwidget( 0 )
 {
-	VolumeGroupFactory::the()->registerGroup( this );
+std::cerr << "VolumeGroup::VolumeGroup( " << name << ", " << channels << ", " << p << ", n )" << std::endl;
+	//VolumeGroupFactory::the()->registerGroup( this );
 }
 VolumeGroup::~VolumeGroup() {
+std::cerr << "VolumeGroup::~VolumeGroup()" << std::endl;
+	delete _masterwidget;
 }
 
-int VolumeGroup::channels() { return _channels; }
+void VolumeGroup::remove() {
+std::cerr << "VolumeGroup::remove()" << std::endl;
+	VolumeGroupFactory::the()->unregisterGroup( this );
+}
+
 
 VolumeGroupMasterWidget::VolumeGroupMasterWidget( VolumeGroup* group, QWidget* p, const char* n )
  : QFrame( p,n )
  , _group( group )
 {
-	{ void* tmp = new QVBoxLayout( this ); }
+	new QVBoxLayout( this );
 	QPushButton *tmp = new QPushButton( "remove", this );
 	layout()->add( tmp );
-	connect( tmp, SIGNAL( clicked() ), this, SLOT( removeVG() ) );
+	connect( tmp, SIGNAL( clicked() ), _group, SLOT( remove() ) );
 }
 VolumeGroupMasterWidget::~VolumeGroupMasterWidget() {
-}
-
-void VolumeGroupMasterWidget::removeVG() {
-	_group->removeVG();
 }
 
 VolumeGroupChannelWidget::VolumeGroupChannelWidget( QString in, VolumeGroup* group, QWidget* p, const char* n )

@@ -44,8 +44,8 @@ VGSelectDialog::VGSelectDialog( QWidget* p, const char* n )
 	/// The mainpart
 	_btngroup = new QButtonGroup( 1, Qt::Horizontal, "New Volumegroup", this );
 	_layout2->addWidget( _btngroup );
-	QRadioButton* _btnaux = new QRadioButton( "Auxiliary channels", _btngroup );
-	QRadioButton* _btnstereo = new QRadioButton( "Stereo channel", _btngroup );
+	/*QRadioButton* _btnaux =*/ new QRadioButton( "Auxiliary channels", _btngroup );
+	/*QRadioButton* _btnstereo =*/ new QRadioButton( "Stereo channel", _btngroup );
 
 	/// The bottom line
 	QPushButton* _ok = new QPushButton( "Ok", this );
@@ -61,16 +61,18 @@ VGSelectDialog::~VGSelectDialog() {
 
 void VGSelectDialog::finish() {
 	qDebug( "VGSelectDialog::finish()" );
-	qDebug( QString::number( _btngroup->selectedId() ) );
+	//qDebug( QString::number( _btngroup->selectedId() ) );
 	QString name = QInputDialog::getText( "Name", "Name for the VolumeGroup" );
 	switch ( _btngroup->selectedId() ) {
 		case 0:
 			{
 			int channels = QInputDialog::getInteger( "Channels", "Number auf Channels", 2, 1, 10, 2 );
+			qDebug( "VGSelectDialog::finish() creating VGAux" );
 			_vg = new VGAux( name, channels, 0 );
 			}
 			break;
 		case 1:
+			qDebug( "VGSelectDialog::finish() creating VGStereo" );
 			_vg = new VGStereo( name, 0 );
 			break;
 		default:

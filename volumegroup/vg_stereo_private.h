@@ -38,7 +38,7 @@ class VGStereoChannelWidget : public VolumeGroupChannelWidget {
 Q_OBJECT
 public:
 	VGStereoChannelWidget( QString, VolumeGroup*, QWidget*, const char* =0 );
-	virtual ~VGStereoChannelWidget();
+	~VGStereoChannelWidget();
 private slots:
 	void valueChanged( QString, float );
 };
