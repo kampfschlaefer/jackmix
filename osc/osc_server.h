@@ -23,27 +23,30 @@
 
 #include <lo/lo.h>
 #include <qobject.h>
+#include <qvariant.h>
 
-namespace JackMix {
-	namespace OSC {
+namespace OSC {
 
-		int generic_handler( const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data );
-		void error( int num, const char *m, const char *path );
+	int generic_handler( const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data );
+	void error( int num, const char *m, const char *path );
 
-		class Server : public QObject
-		{
-			Q_OBJECT
-		public:
-			Server();
-			~Server();
-			void data( const char* data ) { emit gotData( QString( data ) ); }
-		signals:
-			void gotData( QString );
-		private:
-			lo_server_thread _server;
-		};
-
+	class Server : public QObject
+	{
+	Q_OBJECT
+	public:
+		Server( QObject*, const char* =0 );
+		Server( QString port="5282", QObject* =0, const char* =0 );
+		~Server();
+		void data( const char* data, QVariant="" );
+	public slots:
+		void start( QString port="5282" );
+		void stop();
+	signals:
+		void gotData( QString );
+	private:
+		lo_server_thread _server;
 	};
+
 };
 
 #endif // OSCSERVER_H

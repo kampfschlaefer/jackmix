@@ -20,29 +20,26 @@
 
 #include <iostream>
 #include <qapplication.h>
-#include <qtextedit.h>
 
-#include "jack_backend.h"
-
-#include "oscserver.h"
+#include "textedit.h"
+#include "osc_server.h"
 
 int main( int argc, char** argv ) {
 	std::cout << "JackMix-Server starting" << std::endl;
 
 	QApplication *qapp = new QApplication( argc, argv );
 
-	(void*) JackMix::JackBackend::backend();
-	JackMix::OSC::Server* _oscserver = new JackMix::OSC::Server();
+	OSC::Server* _oscserver = new OSC::Server();
 
-	QTextEdit *mw = new QTextEdit();
-	mw->setTextFormat( Qt::LogText );
-	QObject::connect( _oscserver, SIGNAL( gotData( QString ) ), mw, SLOT( append( const QString & ) ) );
+	TextEdit *mw = new TextEdit();
+	const char* signal = SIGNAL( gotData( QString ) );
+	const char* slot = SLOT( appendData( QString ) );
+	qDebug( "! %s -> %s ? %s", signal, slot, ( QObject::connect( _oscserver, signal, mw, slot ) )?"True":"False" );
 	mw->show();
 
 	qapp->setMainWidget( mw );
 
 	int ret = qapp->exec();
 	delete _oscserver;
-	(void*) JackMix::JackBackend::backend( true );
 	return ret;
 }
