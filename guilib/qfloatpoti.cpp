@@ -49,6 +49,15 @@ QFloatPoti::QFloatPoti( QWidget* p, const char* n )
 QFloatPoti::~QFloatPoti() {
 }
 
+void QFloatPoti::setPrecision( int ) {
+}
+void QFloatPoti::setPageStep( float ) {
+}
+void QFloatPoti::setMinimum( float ) {
+}
+void QFloatPoti::setMaximum( float ) {
+}
+
 void QFloatPoti::setValue( float n ) {
 	if ( n > d->max )
 		d->value = d->max;

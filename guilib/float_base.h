@@ -18,32 +18,23 @@
 
 */
 
-#ifndef QFLOATPOTI_H
-#define QFLOATPOTI_H
+#ifndef FLOATBASE_H
+#define FLOATBASE_H
 
-#include <qframe.h>
-#include "float_base.h"
+#include "common.h"
 
-class QFloatPoti_private;
-
-class QFloatPoti : public QFrame, public FloatElement {
-Q_OBJECT
+class FloatElement {
 public:
-	QFloatPoti( QWidget*, const char* =0 );
-	~QFloatPoti();
-public slots:
-	void setPrecision( int );
-	void setPageStep( float );
-	void setMinimum( float );
-	void setMaximum( float );
-	void setValue( float );
-	void setColor( QColor );
-protected:
-	void paintEvent( QPaintEvent* );
-	void wheelEvent( QWheelEvent* );
-	void mouseMoveEvent( QMouseEvent* );
-private:
-	QFloatPoti_private* d;
+//	FloatElement();
+//	~FloatElement();
+public:
+	virtual void setPrecision( int ) =0;
+	virtual void setPageStep( float ) =0;
+	virtual void setMinimum( float ) =0;
+	virtual void setMaximum( float ) =0;
+	virtual void setValue( float ) =0;
+//signals:
+//	void valueChanged( float );
 };
 
 #endif

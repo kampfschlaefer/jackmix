@@ -23,10 +23,11 @@
 
 #include <qframe.h>
 #include "common.h"
+#include "float_base.h"
 
 class QSlider;
 
-class QFloatSlider : public QFrame {
+class QFloatSlider : public QFrame, public FloatElement {
 Q_OBJECT
 public:
 	QFloatSlider( QWidget* =0, const char* =0 );

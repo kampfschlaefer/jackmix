@@ -8,18 +8,20 @@ SUBDIRS = .
 # of the other Makefile.am variables
 noinst_LTLIBRARIES = libjackmix_gui.la
 
+check_PROGRAMS = poti_test
+
 # set the include path for X, qt and KDE
 INCLUDES         = $(QT_INCLUDES)
 
 # the library search path. 
 #jackmix_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 libjackmix_gui_la_LDFLAGS = -module -avoid-version -no-undefined $(all_libraries)
-#poti_test_LDFLAGS = 
+poti_test_LDFLAGS = 
 
 # the libraries to link against.
 #jackmix_guilib_LDADD   = $(LIB_QT) $(JACK_LIBS)
 libjackmix_gui_la_LIBADD   = $(LIB_QT)
-#poti_test_LDADD = $(LIB_QT)
+poti_test_LDADD = libjackmix_gui.la $(LIB_QT)
 
 # which sources should be compiled for jackmix
 libjackmix_gui_la_SOURCES = \
@@ -30,7 +32,7 @@ libjackmix_gui_la_SOURCES = \
 	qtickmarks.cpp \
 	qpoti.cpp
 
-#poti_test_SOURCES = poti_test.cpp \
+poti_test_SOURCES = poti_test.cpp
 #	qfloatpoti.cpp
 
 # these are the headers for your project
