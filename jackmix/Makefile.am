@@ -9,20 +9,28 @@ SUBDIRS = .
 bin_PROGRAMS = jackmix
 
 # set the include path for X, qt and KDE
-INCLUDES = -I$(top_srcdir)/backend -I$(top_srcdir)/guilib -I$(top_srcdir)/volumegroup $(QT_INCLUDES)
+INCLUDES = \
+	-I$(top_srcdir)/matrix \
+	-I$(top_srcdir)/backend \
+	-I$(top_srcdir)/guilib \
+	-I$(top_srcdir)/elements \
+	$(QT_INCLUDES)
 
 # the library search path. 
 #jackmix_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 jackmix_LDFLAGS = $(QT_LDFLAGS) $(JACK_CFLAGS)
 
 # the libraries to link against.
-jackmix_LDADD = $(top_builddir)/guilib/libjackmix_gui.la $(top_builddir)/backend/libjackmix_backend.la $(top_builddir)/volumegroup/libjackmix_vg.la $(LIB_QT) $(JACK_LIBS)
+jackmix_LDADD = \
+	$(top_builddir)/matrix/libmixingmatrix.la \
+	$(top_builddir)/elements/libmixingelements.la \
+	../guilib/libjackmix_gui.la \
+	$(top_builddir)/backend/libjackmix_backend.la \
+	$(LIB_QT) $(JACK_LIBS)
 
 # which sources should be compiled for jackmix
 jackmix_SOURCES = \
 	mainwindow.cpp \
-	channelwidget.cpp \
-	xmlinterface.cpp \
 	main.cpp
 
 # these are the headers for your project

@@ -18,18 +18,25 @@
 
 */
 
-#ifndef XMLINTERFACE_H
-#define XMLINTERFACE_H
+#include <iostream>
+#include <qapplication.h>
 
-#include <qdom.h>
-#include <qobject.h>
+#include "mainwidget.h"
+//#include <qwidget.h>
 
-class XMLInterface : public QObject {
-Q_OBJECT
-public:
-	XMLInterface( QObject*, const char* =0 );
-	~XMLInterface();
-};
+int main( int argc, char** argv ) {
+	std::cout << "JackMix starting" << std::endl;
 
-#endif // XMLINTERFACE_H
+	QApplication *qapp = new QApplication( argc, argv );
 
+	//(void*) JackMix::JackBackend::backend();
+
+	MatrixWidget *mw = new MatrixWidget( 0 );
+	mw->show();
+
+	qapp->setMainWidget( mw );
+
+	int ret = qapp->exec();
+	//(void*) JackMix::JackBackend::backend( true );
+	return ret;
+}

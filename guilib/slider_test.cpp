@@ -18,37 +18,20 @@
 
 */
 
-#ifndef JACKMIX_VG_SELECT_H
-#define JACKMIX_VG_SELECT_H
+#include <iostream>
+#include <qapplication.h>
+#include <qcolor.h>
 
-#include <qdialog.h>
+#include "slider.h"
 
-class QButtonGroup;
-class QDomElement;
+int main( int argc, char** argv ) {
+	QApplication *qapp = new QApplication( argc, argv );
 
-namespace JackMix {
+	QWidget *mw = new JackMix::GUI::Slider( 0.5, 0, 1, 3, 0.1, 0 );
+	mw->show();
 
-class VolumeGroup;
+	qapp->setMainWidget( mw );
 
-class VGSelectDialog :public QDialog {
-Q_OBJECT
-public:
-	VGSelectDialog( QWidget *, const char* =0 );
-	~VGSelectDialog();
-
-	VolumeGroup* newVG() const { return _vg; }
-private slots:
-	void finish();
-private:
-	VolumeGroup* _vg;
-	QButtonGroup* _btngroup;
-};
-
-class VGDomCreator {
-public:
-	static bool createFromDomElement( QDomElement );
-};
-
-};
-
-#endif
+	int ret = qapp->exec();
+	return ret;
+}

@@ -51,6 +51,9 @@ QFloatPoti::QFloatPoti( float value, float min, float max, int precision, QColor
 	setMaximum( max );
 	setValue( value );
 	setColor( color );
+	d->poti->setText( n );
+	//qDebug( "QFloatPoti::QFloatPoti : text=%s", d->poti->text().ascii() );
+	d->poti->setLabel( false );
 }
 
 QFloatPoti::QFloatPoti( QWidget* p, const char* n )

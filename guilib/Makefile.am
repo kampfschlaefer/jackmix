@@ -2,29 +2,35 @@
 
 # this has all of the subdirectories that make will recurse into.  if
 # there are none, comment this out
-SUBDIRS = .
+SUBDIRS = . designer
 
 # this is the program that gets installed.  it's name is used for all
 # of the other Makefile.am variables
-noinst_LTLIBRARIES = libjackmix_gui.la
+lib_LTLIBRARIES = libjackmix_gui.la
 
-check_PROGRAMS = poti_test
+check_PROGRAMS = qfloatcontrol_test poti_test slider_test
 
 # set the include path for X, qt and KDE
 INCLUDES         = $(QT_INCLUDES)
 
 # the library search path. 
 #jackmix_LDFLAGS = $(KDE_RPATH) $(all_libraries)
-libjackmix_gui_la_LDFLAGS = $(QT_LDFLAGS) -module -avoid-version -no-undefined
+libjackmix_gui_la_LDFLAGS = $(QT_LDFLAGS) -avoid-version -no-undefined
 poti_test_LDFLAGS = $(QT_LDFLAGS)
+qfloatcontrol_test_LDFLAGS = $(QT_LDFLAGS)
+slieder_test_LDFLAGS = $(QT_LDFLAGS)
 
 # the libraries to link against.
 #jackmix_guilib_LDADD   = $(LIB_QT) $(JACK_LIBS)
-libjackmix_gui_la_LIBADD   = $(LIB_QT)
+libjackmix_gui_la_LIBADD = $(LIB_QT)
 poti_test_LDADD = libjackmix_gui.la $(LIB_QT)
+qfloatcontrol_test_LDADD = libjackmix_gui.la $(LIB_QT)
+slider_test_LDADD = libjackmix_gui.la $(LIB_QT)
 
 # which sources should be compiled for jackmix
 libjackmix_gui_la_SOURCES = \
+	slider.cpp \
+	qfloatcontrol.cpp \
 	qpixmapeffect.cpp \
 	qimageeffect.cpp \
 	qfloatslider.cpp \
@@ -34,8 +40,10 @@ libjackmix_gui_la_SOURCES = \
 	stereovolumeslider.cpp \
 	qpoti.cpp
 
+
 poti_test_SOURCES = poti_test.cpp
-#	qfloatpoti.cpp
+slider_test_SOURCES = slider_test.cpp
+qfloatcontrol_test_SOURCES = qfloatcontrol_test.cpp
 
 # these are the headers for your project
 #noinst_HEADERS   = jackmix.h jackmixview.h jackmixpref.h

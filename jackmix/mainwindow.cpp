@@ -21,12 +21,9 @@
 #include "mainwindow.h"
 #include "mainwindow.moc"
 
-#include "channelwidget.h"
 #include "jack_backend.h"
-#include "volumegroup.h"
-#include "vg_aux.h"
-#include "vg_stereo.h"
-#include "vgselect.h"
+#include "mixingmatrix.h"
+#include "aux_elements.h"
 
 #include <iostream>
 #include <qpopupmenu.h>
@@ -39,177 +36,92 @@
 #include <qfiledialog.h>
 #include <qscrollview.h>
 #include <qmessagebox.h>
+#include <qaction.h>
 
 #include "defaults.xml"
 
 using namespace JackMix;
+using namespace MixingMatrix;
 
-MainWindow::MainWindow( QWidget* p, const char* n ) : QMainWindow( p,n ), _settings( new QSettings( /*QSettings::Ini*/ ) ) {
-	_settings->setPath( "arnoldarts.de", "jackmix", QSettings::User );
-	_settings->beginGroup( "jackmix" );
+MainWindow::MainWindow( QWidget* p, const char* n ) : QMainWindow( p,n ) {
 std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	_filemenu = new QPopupMenu( this );
 	menuBar()->insertItem( "File", _filemenu );
-	_filemenu->insertItem( "Open File...", this, SLOT( openFile() ), CTRL+Key_O );
-	_filemenu->insertItem( "Save File...", this, SLOT( saveFile() ), CTRL+Key_S );
-	_filemenu->insertSeparator();
+	//_filemenu->insertItem( "Open File...", this, SLOT( openFile() ), CTRL+Key_O );
+	//_filemenu->insertItem( "Save File...", this, SLOT( saveFile() ), CTRL+Key_S );
+	//_filemenu->insertSeparator();
 	_filemenu->insertItem( "Quit", this, SLOT( close() ), CTRL+Key_Q );
 
 	_editmenu = new QPopupMenu( this );
 	menuBar()->insertItem( "Edit", _editmenu );
-	_editmenu->insertItem( "Add Input...", this, SLOT( addInput() ) );
-	_editmenu->insertItem( "Add Output...", this, SLOT( addOutput() ) );
-
-	_settingsmenu = new QPopupMenu( this );
-	menuBar()->insertItem( "Settings", _settingsmenu );
-	config_restore_id = _settingsmenu->insertItem( "Restore Last Session", this, SLOT( toggleRestore() ) );
-	_settingsmenu->setItemChecked( config_restore_id, _settings->readBoolEntry( "/Config/RestoreLastSession", true ) );
+	_select_action = new QAction( "Select Mode", 0, this );
+	_select_action->setToggleAction( true );
+	connect( _select_action, SIGNAL( activated() ), this, SLOT( toggleselectmode() ) );
+	_select_action->addTo( _editmenu );
+	//_select_action->addTo( new QToolBar( this ) );
+	_editmenu->setCheckable( true );
+	//_editmenu->insertItem( "Add Input...", this, SLOT( addInput() ) );
+	//_editmenu->insertItem( "Add Output...", this, SLOT( addOutput() ) );
 
 	_helpmenu = new QPopupMenu( this );
 	menuBar()->insertItem( "Help", _helpmenu );
 	_helpmenu->insertItem( "About JackMix", this, SLOT( about() ) );
 	_helpmenu->insertItem( "About Qt", this, SLOT( aboutQt() ) );
 
-	QScrollView *tmp = new QScrollView( this );
-	mw = new QHBox( tmp->viewport() );
-	mw->setSpacing( 3 );
-	mw->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Expanding );
-	tmp->addChild( mw );
-	tmp->setVScrollBarMode( QScrollView::AlwaysOff );
-	tmp->setResizePolicy( QScrollView::AutoOneFit );
-	this->setCentralWidget( tmp );
+	_mw = new MainWindowHelperWidget( this );	
+	setCentralWidget( _mw );
+	_mw->layout->setRowStretch( 0, 0 );
+	_mw->layout->setRowStretch( 1, 1000 );
+	_mw->layout->setColStretch( 1, 0 );
+	_mw->layout->setColStretch( 0, 1000 );
 
-	if ( _settings->readBoolEntry( "/Config/RestoreLastSession", true ) )
-		readXML( _settings->readEntry( "/SaveOnExit/Config", DEFAULTSTRING ) );
-	else
-		readXML( DEFAULTSTRING );
+	QStringList ins = QStringList()<<"in_1"<<"in_2"<<"in_3"<<"in_4"<<"in_5"<<"in_6";
+	QStringList outs = QStringList()<<"out_1"<<"out_2";
+	_mixerwidget = new MixingMatrix::Widget( ins, outs, _mw );
+	_mw->layout->addWidget( _mixerwidget, 1,0 );
+	_inputswidget = new MixingMatrix::Widget( ins, QStringList(), _mw );
+	_mw->layout->addWidget( _inputswidget, 0,0 );
+	_outputswidget = new MixingMatrix::Widget( QStringList(), outs, _mw );
+	_mw->layout->addWidget( _outputswidget, 1,1 );
 
-	_master = new MasterWidgets( this, "MasterControls" );
-	addDockWindow( _master, DockRight );
-	connect( VolumeGroupFactory::the(), SIGNAL( sNewVG( VolumeGroup* ) ), _master, SLOT( newVG( VolumeGroup* ) ) );
+	_mixerwidget->createControl( QStringList()<<"in_1"<<"in_2", QStringList()<<"out_1"<<"out_2" );
+	_mixerwidget->createControl( QStringList()<<"in_4", QStringList()<<"out_1"<<"out_2" );
+	//_mixerwidget->createControl( QStringList()<<"in_4", QStringList()<<"out_1" );
+	//_mixerwidget->createControl( QStringList()<<"in_4", QStringList()<<"out_2" );
+	_mixerwidget->autoFill();
+
+	_inputswidget->createControl( QStringList()<<"in_3"<<"in_4", QStringList()<<"in_3"<<"in_4" );
+	_inputswidget->autoFill();
+
+	_outputswidget->createControl( QStringList()<<"out_1"<<"out_2", QStringList()<<"out_1"<<"out_2" );
+	_outputswidget->autoFill();
+
+	BACKEND->addInput( "in_1" );
+	BACKEND->addInput( "in_2" );
+	BACKEND->addInput( "in_3" );
+	BACKEND->addInput( "in_4" );
+	BACKEND->addInput( "in_5" );
+	BACKEND->addInput( "in_6" );
+	BACKEND->addOutput( "out_1" );
+	BACKEND->addOutput( "out_2" );
+	//BACKEND->addOutput( "out_3" );
 }
 
 MainWindow::~MainWindow() {
 std::cerr << "MainWindow::~MainWindow()" << std::endl;
 }
 
-void MainWindow::readXML( QString xml ) {
-std::cerr << "MainWindow::init( " << xml << " )" << std::endl;
-	QDomDocument doc;
-	doc.setContent( xml );
-	recursiveXML( doc.documentElement() );
-std::cerr << "MainWindow::init() finished..." << std::endl;
-}
-
-void MainWindow::recursiveXML( QDomElement elem ) {
-	QDomNode tmp = elem.firstChild();
-	while ( !tmp.isNull() ) {
-		QDomElement elem = tmp.toElement();
-		if ( elem.tagName() == "channel" )
-			newChannel( new ChannelWidget( elem, mw ) );
-		else if ( elem.tagName() == "volumegroup" )
-			VGDomCreator::createFromDomElement( elem );
-		else if ( elem.tagName() == "matrix" )
-			BACKEND->fromXML( elem );
-		else recursiveXML( elem );
-		tmp = tmp.nextSibling();
-	}
-}
-
 void MainWindow::closeEvent( QCloseEvent* e ) {
 std::cerr << "MainWindow::closeEvent( QCloseEvent " << e << " )" << std::endl;
-	_settings->beginGroup( "/SaveOnExit" );
-	_settings->writeEntry( "/Config", writeXML() );
-
+	delete _mixerwidget;
 	e->accept();
-	delete _settings;
-}
-
-QString MainWindow::writeXML() {
-	QDomDocument doc( "Mainrc" );
-	QDomElement docElem = doc.createElement( "Mainrc" );
-	doc.appendChild( docElem );
-
-	// Mixermatrix
-	QDomElement matrix = doc.createElement( "mixing" );
-	docElem.appendChild( matrix );
-	BACKEND->toXML( doc, matrix );
-
-	// In Channels
-	QDomElement in = doc.createElement( "in" );
-	docElem.appendChild( in );
-	for ( uint i = 0; i<_channelwidgets.size(); i++ )
-		_channelwidgets[ i ]->appendToDoc( doc, in );
-
-	// Out Channels
-	QDomElement out = doc.createElement( "out" );
-	docElem.appendChild( out );
-	for ( int i = 0; i<VolumeGroupFactory::the()->groups(); i++ )
-		VolumeGroupFactory::the()->group( i )->appendToDoc( doc, out );
-
-	//qDebug( ">>> XML-tree\n" + doc.toString() + "<<< XML-tree" );
-
-	return doc.toString();
-}
-
-void MainWindow::addInput() {
-	//std::cerr << "MainWindow::addInput()" << std::endl;
-	QString name = QInputDialog::getText( "Name", "Name for the Input" );
-	//std::cerr << "MainWindow::addInput() after dialog" << std::endl;
-	if ( !name.isEmpty() ) {
-		newChannel( new ChannelWidget( name, mw ) );
-	}
-	//std::cerr << "MainWindow::addInput() finished..." << std::endl;
-}
-void MainWindow::addOutput() {
-	VGSelectDialog *tmp = new VGSelectDialog( 0 );
-	if ( tmp->exec() == QDialog::Accepted ) {
-		_master->newVG( tmp->newVG() );
-	}
-}
-void MainWindow::removeInput( ChannelWidget* n ) {
-	//std::cerr << "MainWindow::removeInput( " << n << " )" << std::endl;
-	//std::cerr << ( ( _channelwidgets.remove( n ) )?"true":"false" ) << std::endl;
-	_channelwidgets.remove( n );
-	delete n;
-}
-
-void MainWindow::newChannel( ChannelWidget* n ) {
-	_channelwidgets.append( n );
-	connect( n, SIGNAL( remove( ChannelWidget* ) ), this, SLOT( removeInput( ChannelWidget* ) ) );
 }
 
 void MainWindow::openFile() {
-	qDebug( "MainWindow::openFile()" );
-	QString file = QFileDialog::getOpenFileName( QString::null, "*.xml", this );
-	QString xml;
-	if ( file != QString::null ) {
-		QFile qfile( file );
-		qfile.open( IO_ReadOnly );
-		xml = QString( qfile.readAll() );
-		while ( _channelwidgets.size() >0 )
-			_channelwidgets[ 0 ]->remove();
-		while ( VolumeGroupFactory::the()->groups()>0 )
-			VolumeGroupFactory::the()->group( 0 )->remove();
-		_channelwidgets.clear();
-		readXML( xml );
-	}
 }
 void MainWindow::saveFile() {
-	QString filename = QFileDialog::getSaveFileName( QString::null, "*.xml", this );
-	if ( filename != QString::null ) {
-		QFile file( filename );
-		file.open( IO_WriteOnly );
-		QString tmp = writeXML();
-		file.writeBlock( tmp.latin1(), tmp.length() );
-	}
 }
 
-void MainWindow::toggleRestore() {
-	bool newvalue = ! _settings->readBoolEntry( "/Config/RestoreLastSession", true );
-	_settings->writeEntry( "/Config/RestoreLastSession", newvalue );
-	_settingsmenu->setItemChecked( config_restore_id, _settings->readBoolEntry( "/Config/RestoreLastSession", true ) );
-}
 void MainWindow::about() {
 	QMessageBox::about( this, "JackMix: About JackMix", "<qt> \
 		<p><b>&copy;2004 by Arnold Krille</b> &lt;arnold@arnoldarts.de&gt;</p> \
@@ -221,23 +133,16 @@ void MainWindow::aboutQt() {
 	QMessageBox::aboutQt( this, "JackMix: About Qt" );
 }
 
-
-MasterWidgets::MasterWidgets( QWidget* p, const char* n ) : QDockWindow( p,n ) {
-	_layout = new QVBox( this );
-	setWidget( _layout );
-	setResizeEnabled( true );
-	setMovingEnabled( false );
-	for ( int i=0; i<VolumeGroupFactory::the()->groups(); i++ ) {
-		newVG( VolumeGroupFactory::the()->group( i ) );
-	}
-}
-MasterWidgets::~MasterWidgets() {
+void MainWindow::toggleselectmode() {
+	bool select = ( _mixerwidget->mode() == Widget::Select );
+	if ( select )
+		_mixerwidget->mode( Widget::Normal );
+	else
+		_mixerwidget->mode( Widget::Select );
+	_select_action->setOn( !select );
 }
 
-void MasterWidgets::newVG( VolumeGroup* n ) {
-	//std::cerr << "MasterWidgets::newVG( " << n << " )" << std::endl;
-	QWidget* tmp = n->masterWidget( _layout );
-	if ( tmp->isHidden() )
-		tmp->show();
+MainWindowHelperWidget::MainWindowHelperWidget( QWidget* p ) : QWidget( p ) {
+	layout = new QGridLayout( this, 2,2, 5 );
 }
 

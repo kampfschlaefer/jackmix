@@ -24,17 +24,26 @@
 #include <qmainwindow.h>
 #include <qdockwindow.h>
 #include <qvaluelist.h>
+#include <qlayout.h>
 
 class QHBox;
 class QSettings;
 class QDomElement;
 class QVBox;
+class QAction;
 
 namespace JackMix {
 
-class ChannelWidget;
-class VolumeGroup;
-class MasterWidgets;
+namespace MixingMatrix {
+	class Widget;
+}
+
+class MainWindowHelperWidget : public QWidget {
+Q_OBJECT
+public:
+	MainWindowHelperWidget( QWidget* =0 );
+	QGridLayout* layout;
+};
 
 class MainWindow : public QMainWindow {
 Q_OBJECT
@@ -42,41 +51,20 @@ public:
 	MainWindow( QWidget* =0, const char* =0 );
 	~MainWindow();
 public slots:
-	void addInput();
-	void addOutput();
-	void removeInput( ChannelWidget* );
 	void openFile();
 	void saveFile();
 private slots:
-	void readXML( QString );
-	QString writeXML();
+	void toggleselectmode();
 	void closeEvent( QCloseEvent* );
-	void toggleRestore();
 	void about();
 	void aboutQt();
 private:
-	void recursiveXML( QDomElement );
-	void newChannel( ChannelWidget* );
-	QHBox* mw;
-	QValueList<ChannelWidget*> _channelwidgets;
-	MasterWidgets* _master;
-	QSettings* _settings;
-
 	int config_restore_id;
 	QPopupMenu *_filemenu, *_editmenu, *_settingsmenu, *_helpmenu;
-};
-
-class MasterWidgets : public QDockWindow {
-Q_OBJECT
-public:
-	MasterWidgets( QWidget* =0, const char* =0 );
-	~MasterWidgets();
-public slots:
-	void newVG( VolumeGroup* );
-private:
-	QVBox* _layout;
+	MixingMatrix::Widget *_mixerwidget, *_inputswidget, *_outputswidget;
+	MainWindowHelperWidget* _mw;
+	QAction* _select_action;
 };
 
 };
-
 #endif

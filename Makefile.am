@@ -1,4 +1,4 @@
-SUBDIRS = guilib backend volumegroup xml-test jackmix
+SUBDIRS = guilib backend xml-test matrix elements jackmix
 
 $(top_srcdir)/configure.in: configure.in.in $(top_srcdir)/subdirs
 	cd $(top_srcdir) && $(MAKE) -f admin/Makefile.common configure.in ;
