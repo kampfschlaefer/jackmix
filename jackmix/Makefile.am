@@ -13,7 +13,7 @@ INCLUDES = -I$(top_srcdir)/backend -I$(top_srcdir)/guilib -I$(top_srcdir)/volume
 
 # the library search path. 
 #jackmix_LDFLAGS = $(KDE_RPATH) $(all_libraries)
-jackmix_LDFLAGS = $(KDE_RPATH) $(QT_LDFLAGS) $(JACK_CFLAGS)
+jackmix_LDFLAGS = $(QT_LDFLAGS) $(JACK_CFLAGS)
 
 # the libraries to link against.
 jackmix_LDADD = $(top_builddir)/guilib/libjackmix_gui.la $(top_builddir)/backend/libjackmix_backend.la $(top_builddir)/volumegroup/libjackmix_vg.la $(LIB_QT) $(JACK_LIBS)
