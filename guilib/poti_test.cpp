@@ -20,13 +20,14 @@
 
 #include <iostream>
 #include <qapplication.h>
+#include <qcolor.h>
 
 #include "qfloatpoti.h"
 
 int main( int argc, char** argv ) {
 	QApplication *qapp = new QApplication( argc, argv );
 
-	QWidget *mw = new QFloatPoti( 0 );
+	QWidget *mw = new QFloatPoti( 0.5,0,1,100, QColor( 0,0,255 ), 0 );
 	mw->show();
 
 	qapp->setMainWidget( mw );

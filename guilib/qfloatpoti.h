@@ -29,6 +29,7 @@ class QFloatPoti_private;
 class QFloatPoti : public QFrame, public FloatElement {
 Q_OBJECT
 public:
+	QFloatPoti( float value, float min, float max, int precision, QColor color, QWidget*, const char* =0 );
 	QFloatPoti( QWidget*, const char* =0 );
 	~QFloatPoti();
 public slots:
@@ -38,10 +39,6 @@ public slots:
 	void setMaximum( float );
 	void setValue( float );
 	void setColor( QColor );
-protected:
-	void paintEvent( QPaintEvent* );
-	void wheelEvent( QWheelEvent* );
-	void mouseMoveEvent( QMouseEvent* );
 private:
 	QFloatPoti_private* d;
 };
