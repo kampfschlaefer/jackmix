@@ -19,9 +19,9 @@ QFloatSlider::~QFloatSlider() {
 }
 
 void QFloatSlider::init( float value, float min, float max, float pagestep, int precision, Orientation o ) {
-	setFrameStyle( QFrame::Panel|QFrame::Raised );
-	setMargin( 1 );
-	setLineWidth( 2 );
+	//setFrameStyle( QFrame::Panel|QFrame::Sunken );
+	//setMargin( 1 );
+	//setLineWidth( 1 );
 	QBoxLayout* _layout = new QBoxLayout( this, QBoxLayout::LeftToRight, 2 );
 	_slider = new QSlider( o, this );
 	_layout->addWidget( _slider );

@@ -10,9 +10,6 @@ JackBackend::JackBackend() {
 	std::cout << "JackBackend::JackBackend()" << std::endl;
 	client = ::jack_client_new( "JackMix" );
 	::jack_set_process_callback( client, JackMix::process, 0 );
-	std::cout << "JackBackend::JackBackend() ports" << std::endl;
-	addOutput( "out_L" );
-	addOutput( "out_R" );
 	std::cout << "JackBackend::JackBackend() activate" << std::endl;
 	::jack_activate( client );
 	std::cout << "JackBackend::JackBackend() finished" << std::endl;

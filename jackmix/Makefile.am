@@ -24,6 +24,7 @@ jackmix_SOURCES = \
 	mainwindow.cpp \
 	channelwidget.cpp \
 	volumeslider.cpp \
+	volumegroup.cpp \
 	qfloatslider.cpp \
 	main.cpp
 
