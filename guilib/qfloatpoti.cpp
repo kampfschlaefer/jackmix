@@ -44,6 +44,7 @@ QFloatPoti::QFloatPoti( float value, float min, float max, int precision, QColor
 {
 	QBoxLayout* _layout = new QVBoxLayout( this );
 	d->poti = new QPoti( 0,100,1,0, this );
+	connect( d->poti, SIGNAL( valueChanged( int ) ), this, SLOT( iValueChanged( int ) ) );
 	_layout->addWidget( d->poti );
 	setPrecision( precision );
 	setMinimum( min );
@@ -58,6 +59,7 @@ QFloatPoti::QFloatPoti( QWidget* p, const char* n )
 {
 	QBoxLayout* _layout = new QVBoxLayout( this );
 	d->poti = new QPoti( 0,100,1,0, this );
+	connect( d->poti, SIGNAL( valueChanged( int ) ), this, SLOT( iValueChanged( int ) ) );
 	_layout->addWidget( d->poti );
 }
 QFloatPoti::~QFloatPoti() {
@@ -90,5 +92,10 @@ void QFloatPoti::setValue( float n ) {
 
 void QFloatPoti::setColor( QColor n ) {
 	d->poti->setColor( n );
+}
+
+void QFloatPoti::iValueChanged( int n ) {
+	d->value = n / float( d->precision );
+	emit valueChanged( d->value );
 }
 

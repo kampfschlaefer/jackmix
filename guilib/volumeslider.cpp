@@ -25,6 +25,7 @@
 #include <qlayout.h>
 #include <qlabel.h>
 #include "qfloatslider.h"
+#include "qfloatpoti.h"
 
 using namespace JackMix;
 
@@ -51,3 +52,18 @@ void VolumeSlider::iValueChanged( float n ) {
 	emit valueChanged( _name, dbtoamp( n ) );
 }
 
+VolumeKnob::VolumeKnob( QString name, float value, QWidget* p, bool _showlabel, const char* n ) : QFrame( p,n ), dB2VolCalc( -36,12 ), _name( name )
+{
+	QBoxLayout *_layout = new QBoxLayout( this, QBoxLayout::TopToBottom );
+	QFloatPoti *tmp = new QFloatPoti( value, dbmin, dbmax, 10, QColor( 255,0,0 ), this );
+	connect( tmp, SIGNAL( valueChanged( float ) ), this, SLOT( iValueChanged( float ) ) );
+	if ( _showlabel )
+		_layout->addWidget( new QLabel( _name, this ),-10,Qt::AlignCenter );
+	_layout->addWidget( tmp,100 );
+}
+VolumeKnob::~VolumeKnob() {
+}
+
+void VolumeKnob::iValueChanged( float n ) {
+	emit valueChanged( _name, dbtoamp( n ) );
+}

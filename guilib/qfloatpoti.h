@@ -39,6 +39,10 @@ public slots:
 	void setMaximum( float );
 	void setValue( float );
 	void setColor( QColor );
+signals:
+	void valueChanged( float );
+private slots:
+	void iValueChanged( int );
 private:
 	QFloatPoti_private* d;
 };

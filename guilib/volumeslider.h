@@ -46,6 +46,19 @@ private:
 	bool _showlabel, _showvalue;
 };
 
+class VolumeKnob : public QFrame, public dB2VolCalc {
+Q_OBJECT
+public:
+	VolumeKnob( QString, float, QWidget*, bool showlabel=true, const char* =0 );
+	~VolumeKnob();
+signals:
+	void valueChanged( QString, float );
+private slots:
+	void iValueChanged( float );
+private:
+	QString _name;
+};
+
 };
 
 #endif
