@@ -28,6 +28,8 @@
 
 #include <qlayout.h>
 #include <qpushbutton.h>
+#include <qobjectlist.h>
+#include <qlabel.h>
 
 using namespace JackMix;
 using namespace MixerElements;
@@ -78,18 +80,23 @@ Mono2StereoElement::Mono2StereoElement( QStringList inchannel, QStringList outch
 		_volume_value = right;
 		_balance_value = left-right;
 	}
-	QGridLayout* _layout = new QGridLayout( this, 3,2, 3 );
+	QGridLayout* _layout = new QGridLayout( this, 4,2, 3 );
+
 	QPushButton* _btn_select = new QPushButton( "S", this );
 	_layout->addWidget( _btn_select, 0,0 );
 	connect( _btn_select, SIGNAL( clicked() ), this, SLOT( slot_toggle() ) );
 	QPushButton* _btn_replace = new QPushButton( "R", this );
 	_layout->addWidget( _btn_replace, 0,1 );
 	connect( _btn_replace, SIGNAL( clicked() ), this, SLOT( slot_replace() ) );
+	QPushButton* _btn_print = new QPushButton( "P", this );
+	_layout->addWidget( _btn_print, 1,0 );
+	connect( _btn_print, SIGNAL( clicked() ), this, SLOT( printSignals() ) );
+
 	QFloatPoti* _balance = new QFloatPoti( _balance_value, -1, 1, 100, QColor( 0,0,255 ), this );
-	_layout->addMultiCellWidget( _balance, 1,1, 0,1 );
+	_layout->addMultiCellWidget( _balance, 2,2, 0,1 );
 	connect( _balance, SIGNAL( valueChanged( float ) ), this, SLOT( balance( float ) ) );
 	JackMix::GUI::Slider* _volume = new JackMix::GUI::Slider( amptodb( _volume_value ), dbmin, dbmax, 1, 3, this );
-	_layout->addMultiCellWidget( _volume, 2,2, 0,1 );
+	_layout->addMultiCellWidget( _volume, 3,3, 0,1 );
 	connect( _volume, SIGNAL( valueChanged( float ) ), this, SLOT( volume( float ) ) );
 }
 Mono2StereoElement::~Mono2StereoElement() {
@@ -118,6 +125,31 @@ void Mono2StereoElement::calculateVolumes() {
 		right = dbtoamp( _volume_value )*( 1+_balance_value );
 	BACKEND->setVolume( _inchannel, _outchannel1, left );
 	BACKEND->setVolume( _inchannel, _outchannel2, right );
+}
+
+void Mono2StereoElement::printSignals() {
+	qDebug( "\n* Poperties: *" );
+	QObjectListIterator it( * parent()->children() );
+	while ( QObject* object = it.current() )  {
+		++it;
+		if ( strcmp( object->className(), "JackMix::MixerElements::AuxElement" ) ) {
+		qDebug( "  Child %s (%s)", object->name(), object->className() );
+			qDebug( "  with %i ins (%s) and %i outs (%s).", object->property( "ins" ).toInt(), object->property( "in" ).toStringList().join( "," ).latin1(), object->property( "outs" ).toInt(), object->property( "out" ).toStringList().join( "," ).latin1() );
+			qDebug( "    Properties:" );
+			QStrList tmp = object->metaObject()->propertyNames( false );
+			tmp.sort();
+			for ( uint i=0; i<tmp.count(); i++ ) {
+				QString signal = tmp.at( i )+QString( "_changed(" ) + object->metaObject()->property( i )->type() + ")";
+				QString slot = QString( "set_" ) + tmp.at( i ) + "(" + object->metaObject()->property( i )->type() + ")";
+				//qDebug( "? signal: %s slot: %s ?", signal.latin1(), slot.latin1() );
+				qDebug( "      %s (signal: %i, slot: %i)", tmp.at( i ),
+					object->metaObject()->signalNames().contains( signal.latin1() ),
+					object->metaObject()->slotNames().contains( slot.latin1() ) );
+			}
+		} else
+		qDebug( "  Child %s (%s) - ignoring...", object->name(), object->className() );
+	}
+	qDebug( "\n" );
 }
 
 Stereo2StereoElement::Stereo2StereoElement( QStringList inchannels, QStringList outchannels, Widget* p, const char* n )

@@ -202,17 +202,17 @@ Element::Element( QStringList in, QStringList out, Widget* p, const char* n )
 	, _in( in )
 	, _out( out )
 	, _selected( false )
-	, _widget( p )
+	, _parent( p )
 {
 	//qDebug( "MixingMatrix::Element::Element( QStringList '%s', QStringList '%s' )", in.join(",").latin1(), out.join(",").latin1() );
-	_widget->addElement( this );
+	_parent->addElement( this );
 	setMargin( 2 );
 	setFrameStyle( QFrame::Raised|QFrame::StyledPanel );
 	setLineWidth( 2 );
 }
 Element::~Element() {
 	//qDebug( "MixingMatrix::Element::~Element()" );
-	_widget->removeElement( this );
+	_parent->removeElement( this );
 }
 
 bool Element::isResponsible( QString in, QString out ) {
@@ -224,7 +224,7 @@ bool Element::isResponsible( QString in, QString out ) {
 void Element::select( bool n ) {
 qDebug( "MixingMatrix::Element::select( bool %i )", n );
 	if ( n != _selected ) {
-		if ( _widget->mode() == Widget::Select ) {
+		if ( _parent->mode() == Widget::Select ) {
 			_selected = n;
 			if ( _selected ) {
 				setFrameShadow( QFrame::Sunken );
@@ -239,16 +239,16 @@ qDebug( "MixingMatrix::Element::select( bool %i )", n );
 }
 
 int Element::neighbors() const {
-//	qDebug( "neighbor: %s", _widget->nextIn( _in[ 0 ] ).latin1() );
-	Element* neighbor = _widget->getResponsible( _widget->nextIn( _in[ _in.size()-1 ] ), _out[ 0 ] );
+//	qDebug( "neighbor: %s", _parent->nextIn( _in[ 0 ] ).latin1() );
+	Element* neighbor = _parent->getResponsible( _parent->nextIn( _in[ _in.size()-1 ] ), _out[ 0 ] );
 	if ( neighbor && neighbor->isSelected() )
 		return neighbor->neighbors()+1;
 	return 0;
 }
 QStringList Element::neighborsList() const {
 //	qDebug( "self = [%s]", _in.join( "|" ).latin1() );
-//	qDebug( "neighbor = %s", _widget->nextIn( _in[ _in.size()-1 ] ).latin1() );
-	Element* neighbor = _widget->getResponsible( _widget->nextIn( _in[ _in.size()-1 ] ), _out[ 0 ] );
+//	qDebug( "neighbor = %s", _parent->nextIn( _in[ _in.size()-1 ] ).latin1() );
+	Element* neighbor = _parent->getResponsible( _parent->nextIn( _in[ _in.size()-1 ] ), _out[ 0 ] );
 	QStringList tmp;
 	if ( neighbor && neighbor->isSelected() )
 		tmp = neighbor->neighborsList();
@@ -258,7 +258,7 @@ QStringList Element::neighborsList() const {
 }
 int Element::followers( int n ) const {
 //qDebug( "Element::followers( int %i )", n );
-	Element* follower = _widget->getResponsible( _in[ 0 ], _widget->nextOut( _out[ _out.size()-1 ] ) );
+	Element* follower = _parent->getResponsible( _in[ 0 ], _parent->nextOut( _out[ _out.size()-1 ] ) );
 /*	if ( follower )
 		qDebug( "follower of %p is %p which has selected=%i", this, follower, follower->isSelected() );
 	else
@@ -269,8 +269,8 @@ int Element::followers( int n ) const {
 }
 QStringList Element::followersList() const {
 //	qDebug( "self = [%s]", _out.join( "|" ).latin1() );
-//	qDebug( "follower = %s", _widget->nextOut( _out[ _out.size()-1 ] ).latin1() );
-	Element* follower = _widget->getResponsible( _in[ 0 ], _widget->nextOut(  _out[  _out.size()-1 ] ) );
+//	qDebug( "follower = %s", _parent->nextOut( _out[ _out.size()-1 ] ).latin1() );
+	Element* follower = _parent->getResponsible( _in[ 0 ], _parent->nextOut(  _out[  _out.size()-1 ] ) );
 	QStringList tmp;
 	if ( follower && follower->isSelected() )
 		tmp = follower->followersList();
@@ -319,7 +319,7 @@ QStringList Global::canCreate( int in, int out ) {
 bool Global::create( QString type, QStringList ins, QStringList outs, Widget* parent, const char* name ) {
 	//qDebug( "Global::create( QString %s, QStringList '%s', QStringList '%s', Widget* %p, const char* %s )", type.latin1(), ins.join( "," ).latin1(), outs.join( "," ).latin1(), parent, name );
 	Element* elem=0;
-	for ( uint i=0; i<_factories.size(); i++ ) {
+	for ( uint i=0; i<_factories.size() && elem==0; i++ ) {
 		elem = _factories[ i ]->create( type, ins, outs, parent, name );
 	}
 	qDebug( "Will show and return %p", elem );

@@ -33,7 +33,7 @@ Slider::Slider( float value, float min, float max, int precision, float pagestep
 	, _precision( precision )
 	, _valuestring( valuestring )
 {
-	setMinimumSize( 30,30 );
+	setMinimumSize( 20,20 );
 	setFocusPolicy( QWidget::TabFocus );
 }
 Slider::~Slider() {

@@ -60,15 +60,19 @@ private slots:
 	void togglein();
 	void toggleout();
 	void closeEvent( QCloseEvent* );
+
 	void autofill();
+
 	void addInput();
 	void addInput( QString );
 	void addOutput();
 	void addOutput( QString );
+
 	void removeInput();
 	void removeInput( QString );
 	void removeOutput();
 	void removeOutput( QString );
+
 	void about();
 	void aboutQt();
 private:

@@ -91,6 +91,9 @@ Q_OBJECT
 Q_PROPERTY( bool selected READ isSelected WRITE select )
 Q_PROPERTY( QStringList in READ in )
 Q_PROPERTY( QStringList out READ out )
+Q_PROPERTY( int ins READ inchannels )
+Q_PROPERTY( int outs READ outchannels )
+Q_PROPERTY( QString name READ name WRITE name )
 public:
 	/**
 	 * Gets the upper left corner in channelnames.
@@ -102,11 +105,8 @@ public:
 	// The size of this control in channels.
 	virtual int inchannels() const =0;
 	virtual int outchannels() const =0;
-	// The channels this element controls.
-	//virtual QStringList inchannels_list() const =0;
-	//virtual QStringList outchannels_list() const =0;
 
-	// The starting upper left corner in channels. (FIXME)
+	// The channels this control is in charge of
 	QStringList in() const { return _in; }
 	QStringList out() const { return _out; }
 
@@ -114,6 +114,12 @@ public:
 	bool isResponsible( QString in, QString out );
 
 	bool isSelected() const { return _selected; }
+
+	QString name() const { return QString( name() ); }
+	void name( QString n ) { setName( n.latin1() ); }
+	//void name( QString n );
+
+	//QWidget* getNameWidget( QWidget* );
 public slots:
 	void select( bool );
 public:
@@ -135,10 +141,12 @@ public:
 signals:
 	void replace( Element* );
 
+protected:
+	const Widget* parent() { return _parent; }
 private:
 	QStringList _in, _out;
 	bool _selected;
-	Widget* _widget;
+	Widget* _parent;
 };
 
 

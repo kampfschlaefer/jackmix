@@ -8,8 +8,8 @@ SUBDIRS = .
 # of the other Makefile.am variables
 
 AM_CXXFLAGS = -DQT_PLUGIN
-widgetdir = $(libdir)/designer
 widget_LTLIBRARIES = libjackmix_gui_designer.la
+widgetdir = $(libdir)/designer
 
 
 # set the include path for X, qt and KDE
