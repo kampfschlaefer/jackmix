@@ -35,6 +35,7 @@
 #include <qlayout.h>
 #include <qinputdialog.h>
 #include <qsettings.h>
+#include <qfiledialog.h>
 
 #include "defaults.xml"
 
@@ -46,12 +47,14 @@ MainWindow::MainWindow( QWidget* p, const char* n ) : QMainWindow( p,n ), _setti
 std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	QPopupMenu *file = new QPopupMenu( this );
 	menuBar()->insertItem( "File", file );
+	file->insertItem( "Open File...", this, SLOT( openFile() ), CTRL+Key_O );
+	file->insertItem( "Save File...", this, SLOT( saveFile() ), CTRL+Key_S );
 	file->insertItem( "Quit", this, SLOT( close() ), CTRL+Key_Q );
 
 	QPopupMenu *edit = new QPopupMenu( this );
 	menuBar()->insertItem( "Edit", edit );
-	edit->insertItem( "Add Input", this, SLOT( addInput() ) );
-	edit->insertItem( "Add Output", this, SLOT( addOutput() ) );
+	edit->insertItem( "Add Input...", this, SLOT( addInput() ) );
+	edit->insertItem( "Add Output...", this, SLOT( addOutput() ) );
 
 	//new VGAux( "aux", 3, this );
 	//new VGStereo( "stereo", this );
@@ -60,13 +63,14 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	this->setCentralWidget( mw );
 	mw->setSpacing( 3 );
 
-	init( _settings->readEntry( "/SaveOnExit/Config", DEFAULTSTRING ) );
+	readXML( _settings->readEntry( "/SaveOnExit/Config", DEFAULTSTRING ) );
 
 	_master = new MasterWidgets( this, "MasterControls" );
 	addDockWindow( _master, DockRight );
+	connect( VolumeGroupFactory::the(), SIGNAL( sNewVG( VolumeGroup* ) ), _master, SLOT( newVG( VolumeGroup* ) ) );
 }
 
-void MainWindow::init( QString xml ) {
+void MainWindow::readXML( QString xml ) {
 std::cerr << "MainWindow::init( " << xml << " )" << std::endl;
 	QDomDocument doc;
 	doc.setContent( xml );
@@ -93,6 +97,14 @@ std::cerr << "MainWindow::~MainWindow()" << std::endl;
 
 void MainWindow::closeEvent( QCloseEvent* e ) {
 std::cerr << "MainWindow::closeEvent( QCloseEvent " << e << " )" << std::endl;
+	_settings->beginGroup( "/SaveOnExit" );
+	_settings->writeEntry( "/Config", writeXML() );
+
+	e->accept();
+	delete _settings;
+}
+
+QString MainWindow::writeXML() {
 	QDomDocument doc( "Mainrc" );
 	QDomElement docElem = doc.createElement( "Mainrc" );
 	doc.appendChild( docElem );
@@ -111,11 +123,7 @@ std::cerr << "MainWindow::closeEvent( QCloseEvent " << e << " )" << std::endl;
 
 	qDebug( ">>> XML-tree\n" + doc.toString() + "<<< XML-tree" );
 
-	_settings->beginGroup( "/SaveOnExit" );
-	_settings->writeEntry( "/Config", QString( doc.toString() ) );
-
-	e->accept();
-	delete _settings;
+	return doc.toString();
 }
 
 void MainWindow::addInput() {
@@ -145,6 +153,34 @@ void MainWindow::newChannel( ChannelWidget* n ) {
 	connect( n, SIGNAL( remove( ChannelWidget* ) ), this, SLOT( removeInput( ChannelWidget* ) ) );
 }
 
+void MainWindow::openFile() {
+	qDebug( "MainWindow::openFile()" );
+	QString file = QFileDialog::getOpenFileName( QString::null, "*.xml", this );
+	QString xml;
+	if ( file != QString::null ) {
+		QFile qfile( file );
+		qfile.open( IO_ReadOnly );
+		xml = QString( qfile.readAll() );
+	}
+	//qDebug( xml );
+	//qDebug( "About to delete " + QString::number( _channelwidgets.size() ) + " Channels" );
+	while ( _channelwidgets.size() >0 )
+		_channelwidgets[ 0 ]->remove();
+	while ( VolumeGroupFactory::the()->groups()>0 )
+		VolumeGroupFactory::the()->group( 0 )->remove();
+	//qDebug( "Remaining " + QString::number( _channelwidgets.size() ) + " widgets" );
+	_channelwidgets.clear();
+	readXML( xml );
+}
+void MainWindow::saveFile() {
+	QString filename = QFileDialog::getSaveFileName( QString::null, "*.xml", this );
+	if ( filename != QString::null ) {
+		QFile file( filename );
+		file.open( IO_WriteOnly );
+		QString tmp = writeXML();
+		file.writeBlock( tmp.latin1(), tmp.length() );
+	}
+}
 
 MasterWidgets::MasterWidgets( QWidget* p, const char* n ) : QDockWindow( p,n ) {
 	for ( int i=0; i<VolumeGroupFactory::the()->groups(); i++ ) {

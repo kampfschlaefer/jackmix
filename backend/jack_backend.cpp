@@ -22,6 +22,7 @@
 //#include "jack_backend.moc"
 
 #include <iostream>
+#include <qdom.h>
 
 using namespace JackMix;
 
@@ -103,6 +104,12 @@ QStringList JackBackend::inchannels() {
 	return tmp;
 }
 
+void JackBackend::toXML( QDomDocument doc, QDomElement elem ) {
+}
+void JackBackend::fromXML( QDomElement elem ) {
+}
+
+
 int JackMix::process( jack_nframes_t nframes, void* /*arg*/ ) {
 //	std::cout << "JackMix::process( jack_nframes_t " << nframes << ", void* )" << std::endl;
 	QMap<QString,jack_default_audio_sample_t*> ins;
@@ -114,7 +121,6 @@ int JackMix::process( jack_nframes_t nframes, void* /*arg*/ ) {
 		outs.insert( it.key(), (jack_default_audio_sample_t*) jack_port_get_buffer( it.data(), nframes ) );
 	ports_it in_it;
 	ports_it out_it;
-//	std::cout << "JackMix::process 1" << std::endl;
 	/// Blank outports...
 	for ( out_it = BACKEND->out_ports.begin(); out_it != BACKEND->out_ports.end(); ++out_it ) {
 		jack_default_audio_sample_t* tmp = outs[ out_it.key() ];
@@ -126,7 +132,6 @@ int JackMix::process( jack_nframes_t nframes, void* /*arg*/ ) {
 		float volume = BACKEND->getInVolume( in_it.key() );
 		for ( jack_nframes_t n=0; n<nframes; n++ ) tmp[ n ] *= volume;
 	}
-//	std::cout << "JackMix::process 2" << std::endl;
 	/// The actual mixing.
 	for ( in_it = BACKEND->in_ports.begin(); in_it != BACKEND->in_ports.end(); ++in_it ) {
 		jack_default_audio_sample_t* tmpin = ins[ in_it.key() ];
@@ -138,14 +143,12 @@ int JackMix::process( jack_nframes_t nframes, void* /*arg*/ ) {
 			}
 		}
 	}
-//	std::cout << "JackMix::process 3" << std::endl;
 	/// Adjust outlevels.
 	for ( out_it = BACKEND->out_ports.begin(); out_it != BACKEND->out_ports.end(); ++out_it ) {
 		jack_default_audio_sample_t* tmp = outs[ out_it.key() ];
 		float volume = BACKEND->getOutVolume( out_it.key() );
 		for ( jack_nframes_t n=0; n<nframes; n++ ) tmp[ n ] *= volume;
 	}
-//	std::cout << "JackMix::process 4" << std::endl;
 	return 0;
 }
 

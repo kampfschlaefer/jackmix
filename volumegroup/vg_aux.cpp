@@ -83,10 +83,10 @@ VGAuxMasterWidget::VGAuxMasterWidget( VGAux* g, QWidget* p, const char* n )
 	setMargin( 1 );
 	setLineWidth( 1 );
 	setFrameStyle( QFrame::Panel|QFrame::Raised );
-	QGridLayout* _layout = new QGridLayout( this, 1, 2 );
-	layout()->addItem( _layout );
+	QGridLayout* _layout = new QGridLayout( layout(), 1, 2 );
+	//layout()->addItem( _layout );
 	_layout->setMargin( 1 );
-	//_layout->setAutoAdd( true );
+	_layout->setAutoAdd( true );
 	VolumeKnob* tmp;
 	for ( int i=0; i<group()->channels(); i++ ) {
 		tmp = new VolumeKnob( group()->name() + "_" + QString::number( i ), 1, this );

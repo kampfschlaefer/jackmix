@@ -26,6 +26,9 @@
 #include <qstringlist.h>
 #include <jack/jack.h>
 
+class QDomElement;
+class QDomDocument;
+
 namespace JackMix {
 
 typedef QMap<QString,jack_port_t*> portsmap;
@@ -55,6 +58,9 @@ public:
 	QStringList outchannels();
 	/// returns a QStringList with the names of the in-channels
 	QStringList inchannels();
+
+	void toXML( QDomDocument, QDomElement );
+	void fromXML( QDomElement );
 private:
 	/// Initializes the connection
 	JackBackend();

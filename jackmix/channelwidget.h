@@ -44,9 +44,9 @@ signals:
 public slots:
 	void newVG( VolumeGroup* );
 	void removeVG( VolumeGroup* );
+	void remove();
 private slots:
 	void valueChanged( QString, float );
-	void remove();
 private:
 	void init();
 	QString _name;

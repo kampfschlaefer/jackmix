@@ -44,8 +44,11 @@ public slots:
 	void addInput();
 	void addOutput();
 	void removeInput( ChannelWidget* );
+	void openFile();
+	void saveFile();
 private slots:
-	void init( QString );
+	void readXML( QString );
+	QString writeXML();
 	void closeEvent( QCloseEvent* );
 private:
 	void recursiveXML( QDomElement );
