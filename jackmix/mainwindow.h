@@ -35,6 +35,7 @@ public:
 	~MainWindow();
 public slots:
 	void addInput();
+	void addOutput();
 private:
 	QHBox* mw;
 };

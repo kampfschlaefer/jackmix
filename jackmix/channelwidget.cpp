@@ -50,7 +50,7 @@ ChannelWidget::ChannelWidget( QString name, QWidget* p, const char* n ) : QFrame
 	BACKEND->addInput( _name );
 	QWidget* tmp;
 	for ( int i=0; i<VolumeGroupFactory::the()->groups(); i++ ) {
-		//std::cerr << "ChannelWidget::ChannelWidget " << i << std::endl;
+		std::cerr << "ChannelWidget::ChannelWidget " << i << std::endl;
 		tmp = VolumeGroupFactory::the()->group( i )->channelWidget( _name, this );
 		_layout->addWidget( tmp, 100 );
 		tmp->show();

@@ -11,7 +11,7 @@ noinst_LTLIBRARIES = libjackmix_vg.la
 check_PROGRAMS = dialog_test
 
 # set the include path for X, qt and KDE
-INCLUDES         = $(QT_INCLUDES)
+INCLUDES         = -I$(top_srcdir)/backend -I$(top_srcdir)/guilib $(QT_INCLUDES)
 
 # the library search path. 
 #jackmix_LDFLAGS = $(KDE_RPATH) $(all_libraries)
@@ -20,11 +20,14 @@ dialog_test_LDFLAGS =
 
 # the libraries to link against.
 #jackmix_guilib_LDADD   = $(LIB_QT) $(JACK_LIBS)
-libjackmix_vg_la_LIBADD   = $(LIB_QT) $(JACK_LIBS)
+libjackmix_vg_la_LIBADD   = $(top_builddir)/backend/libjackmix_backend.la $(top_builddir)/guilib/libjackmix_gui.la $(LIB_QT) $(JACK_LIBS)
 dialog_test_LDADD = libjackmix_vg.la $(LIB_QT)
 
 # which sources should be compiled for jackmix
 libjackmix_vg_la_SOURCES = \
+	volumegroup.cpp \
+	vg_aux.cpp \
+	vg_stereo.cpp \
 	vgselect.cpp
 
 dialog_test_SOURCES = dialog_test.cpp

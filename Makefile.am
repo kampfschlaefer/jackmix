@@ -1,4 +1,4 @@
-SUBDIRS = guilib volumegroup jackmix
+SUBDIRS = guilib backend volumegroup jackmix
 
 $(top_srcdir)/configure.in: configure.in.in $(top_srcdir)/subdirs
 	cd $(top_srcdir) && $(MAKE) -f admin/Makefile.common configure.in ;

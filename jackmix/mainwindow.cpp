@@ -67,6 +67,9 @@ void MainWindow::addInput() {
 	if ( !name.isEmpty() )
 		tmp = new ChannelWidget( name, mw );
 }
+void MainWindow::addOutput() {
+
+}
 
 MasterWidgets::MasterWidgets( QWidget* p, const char* n ) : QDockWindow( p,n ) {
 	QBoxLayout* _layout = boxLayout();//new QVBoxLayout( this );

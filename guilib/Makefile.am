@@ -30,6 +30,8 @@ libjackmix_gui_la_SOURCES = \
 	qfloatslider.cpp \
 	qfloatpoti.cpp \
 	qtickmarks.cpp \
+	volumeslider.cpp \
+	stereovolumeslider.cpp \
 	qpoti.cpp
 
 poti_test_SOURCES = poti_test.cpp
