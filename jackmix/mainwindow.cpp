@@ -11,6 +11,7 @@
 #include <qpopupmenu.h>
 #include <qmenubar.h>
 #include <qhbox.h>
+#include <qlayout.h>
 
 using namespace JackMix;
 
@@ -30,7 +31,18 @@ MainWindow::MainWindow( QWidget* p, const char* n ) : QMainWindow( p,n ) {
 	tmp = new ChannelWidget( "in_2", mw );
 	tmp = new ChannelWidget( "in_3", mw );
 	tmp = new ChannelWidget( "in_4", mw );
+
+	addDockWindow( new MasterWidgets( this, "MasterControls" ), DockRight );
 }
 MainWindow::~MainWindow() {
+}
+
+MasterWidgets::MasterWidgets( QWidget* p, const char* n ) : QDockWindow( p,n ) {
+	QBoxLayout* _layout = boxLayout();//new QVBoxLayout( this );
+	for ( int i=0; i<VolumeGroupFactory::the()->groups(); i++ ) {
+		_layout->addWidget( VolumeGroupFactory::the()->group( i )->masterWidget( this ) );
+	}
+}
+MasterWidgets::~MasterWidgets() {
 }
 
