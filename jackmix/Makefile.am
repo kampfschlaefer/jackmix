@@ -20,7 +20,6 @@ jackmix_LDADD   = $(LIB_QT) -ljack -lrt -ldl -lpthread
 # which sources should be compiled for jackmix
 jackmix_SOURCES = \
 	jack_backend.cpp \
-	backendwatcher.cpp \
 	mainwindow.cpp \
 	channelwidget.cpp \
 	volumeslider.cpp \
