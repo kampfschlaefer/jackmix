@@ -217,9 +217,8 @@ void Widget::addoutchannel( QString name ) {
 
 void Widget::connectSlave( Element* slave, QString slot ) {
 	qDebug( "Widget::connectSlave( %p, %s ) [ ! simple ! ]", slave, slot.latin1() );
-	if ( !_elements[ 0 ]->metaObject()->findProperty( slot.latin1() ) ) {
+	if ( !_elements[ 0 ]->metaObject()->findProperty( slot.latin1() ) )
 		connectMasterSlave( _elements[ 0 ], slot, slave, slot );
-	}
 }
 void Widget::connectMaster( Element* master, QString signal ) {
 	qDebug( "Widget::connectMaster( %p, %s ) [ ! defunct ! ]", master, signal.latin1() );
@@ -237,14 +236,12 @@ void Widget::connectMasterSlave( Element* master, QString signal, Element* slave
 }
 void Widget::disconnectSlave( Element* slave, QString slot ) {
 	qDebug( "Widget::disconnectSlave( %p, %s )", slave, slot.latin1() );
-	//if ( _connections.contains( ElementSlotSignalPair( slave, slot ) ) )
-	//	qDebug( "  _connections contains this pair" );
-	_connections.remove( ElementSlotSignalPair( slave, slot ) );
+	//_connections.remove( ElementSlotSignalPair( slave, slot ) );
 	QMap<ElementSlotSignalPair,ElementSlotSignalPair>::Iterator it;
 	for ( it = _connections.begin(); it != _connections.end(); ++it ) {
-		qDebug( "Trying slave (%p,%s)", it.key().element, it.key().slot.latin1() );
+		//qDebug( "Trying slave (%p,%s)", it.key().element, it.key().slot.latin1() );
 		if ( it.key() == ElementSlotSignalPair( slave, slot ) ) {
-			qDebug( "\nSecond try: remove connection!\n" );
+			//qDebug( "\nSecond try: remove connection!\n" );
 			_connections.remove( it );
 		}
 	}
@@ -252,10 +249,9 @@ void Widget::disconnectSlave( Element* slave, QString slot ) {
 void Widget::disconnectMaster( Element* master, QString signal ) {
 	qDebug( "Widget::disconnectMaster( %p, %s )", master, signal.latin1() );
 	QMap<ElementSlotSignalPair,ElementSlotSignalPair>::Iterator it;
-	for ( it = _connections.begin(); it != _connections.end(); ++it ) {
+	for ( it = _connections.begin(); it != _connections.end(); ++it )
 		if ( it.data() == ElementSlotSignalPair( master, signal ) )
 			_connections.remove( it );
-	}
 }
 
 void Widget::toggleConnectionLister( bool n ) {
@@ -304,7 +300,6 @@ Element::Element( QStringList in, QStringList out, Widget* p, const char* n )
 	setMargin( 2 );
 	setFrameStyle( QFrame::Raised|QFrame::StyledPanel );
 	setLineWidth( 2 );
-	//qDebug( "Element::Element() Properties: %s", QStringList::fromStrList( metaObject()->propertyNames() ).join( "," ).latin1() );
 }
 Element::~Element() {
 	//qDebug( "MixingMatrix::Element::~Element()" );
