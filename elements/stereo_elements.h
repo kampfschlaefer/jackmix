@@ -45,6 +45,7 @@ public:
 
 private slots:
 	void slot_toggle();
+	void slot_replace() { emit replace( this ); }
 	void balance( float );
 	void volume( float );
 	void calculateVolumes();

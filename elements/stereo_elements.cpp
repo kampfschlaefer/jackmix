@@ -78,15 +78,18 @@ Mono2StereoElement::Mono2StereoElement( QStringList inchannel, QStringList outch
 		_volume_value = right;
 		_balance_value = left-right;
 	}
-	QGridLayout* _layout = new QGridLayout( this, 3,1, 3 );
+	QGridLayout* _layout = new QGridLayout( this, 3,2, 3 );
 	QPushButton* _btn_select = new QPushButton( "S", this );
 	_layout->addWidget( _btn_select, 0,0 );
 	connect( _btn_select, SIGNAL( clicked() ), this, SLOT( slot_toggle() ) );
+	QPushButton* _btn_replace = new QPushButton( "R", this );
+	_layout->addWidget( _btn_replace, 0,1 );
+	connect( _btn_replace, SIGNAL( clicked() ), this, SLOT( slot_replace() ) );
 	QFloatPoti* _balance = new QFloatPoti( _balance_value, -1, 1, 100, QColor( 0,0,255 ), this );
-	_layout->addWidget( _balance, 1,0 );
+	_layout->addMultiCellWidget( _balance, 1,1, 0,1 );
 	connect( _balance, SIGNAL( valueChanged( float ) ), this, SLOT( balance( float ) ) );
 	JackMix::GUI::Slider* _volume = new JackMix::GUI::Slider( amptodb( _volume_value ), dbmin, dbmax, 1, 3, this );
-	_layout->addWidget( _volume, 2,0 );
+	_layout->addMultiCellWidget( _volume, 2,2, 0,1 );
 	connect( _volume, SIGNAL( valueChanged( float ) ), this, SLOT( volume( float ) ) );
 }
 Mono2StereoElement::~Mono2StereoElement() {

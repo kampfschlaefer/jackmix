@@ -63,7 +63,10 @@ public slots:
 	void saveFile();
 private slots:
 	void toggleselectmode();
+	void togglein();
+	void toggleout();
 	void closeEvent( QCloseEvent* );
+	void autofill();
 	void addInput();
 	void addInput( QString );
 	void addOutput();
@@ -72,10 +75,10 @@ private slots:
 	void aboutQt();
 private:
 	int config_restore_id;
-	QPopupMenu *_filemenu, *_editmenu, *_settingsmenu, *_helpmenu;
+	QPopupMenu *_filemenu, *_editmenu, *_viewmenu, *_settingsmenu, *_helpmenu;
 	MixingMatrix::Widget *_mixerwidget, *_inputswidget, *_outputswidget;
 	MainWindowHelperWidget* _mw;
-	QAction* _select_action;
+	QAction *_select_action, *_togglein_action, *_toggleout_action;
 };
 
 };

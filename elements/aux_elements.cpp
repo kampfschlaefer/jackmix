@@ -49,9 +49,13 @@ public:
 	}
 
 	Element* create( QString type , QStringList ins, QStringList outs, Widget* p, const char* n=0 ) {
-		if ( type=="AuxElement" )
+		if ( type=="AuxElement" ) {
 			return new AuxElement( ins, outs, p, n );
-		return 0;
+		/*	AuxElement* tmp = new AuxElement( ins, outs, p, n );
+			qDebug( "Created %s with address %p", type.latin1(), tmp );
+			return tmp;*/
+		} else
+			return 0;
 	}
 };
 AuxFactory* _auxfactory = new AuxFactory();

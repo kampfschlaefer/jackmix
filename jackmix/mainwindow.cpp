@@ -60,8 +60,21 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	_select_action->addTo( _editmenu );
 	//_select_action->addTo( new QToolBar( this ) );
 	_editmenu->setCheckable( true );
+	_editmenu->insertItem( "Autofill", this, SLOT( autofill() ) );
+	_editmenu->insertSeparator();
 	_editmenu->insertItem( "Add Input...", this, SLOT( addInput() ) );
 	_editmenu->insertItem( "Add Output...", this, SLOT( addOutput() ) );
+
+	_viewmenu = new QPopupMenu( this );
+	menuBar()->insertItem( "View", _viewmenu );
+	_togglein_action = new QAction( "Hide inputcontrols", 0, this );
+	//_togglein_action->setToggleAction( true );
+	connect( _togglein_action, SIGNAL( activated() ), this, SLOT( togglein() ) );
+	_togglein_action->addTo( _viewmenu );
+	_toggleout_action = new QAction( "Hide outputcontrols", 0, this );
+	//_toggleout_action->setToggleAction( true );
+	connect( _toggleout_action, SIGNAL( activated() ), this, SLOT( toggleout() ) );
+	_toggleout_action->addTo( _viewmenu );
 
 	_helpmenu = new QPopupMenu( this );
 	menuBar()->insertItem( "Help", _helpmenu );
@@ -92,8 +105,8 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	//_mixerwidget->createControl( QStringList()<<"in_4", QStringList()<<"out_2" );
 	_mixerwidget->autoFill();
 
-	_inputswidget->createControl( QStringList()<<"in_1"<<"in_2", QStringList()<<"in_1"<<"in_2" );
-	_inputswidget->createControl( QStringList()<<"in_3"<<"in_4", QStringList()<<"in_3"<<"in_4" );
+	//_inputswidget->createControl( QStringList()<<"in_1"<<"in_2", QStringList()<<"in_1"<<"in_2" );
+	//_inputswidget->createControl( QStringList()<<"in_3"<<"in_4", QStringList()<<"in_3"<<"in_4" );
 	_inputswidget->autoFill();
 
 	//_outputswidget->createControl( QStringList()<<"out_1"<<"out_2", QStringList()<<"out_1"<<"out_2" );
@@ -146,6 +159,28 @@ void MainWindow::toggleselectmode() {
 		_mixerwidget->mode( Widget::Select );
 	_select_action->setOn( !select );
 }
+void MainWindow::togglein() {
+	bool shown = _inputswidget->isShown();
+	if ( shown ) {
+		_inputswidget->hide();
+		_togglein_action->setMenuText( "Show inputcontrols" );
+	} else {
+		_inputswidget->show();
+		_togglein_action->setMenuText( "Hide inputcontrols" );
+	}
+	//_togglein_action->setOn( shown );
+}
+void MainWindow::toggleout() {
+	bool shown = _outputswidget->isShown();
+	if ( shown ) {
+		_outputswidget->hide();
+		_toggleout_action->setMenuText( "Show outputcontrols" );
+	} else {
+		_outputswidget->show();
+		_toggleout_action->setMenuText( "Hide outputcontrols" );
+	}
+	//_toggleout_action->setOn( shown );
+}
 
 void MainWindow::addInput() {
 	QString tmp = QInputDialog::getText( "Inchannel name", "Channel name", QLineEdit::Normal, "(empty)", 0, this );
@@ -170,6 +205,10 @@ void MainWindow::addOutput( QString name ) {
 	_mixerwidget->autoFill();
 	_outputswidget->addoutchannel( name );
 	_outputswidget->autoFill();
+}
+
+void MainWindow::autofill() {
+	_mixerwidget->autoFill();
 }
 
 

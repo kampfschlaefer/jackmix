@@ -56,17 +56,20 @@ void Widget::removeElement( Element* n ) { _elements.remove( n ); }
 void Widget::replace( Element* n ) {
 qDebug( "Widget::replace( Element* %p )", n );
 qDebug( "This Element has %i selected neighbors.", n->neighbors() );
+qDebug( " and %i selected followers.", n->followers( n->neighbors() ) );
 	QStringList in, out;
 	in = n->neighborsList();
 	qDebug( "Selected ins = %s", in.join( "," ).ascii() );
-	out = n->out();
+	out = n->followersList();
 	qDebug( "Selected outs = %s", out.join( "," ).ascii() );
 	for ( QStringList::ConstIterator it=out.begin(); it!=out.end(); ++it ) {
 		for ( QStringList::ConstIterator jt=in.begin(); jt!=in.end(); ++jt ) {
 			Element* tmp = getResponsible( ( *jt ),( *it ) );
 			qDebug( "About to delete %p", tmp );
-			if ( tmp )
+			if ( tmp ) {
+				removeElement( tmp );
 				delete tmp;
+			}
 		}
 	}
 	createControl( in, out );
@@ -91,12 +94,18 @@ qDebug( "Widget::createControl( QStringList '%s', QStringList '%s')", inchannels
 }
 
 void Widget::autoFill() {
-qDebug( "Widget::autoFill()" );
+qDebug( "\nWidget::autoFill()" );
+//	qDebug( "_direction = %i", _direction );
 	if ( _direction == None ) {
+//		qDebug( "Doing the Autofill-boogie..." );
 		for ( QStringList::Iterator init=_inchannels.begin(); init!=_inchannels.end(); ++init )
-			for ( QStringList::Iterator outit=_outchannels.begin(); outit!=_outchannels.end(); ++outit )
-				if ( !getResponsible( *init, *outit ) )
+			for ( QStringList::Iterator outit=_outchannels.begin(); outit!=_outchannels.end(); ++outit ) {
+				if ( !getResponsible( *init, *outit ) ) {
+//					qDebug( "...together with (%s|%s)", ( *init ).latin1(), ( *outit ).latin1() );
 					createControl( QStringList()<<*init, QStringList()<<*outit );
+				}
+//				else qDebug( "   (%s|%s) is allready occupied. :(", ( *init ).latin1(), ( *outit ).latin1() );
+			}
 	} else if ( _direction == Vertical ) {
 		for ( QStringList::Iterator outit=_outchannels.begin(); outit!=_outchannels.end(); ++outit )
 			if ( !getResponsible( *outit, *outit ) )
@@ -107,6 +116,7 @@ qDebug( "Widget::autoFill()" );
 				createControl( QStringList()<<*init, QStringList()<<*init );
 	}
 	resizeEvent( 0 );
+	qDebug( "\n" );
 }
 
 void Widget::resizeEvent( QResizeEvent* ) {
@@ -128,15 +138,21 @@ void Widget::resizeEvent( QResizeEvent* ) {
 
 	if ( _direction == Horizontal )
 //		h=0;
-		for ( uint i=0; i<_elements.size(); i++ )
+		for ( uint i=0; i<_elements.size(); i++ ) {
 			_elements[ i ]->setGeometry( _inchannels.findIndex( _elements[ i ]->in()[ 0 ] )*w, 0, w*_elements[ i ]->inchannels(), h );
+			_elements[ i ]->show();
+		}
 	else if ( _direction == Vertical )
 //		w=0;
-		for ( uint i=0; i<_elements.size(); i++ )
+		for ( uint i=0; i<_elements.size(); i++ ) {
 			_elements[ i ]->setGeometry( 0, _outchannels.findIndex( _elements[ i ]->out()[ 0 ] )*h, w, h*_elements[ i ]->outchannels() );
+			_elements[ i ]->show();
+		}
 	else
-		for ( uint i=0; i<_elements.size(); i++ )
+		for ( uint i=0; i<_elements.size(); i++ ) {
 			_elements[ i ]->setGeometry( _inchannels.findIndex( _elements[ i ]->in()[ 0 ] )*w, _outchannels.findIndex( _elements[ i ]->out()[ 0 ] )*h, w*_elements[ i ]->inchannels(), h*_elements[ i ]->outchannels() );
+			_elements[ i ]->show();
+		}
 }
 
 QSize Widget::minimumSizeHint() const {
@@ -223,28 +239,44 @@ qDebug( "MixingMatrix::Element::select( bool %i )", n );
 }
 
 int Element::neighbors() const {
-	//qDebug( "neighbor: %s", _widget->nextIn( _in[ 0 ] ).latin1() );
+//	qDebug( "neighbor: %s", _widget->nextIn( _in[ 0 ] ).latin1() );
 	Element* neighbor = _widget->getResponsible( _widget->nextIn( _in[ _in.size()-1 ] ), _out[ 0 ] );
 	if ( neighbor && neighbor->isSelected() )
 		return neighbor->neighbors()+1;
 	return 0;
 }
 QStringList Element::neighborsList() const {
-	qDebug( "self = [%s]", _in.join( "|" ).latin1() );
-	qDebug( "neighbor = %s", _widget->nextIn( _in[ _in.size()-1 ] ).latin1() );
+//	qDebug( "self = [%s]", _in.join( "|" ).latin1() );
+//	qDebug( "neighbor = %s", _widget->nextIn( _in[ _in.size()-1 ] ).latin1() );
 	Element* neighbor = _widget->getResponsible( _widget->nextIn( _in[ _in.size()-1 ] ), _out[ 0 ] );
 	QStringList tmp;
 	if ( neighbor && neighbor->isSelected() )
 		tmp = neighbor->neighborsList();
 	tmp += _in;
+	tmp.sort();
 	return tmp;
 }
-int Element::followers( int /*n*/ ) {
-// FIXME
-//	Element* follower = _widget->getResponsible( in(),out()+1 );
-//	if ( follower && follower->isSelected() && follower->neighbors() >= n )
-//		return follower->followers( n )+1;
+int Element::followers( int n ) const {
+//qDebug( "Element::followers( int %i )", n );
+	Element* follower = _widget->getResponsible( _in[ 0 ], _widget->nextOut( _out[ _out.size()-1 ] ) );
+/*	if ( follower )
+		qDebug( "follower of %p is %p which has selected=%i", this, follower, follower->isSelected() );
+	else
+		qDebug( "follower of %p is %p", this, follower );*/
+	if ( follower && follower->isSelected() && follower->neighbors() >= n )
+		return follower->followers( n )+1;
 	return 0;
+}
+QStringList Element::followersList() const {
+//	qDebug( "self = [%s]", _out.join( "|" ).latin1() );
+//	qDebug( "follower = %s", _widget->nextOut( _out[ _out.size()-1 ] ).latin1() );
+	Element* follower = _widget->getResponsible( _in[ 0 ], _widget->nextOut(  _out[  _out.size()-1 ] ) );
+	QStringList tmp;
+	if ( follower && follower->isSelected() )
+		tmp = follower->followersList();
+	tmp += _out;
+	tmp.sort();
+	return tmp;
 }
 
 
@@ -268,11 +300,11 @@ Global* Global::the() {
 }
 
 void Global::registerFactory( ElementFactory* n ) {
-qDebug( "Global::registerFactory( ElementFactory* %p )", n );
+	//qDebug( "Global::registerFactory( ElementFactory* %p )", n );
 	_factories.push_back( n );
 }
 void Global::unregisterFactory( ElementFactory* n ) {
-qDebug( "Global::unregisterFactory( ElementFactory* %p )", n );
+	//qDebug( "Global::unregisterFactory( ElementFactory* %p )", n );
 	_factories.remove( n );
 }
 
@@ -290,7 +322,10 @@ bool Global::create( QString type, QStringList ins, QStringList outs, Widget* pa
 	for ( uint i=0; i<_factories.size(); i++ ) {
 		elem = _factories[ i ]->create( type, ins, outs, parent, name );
 	}
-	if ( elem ) elem->show();
+	qDebug( "Will show and return %p", elem );
+	if ( elem ) {
+		elem->show();
+	}
 	return elem;
 }
 

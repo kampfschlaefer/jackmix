@@ -53,8 +53,6 @@ public:
 	/// Create Controls
 	// Create controls. return true on success
 	bool createControl( QStringList inchannels, QStringList outchannels );
-	// Fills the empty nodes with 1to1-controls
-	void autoFill();
 
 	/// Layout
 	QSize smallestElement() const;
@@ -78,6 +76,8 @@ public:
 	int elements() const { return _elements.size(); }
 public slots:
 	void replace( Element* );
+	// Fills the empty nodes with 1to1-controls
+	void autoFill();
 private:
 	enum Mode _mode;
 	Direction _direction;
@@ -129,7 +129,8 @@ public:
 	QStringList neighborsList() const;
 	// returns the number of following rows with the given number
 	// of selected items.
-	int followers( int );
+	int followers( int ) const;
+	QStringList followersList() const;
 
 signals:
 	void replace( Element* );
