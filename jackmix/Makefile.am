@@ -6,7 +6,7 @@ SUBDIRS = .
 
 # this is the program that gets installed.  it's name is used for all
 # of the other Makefile.am variables
-bin_PROGRAMS = jackmix
+bin_PROGRAMS = jackmix poti_test
 
 # set the include path for X, qt and KDE
 INCLUDES         = $(QT_INCLUDES)
@@ -14,9 +14,11 @@ INCLUDES         = $(QT_INCLUDES)
 # the library search path. 
 #jackmix_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 jackmix_LDFLAGS = $(JACK_CFLAGS)
+#poti_test_LDFLAGS = 
 
 # the libraries to link against.
 jackmix_LDADD   = $(LIB_QT) $(JACK_LIBS)
+poti_test_LDADD = $(LIB_QT)
 
 # which sources should be compiled for jackmix
 jackmix_SOURCES = \
@@ -31,6 +33,9 @@ jackmix_SOURCES = \
 	qfloatslider.cpp \
 	qtickmarks.cpp \
 	main.cpp
+
+poti_test_SOURCES = poti_test.cpp \
+	qfloatpoti.cpp
 
 # these are the headers for your project
 #noinst_HEADERS   = jackmix.h jackmixview.h jackmixpref.h
