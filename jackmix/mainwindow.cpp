@@ -200,11 +200,12 @@ void MainWindow::addInput() {
 		addInput( tmp );
 }
 void MainWindow::addInput( QString name ) {
-	_backend->addInput( name );
-	_mixerwidget->addinchannel( name );
-	_mixerwidget->autoFill();
-	_inputswidget->addinchannel( name );
-	_inputswidget->autoFill();
+	if ( _backend->addInput( name ) ) {
+		_mixerwidget->addinchannel( name );
+		_mixerwidget->autoFill();
+		_inputswidget->addinchannel( name );
+		_inputswidget->autoFill();
+	}
 }
 void MainWindow::addOutput() {
 	QString tmp = QInputDialog::getText( "Outchannel name", "Channel name", QLineEdit::Normal, "(empty)", 0, this );
@@ -212,30 +213,39 @@ void MainWindow::addOutput() {
 		addOutput( tmp );
 }
 void MainWindow::addOutput( QString name ) {
-	_backend->addOutput( name );
-	_mixerwidget->addoutchannel( name );
-	_mixerwidget->autoFill();
-	_outputswidget->addoutchannel( name );
-	_outputswidget->autoFill();
+	if ( _backend->addOutput( name ) ) {
+		_mixerwidget->addoutchannel( name );
+		_mixerwidget->autoFill();
+		_outputswidget->addoutchannel( name );
+		_outputswidget->autoFill();
+	}
 }
 
 void MainWindow::removeInput() {
 qDebug( "MainWindow::removeInput()" );
-	ChannelSelector *tmp = new ChannelSelector( "Delete Inputchannels", "Selecte the inputchannels for deletion:", _backend->inchannels(), this );
+	ChannelSelector *tmp = new ChannelSelector( "Delete Inputchannels", "Select the inputchannels for deletion:", _backend->inchannels(), this );
 	connect( tmp, SIGNAL( selectedChannel( QString ) ), this, SLOT( removeInput( QString ) ) );
 	tmp->show();
 }
 void MainWindow::removeInput( QString n ) {
-qDebug( "MainWindow::removeInput( QString %s )", n.latin1() );
+	qDebug( "MainWindow::removeInput( QString %s )", n.latin1() );
+	if ( _backend->removeInput( n ) ) {
+		_inputswidget->removeinchannel( n );
+		_mixerwidget->removeinchannel( n );
+	}
 }
 void MainWindow::removeOutput() {
 qDebug( "MainWindow::removeOutput()" );
-	ChannelSelector *tmp = new ChannelSelector( "Delete Outputchannels", "Selecte the outputchannels for deletion:", _backend->outchannels(), this );
+	ChannelSelector *tmp = new ChannelSelector( "Delete Outputchannels", "Select the outputchannels for deletion:", _backend->outchannels(), this );
 	connect( tmp, SIGNAL( selectedChannel( QString ) ), this, SLOT( removeOutput( QString ) ) );
 	tmp->show();
 }
 void MainWindow::removeOutput( QString n ) {
 qDebug( "MainWindow::removeOutput( QString %s )", n.latin1() );
+	if ( _backend->removeOutput( n ) ) {
+		_outputswidget->removeoutchannel( n );
+		_mixerwidget->removeoutchannel( n );
+	}
 }
 
 void MainWindow::autofill() {

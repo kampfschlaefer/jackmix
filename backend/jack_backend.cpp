@@ -45,24 +45,35 @@ JackBackend::~JackBackend() {
 		::jack_client_close( client );
 }
 
-void JackBackend::addOutput( QString name ) {
-	if ( client )
+bool JackBackend::addOutput( QString name ) {
+	if ( client ) {
 		out_ports.insert( name, jack_port_register ( client, name.latin1(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0 ) );
+		return true;
+	}
+	return false;
 }
-void JackBackend::addInput( QString name ) {
-	if ( client )
+bool JackBackend::addInput( QString name ) {
+	if ( client ) {
 		in_ports.insert( name, jack_port_register ( client, name.latin1(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0 ) );
+		return true;
+	}
+	return false;
 }
 
-void JackBackend::removeOutput( QString name ) {
+bool JackBackend::removeOutput( QString name ) {
 	if ( client )
 		jack_port_unregister( client, out_ports[ name ] );
 	out_ports.remove( name );
+	return true;
 }
-void JackBackend::removeInput( QString name ) {
-	if ( client )
-		jack_port_unregister( client, in_ports[ name ] );
-	in_ports.remove( name );
+bool JackBackend::removeInput( QString name ) {
+	if ( in_ports.find( name ) != in_ports.end() ) {
+		if ( client )
+			jack_port_unregister( client, in_ports[ name ] );
+		in_ports.remove( name );
+		return true;
+	}
+	return false;
 }
 
 void JackBackend::setVolume( QString channel, QString output, float volume ) {
@@ -87,6 +98,7 @@ void JackBackend::setOutVolume( QString ch, float n ) {
 	outvolumes[ ch ] = n;
 }
 float JackBackend::getOutVolume( QString ch ) {
+	//std::cerr << "JackBackend::getOutVolume(QString " << ch << " )" << std::endl;
 	outvolumes.insert( ch, 1, FALSE );
 	return outvolumes[ ch ];
 }
@@ -95,6 +107,7 @@ void JackBackend::setInVolume( QString ch, float n ) {
 	involumes[ ch ] = n;
 }
 float JackBackend::getInVolume( QString ch ) {
+	//std::cerr << "JackBackend::getInVolume(QString " << ch << " )" << std::endl;
 	involumes.insert( ch, 1, FALSE );
 	return involumes[ ch ];
 }

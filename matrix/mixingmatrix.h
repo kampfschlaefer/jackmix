@@ -27,7 +27,7 @@
 #include <qpopupmenu.h>
 #include <qaction.h>
 
-#include "jack_backend.h"
+#include "backend_interface.h"
 
 namespace JackMix {
 
@@ -70,10 +70,10 @@ Q_PROPERTY( Mode mode READ mode WRITE mode )
 Q_PROPERTY( Direction direction READ direction WRITE direction )
 public:
 	// \param inchannels, outchannels, backend, parent, name=0
-	Widget( QStringList, QStringList, JackMix::JackBackend*, QWidget*, const char* =0 );
+	Widget( QStringList, QStringList, JackMix::BackendInterface*, QWidget*, const char* =0 );
 	~Widget();
 
-	JackMix::JackBackend* backend() const { return _backend; }
+	JackMix::BackendInterface* backend() const { return _backend; }
 
 	QStringList inchannels() const { return _inchannels; }
 	QStringList outchannels() const { return _outchannels; }
@@ -83,6 +83,9 @@ public:
 	/// New input/output channels
 	void addinchannel( QString );
 	void addoutchannel( QString );
+	/// Remove input/output channels
+	void removeinchannel( QString );
+	void removeoutchannel( QString );
 
 	/// Create Controls
 	// Create controls. return true on success
@@ -149,7 +152,7 @@ private:
 	QStringList _inchannels, _outchannels;
 	ConnectionLister* _connectionlister;
 	QMap <ElementSlotSignalPair,ElementSlotSignalPair> _connections;
-	JackMix::JackBackend* _backend;
+	JackMix::BackendInterface* _backend;
 };
 
 class Element : public QFrame
@@ -169,7 +172,7 @@ public:
 	Element( QStringList in, QStringList out, Widget*, const char* =0 );
 	virtual ~Element();
 
-	JackMix::JackBackend* backend() const { return _parent->backend(); }
+	JackMix::BackendInterface* backend() const { return _parent->backend(); }
 
 	// The size of this control in channels.
 	virtual int inchannels() const =0;

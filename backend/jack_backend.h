@@ -26,36 +26,43 @@
 #include <qstringlist.h>
 #include <jack/jack.h>
 
+#include "backend_interface.h"
+
 class QDomElement;
 class QDomDocument;
 
 namespace JackMix {
 
+int process( ::jack_nframes_t, void* );
+
 typedef QMap<QString,jack_port_t*> portsmap;
 typedef portsmap::Iterator ports_it;
 
-class JackBackend {
+class JackBackend : public BackendInterface {
+	friend int process( ::jack_nframes_t, void* );
 public:
 	/// Initializes the connection
 	JackBackend();
 	/// Ends everything
 	~JackBackend();
 
-	void addOutput( QString );
-	void removeInput( QString );
-	void addInput( QString );
-	void removeOutput( QString );
+	bool addOutput( QString );
+	bool removeInput( QString );
+	bool addInput( QString );
+	bool removeOutput( QString );
 
 	/// sets the volume of channel,output
 	void setVolume( QString,QString,float );
 	/// returns the volume of channel,output
 	float getVolume( QString,QString );
 
+private:
 	void setOutVolume( QString, float );
 	float getOutVolume( QString );
 	void setInVolume( QString, float );
 	float getInVolume( QString );
 
+public:
 	/// returns a QStringList with the names of the out-channels
 	QStringList outchannels();
 	/// returns a QStringList with the names of the in-channels
@@ -63,9 +70,8 @@ public:
 
 	void toXML( QDomDocument, QDomElement );
 	void fromXML( QDomElement );
-private:
 
-public:
+private:
 	portsmap in_ports;
 	portsmap out_ports;
 	::jack_client_t *client;
@@ -74,8 +80,6 @@ public:
 	QMap<QString,float> outvolumes;
 	QMap<QString,float> involumes;
 };
-
-int process( ::jack_nframes_t, void* );
 
 };
 

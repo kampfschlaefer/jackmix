@@ -73,14 +73,35 @@ ConnectionLister::ConnectionLister( Widget* w, QWidget* p, const char* n )
 	QValueList<Element*>::Iterator it;
 	for ( it=_widget->_elements.begin(); it!=_widget->_elements.end(); ++it ) {
 		qDebug( "  %p : %s", ( *it ), ( *it )->getPropertyList().join( "," ).latin1() );
-		QStringList tmp = ( *it )->getPropertyList();
-		if ( !tmp.empty() ) {
-			_box_signals->insertItem( new ElementConnectView( _box_signals, ( *it ) ) );
-			_box_slots->insertItem( new ElementConnectView( _box_slots, ( *it ) ) );
-		}
+		addElement( *it );
 	}
 }
 ConnectionLister::~ConnectionLister() {
+}
+
+void ConnectionLister::addElement( Element* elem ) {
+		QStringList tmp = elem->getPropertyList();
+		if ( !tmp.empty() ) {
+			_box_signals->insertItem( new ElementConnectView( _box_signals, elem ) );
+			_box_slots->insertItem( new ElementConnectView( _box_slots, elem ) );
+		}
+}
+void ConnectionLister::removeElement( Element* elem ) {
+//	qDebug( "ConnectionLister::removeElement( %p )", elem );
+	QListViewItem *tmp = _box_signals->firstChild();
+	while ( tmp != 0 ) {
+		ElementConnectView* _tmp = static_cast<ElementConnectView*>( tmp );
+		tmp = tmp->nextSibling();
+		if ( elem == _tmp->element() )
+			delete _tmp;
+	}
+	tmp = _box_slots->firstChild();
+	while ( tmp != 0 ) {
+		ElementConnectView* _tmp = static_cast<ElementConnectView*>( tmp );
+		tmp = tmp->nextSibling();
+		if ( elem == _tmp->element() )
+			delete _tmp;
+	}
 }
 
 void ConnectionLister::connectControls() {

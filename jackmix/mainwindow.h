@@ -35,7 +35,7 @@ class QAction;
 
 namespace JackMix {
 
-class JackBackend;
+class BackendInterface;
 
 namespace MixingMatrix {
 	class Widget;
@@ -84,7 +84,7 @@ private:
 	MainWindowHelperWidget* _mw;
 	QAction *_select_action, *_togglein_action, *_toggleout_action, *_add_inchannel_action, *_add_outchannel_action, *_remove_inchannel_action, *_remove_outchannel_action;
 	QAction *_debugPrint, *_showLister;
-	JackBackend* _backend;
+	BackendInterface* _backend;
 };
 
 };

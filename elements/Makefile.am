@@ -22,9 +22,10 @@ libmixingelements_la_LDFLAGS = $(QT_LDFLAGS)
 libmixingelements_la_LIBADD = \
 	$(top_builddir)/matrix/libmixingmatrix.la \
 	$(top_builddir)/guilib/libjackmix_gui.la \
-	$(top_builddir)/backend/libjackmix_backend.la \
 	$(LIB_QT) $(LIB_XEXT) $(LIB_X11)
 
+#	$(top_builddir)/backend/libjackmix_backend.la \
+#
 # which sources should be compiled
 libmixingelements_la_SOURCES = \
 	stereo_elements.cpp \

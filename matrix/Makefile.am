@@ -6,7 +6,7 @@ SUBDIRS = .
 
 # this is the program that gets installed.  it's name is used for all
 # of the other Makefile.am variables
-check_PROGRAMS = matrix
+#check_PROGRAMS = matrix
 noinst_LTLIBRARIES = libmixingmatrix.la
 
 # set the include path for X, qt and KDE

@@ -41,6 +41,9 @@ public:
 	ConnectionLister( Widget*, QWidget* =0, const char* =0 );
 	~ConnectionLister();
 
+public slots:
+	void addElement( Element* );
+	void removeElement( Element* );
 private slots:
 	void connectControls();
 	void disconnectMaster();

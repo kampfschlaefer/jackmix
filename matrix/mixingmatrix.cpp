@@ -38,7 +38,7 @@ bool ElementSlotSignalPair::exists() const {
 	return ( element->metaObject()->findProperty( slot ) > -1 )?true:false;
 }
 
-Widget::Widget( QStringList ins, QStringList outs, JackMix::JackBackend* backend, QWidget* p, const char* n )
+Widget::Widget( QStringList ins, QStringList outs, JackMix::BackendInterface* backend, QWidget* p, const char* n )
 	: QFrame( p,n )
 	, _mode( Normal )
 	, _direction( None )
@@ -71,7 +71,13 @@ void Widget::addElement( Element* n ) {
 	connect( n, SIGNAL( disconnectSlave( Element*, QString ) ), this, SLOT( disconnectSlave( Element*, QString ) ) );
 	connect( n, SIGNAL( disconnectMaster( Element*, QString ) ), this, SLOT( disconnectMaster( Element*, QString ) ) );
 }
-void Widget::removeElement( Element* n ) { _elements.remove( n ); }
+void Widget::removeElement( Element* n ) {
+	disconnectMaster( n, 0 );
+	disconnectSlave( n, 0 );
+	if ( _connectionlister )
+		_connectionlister->removeElement( n );
+	_elements.remove( n );
+}
 
 void Widget::replace( Element* n ) {
 qDebug( "Widget::replace( Element* %p )", n );
@@ -87,9 +93,6 @@ qDebug( " and %i selected followers.", n->followers( n->neighbors() ) );
 			Element* tmp = getResponsible( ( *jt ),( *it ) );
 			qDebug( "About to delete %p", tmp );
 			if ( tmp ) {
-				disconnectMaster( tmp, 0 );
-				disconnectSlave( tmp, 0 );
-				removeElement( tmp );
 				delete tmp;
 			}
 		}
@@ -106,7 +109,7 @@ Element* Widget::getResponsible( QString in, QString out ) const {
 }
 
 bool Widget::createControl( QStringList inchannels, QStringList outchannels ) {
-qDebug( "Widget::createControl( QStringList '%s', QStringList '%s')", inchannels.join( "," ).latin1(), outchannels.join( "," ).latin1() );
+	//qDebug( "Widget::createControl( QStringList '%s', QStringList '%s')", inchannels.join( "," ).latin1(), outchannels.join( "," ).latin1() );
 
 	QString control = Global::the()->canCreate( inchannels.size(), outchannels.size() )[ 0 ];
 	//qDebug( "Found %s to control [%i,%i] channels", control.latin1(), inchannels.size(), outchannels.size() );
@@ -217,6 +220,32 @@ void Widget::addinchannel( QString name ) {
 void Widget::addoutchannel( QString name ) {
 	_outchannels.push_back( name );
 	this->updateGeometry();
+}
+void Widget::removeinchannel( QString name ) {
+//	qDebug( "Widget::removeinchannel( %s )", name.latin1() );
+	for ( QStringList::Iterator it = _outchannels.begin(); it != _outchannels.end(); it++ ) {
+		Element* tmp = getResponsible( name, *it );
+		if ( tmp ) {
+//			qDebug( "removing element %p", tmp );
+			delete tmp;
+			_inchannels.remove( name );
+		}
+	}
+	autoFill();
+//	qDebug( "_inchannels.count = %i", _inchannels.size() );
+}
+void Widget::removeoutchannel( QString name ) {
+//	qDebug( "Widget::removeoutchannel( %s )", name.latin1() );
+	for ( QStringList::Iterator it = _inchannels.begin(); it != _inchannels.end(); it++ ) {
+		Element* tmp = getResponsible( *it, name );
+		if ( tmp ) {
+//			qDebug( "removing element %p", tmp );
+			delete tmp;
+			_outchannels.remove( name );
+		}
+	}
+	autoFill();
+//	qDebug( "_outchannels.count = %i", _outchannels.size() );
 }
 
 void Widget::connectSlave( Element* slave, QString slot ) {
@@ -448,7 +477,7 @@ bool Global::create( QString type, QStringList ins, QStringList outs, Widget* pa
 	for ( uint i=0; i<_factories.size() && elem==0; i++ ) {
 		elem = _factories[ i ]->create( type, ins, outs, parent, name );
 	}
-	qDebug( "Will show and return %p", elem );
+//	qDebug( "Will show and return %p", elem );
 	if ( elem ) {
 		elem->show();
 	}
