@@ -30,11 +30,11 @@
 
 class MatrixElement;
 
-class MatrixElement : public MixingMatrix::Element
+class MatrixElement : public JackMix::MixingMatrix::Element
 {
 Q_OBJECT
 public:
-	MatrixElement( int, int, MixingMatrix::Widget*, const char* =0 );
+	MatrixElement( int, int, JackMix::MixingMatrix::Widget*, const char* =0 );
 	~MatrixElement();
 
 	int inchannels() const { return 1; }

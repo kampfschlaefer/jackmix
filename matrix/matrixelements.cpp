@@ -23,6 +23,7 @@
 
 #include <qlayout.h>
 
+using namespace JackMix;
 
 MatrixElement::MatrixElement( int col, int row, MixingMatrix::Widget* p, const char* n )
 	: MixingMatrix::Element( col, row, p, n )

@@ -36,8 +36,8 @@ class Stereo2StereoElement;
 class Mono2StereoElement : public JackMix::MixingMatrix::Element, public dB2VolCalc
 {
 Q_OBJECT
-Q_PROPERTY( double volume READ volume );
-Q_PROPERTY( double panorama READ panorama );
+//Q_PROPERTY( double volume READ volume );
+//Q_PROPERTY( double panorama READ panorama );
 public:
 	Mono2StereoElement( QStringList, QStringList, MixingMatrix::Widget*, const char* =0 );
 	~Mono2StereoElement();
@@ -71,7 +71,7 @@ private:
 class Stereo2StereoElement : public JackMix::MixingMatrix::Element, public dB2VolCalc
 {
 Q_OBJECT
-Q_PROPERTY( double volume READ getVolume )
+//Q_PROPERTY( double volume READ getVolume )
 public:
 	Stereo2StereoElement( QStringList, QStringList, MixingMatrix::Widget*, const char* =0 );
 	~Stereo2StereoElement();

@@ -197,6 +197,17 @@ void Widget::addoutchannel( QString name ) {
 	this->updateGeometry();
 }
 
+void Widget::debugPrint() {
+	qDebug( "\nWidget::debugPrint()" );
+	qDebug( "  Elements:" );
+	QValueList<Element*>::Iterator it;
+	for ( it=_elements.begin(); it!=_elements.end(); ++it ) {
+		qDebug( "    %p [%s]:\n      %s", ( *it ), ( *it )->metaObject()->className(), ( *it )->getPropertyList().join( "," ).latin1() );
+	}
+	qDebug( "\n" );
+}
+
+
 Element::Element( QStringList in, QStringList out, Widget* p, const char* n )
 	: QFrame( p,n )
 	, _in( in )
@@ -277,6 +288,23 @@ QStringList Element::followersList() const {
 	tmp += _out;
 	tmp.sort();
 	return tmp;
+}
+
+Properties Element::getProperties() {
+	return _properties;
+}
+QStringList Element::getPropertyList() {
+	QStringList tmp;
+	Properties::Iterator it;
+	for ( it = _properties.begin(); it != _properties.end(); ++it )
+		tmp << it.key();
+	return tmp;
+}
+void Element::addProperty( Property n ) {
+	_properties[ n.name ] = n;
+}
+Property Element::getProperty( QString n ) {
+	return _properties[ n ];
 }
 
 

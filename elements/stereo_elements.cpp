@@ -30,6 +30,7 @@
 #include <qpushbutton.h>
 #include <qobjectlist.h>
 #include <qlabel.h>
+#include <qvariant.h>
 
 using namespace JackMix;
 using namespace MixerElements;
@@ -98,6 +99,9 @@ Mono2StereoElement::Mono2StereoElement( QStringList inchannel, QStringList outch
 	JackMix::GUI::Slider* _volume = new JackMix::GUI::Slider( amptodb( _volume_value ), dbmin, dbmax, 1, 3, this );
 	_layout->addMultiCellWidget( _volume, 3,3, 0,1 );
 	connect( _volume, SIGNAL( valueChanged( float ) ), this, SLOT( volume( float ) ) );
+
+	addProperty( Property( "volume", "volume_changed", "volume", "float" ) );
+	addProperty( Property( "panorama", "panorama_changed", "panorama", "float" ) );
 }
 Mono2StereoElement::~Mono2StereoElement() {
 }
@@ -128,7 +132,7 @@ void Mono2StereoElement::calculateVolumes() {
 }
 
 void Mono2StereoElement::printSignals() {
-	qDebug( "\n* Poperties: *" );
+/*	qDebug( "\n* Poperties: *" );
 	QObjectListIterator it( * parent()->children() );
 	while ( QObject* object = it.current() )  {
 		++it;
@@ -149,7 +153,7 @@ void Mono2StereoElement::printSignals() {
 		} else
 		qDebug( "  Child %s (%s) - ignoring...", object->name(), object->className() );
 	}
-	qDebug( "\n" );
+	qDebug( "\n" );*/
 }
 
 Stereo2StereoElement::Stereo2StereoElement( QStringList inchannels, QStringList outchannels, Widget* p, const char* n )
@@ -189,6 +193,9 @@ Stereo2StereoElement::Stereo2StereoElement( QStringList inchannels, QStringList 
 	connect( _volume_widget, SIGNAL( valueChanged( float ) ), this, SLOT( volume( float ) ) );
 	BACKEND->setVolume( _inchannel1, _outchannel2, 0 );
 	BACKEND->setVolume( _inchannel2, _outchannel1, 0);
+
+	addProperty( Property( "volume", "volume_changed", "volume", "float" ) );
+//	addProperty( Property( "balance", "balance_changed", "balance", "float" ) );
 }
 Stereo2StereoElement::~Stereo2StereoElement() {
 }

@@ -23,11 +23,27 @@
 
 #include <qframe.h>
 #include <qvaluelist.h>
+#include <qmap.h>
 
 namespace JackMix {
 namespace MixingMatrix {
 
 class Element;
+
+struct Property {
+	Property( QString _name=QString::null, QString _signal=QString::null, QString _slot=QString::null, QString _type=QString::null )
+		: name( _name )
+		, signal( _signal )
+		, slot( _slot )
+		, type( _type )
+		{ }
+	QString name;
+	QString signal;
+	QString slot;
+	QString type;
+};
+
+typedef QMap<QString,Property> Properties;
 
 class Widget : public QFrame
 {
@@ -74,10 +90,15 @@ public:
 	void removeElement( Element* );
 	Element* getResponsible( QString in, QString out ) const;
 	int elements() const { return _elements.size(); }
+
 public slots:
 	void replace( Element* );
+
 	// Fills the empty nodes with 1to1-controls
 	void autoFill();
+
+	// For testing of the properties
+	void debugPrint();
 private:
 	enum Mode _mode;
 	Direction _direction;
@@ -120,6 +141,11 @@ public:
 	//void name( QString n );
 
 	//QWidget* getNameWidget( QWidget* );
+
+	// Properties
+	Properties getProperties();
+	QStringList getPropertyList();
+	Property getProperty( QString );
 public slots:
 	void select( bool );
 public:
@@ -142,10 +168,15 @@ signals:
 	void replace( Element* );
 
 protected:
+	// Adding Properties isn't allowed from the outside of the Element. This wouldn't make sence...
+	void addProperty( Property );
+
+	// Internal pointer
 	const Widget* parent() { return _parent; }
 private:
 	QStringList _in, _out;
 	bool _selected;
+	Properties _properties;
 	Widget* _parent;
 };
 

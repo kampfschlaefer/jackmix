@@ -134,6 +134,10 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	BACKEND->addOutput( "out_1" );
 	BACKEND->addOutput( "out_2" );
 	BACKEND->addOutput( "out_3" );
+
+	_debugPrint = new QAction( "DebugPrint", 0, this );
+	connect( _debugPrint, SIGNAL( activated() ), _mixerwidget, SLOT( debugPrint() ) );
+	_debugPrint->addTo( _filemenu );
 }
 
 MainWindow::~MainWindow() {
