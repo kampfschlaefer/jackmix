@@ -26,7 +26,9 @@
 #include "volumegroup.h"
 #include "vg_aux.h"
 #include "vg_stereo.h"
+#include "vgselect.h"
 
+#include <iostream>
 #include <qpopupmenu.h>
 #include <qmenubar.h>
 #include <qhbox.h>
@@ -36,6 +38,7 @@
 using namespace JackMix;
 
 MainWindow::MainWindow( QWidget* p, const char* n ) : QMainWindow( p,n ) {
+std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	QPopupMenu *file = new QPopupMenu( this );
 	menuBar()->insertItem( "File", file );
 	file->insertItem( "Quit", this, SLOT( close() ), Key_Q );
@@ -43,40 +46,63 @@ MainWindow::MainWindow( QWidget* p, const char* n ) : QMainWindow( p,n ) {
 	QPopupMenu *edit = new QPopupMenu( this );
 	menuBar()->insertItem( "Edit", edit );
 	edit->insertItem( "Add Input", this, SLOT( addInput() ) );
+	edit->insertItem( "Add Output", this, SLOT( addOutput() ) );
 
-	void* tmp;
-	tmp = new VGAux( "aux", 3, this );
-	tmp = new VGStereo( "stereo", this );
+std::cerr << "MainWindow::MainWindow() VolumeGroups" << std::endl;
+	new VGAux( "aux", 3, this );
+	new VGStereo( "stereo", this );
 
+std::cerr << "MainWindow::MainWindow() Layout" << std::endl;
 	mw = new QHBox( this );
 	this->setCentralWidget( mw );
 	mw->setSpacing( 3 );
-	tmp = new ChannelWidget( "in_1", mw );
-	tmp = new ChannelWidget( "in_2", mw );
-//	tmp = new ChannelWidget( "in_3", mw );
-//	tmp = new ChannelWidget( "in_4", mw );
 
-	addDockWindow( new MasterWidgets( this, "MasterControls" ), DockRight );
+	_master = new MasterWidgets( this, "MasterControls" );
+	addDockWindow( _master, DockRight );
+	init();
+}
+
+void MainWindow::init() {
+std::cerr << "MainWindow::init()" << std::endl;
+	_channelwidgets.append( new ChannelWidget( "in_1", mw ) );
+	_channelwidgets.append( new ChannelWidget( "in_2", mw ) );
+	_channelwidgets.append( new ChannelWidget( "in_3", mw ) );
+	_channelwidgets.append( new ChannelWidget( "in_4", mw ) );
+std::cerr << "MainWindow::init() finished..." << std::endl;
 }
 MainWindow::~MainWindow() {
 }
 
 void MainWindow::addInput() {
-	void* tmp;
+std::cerr << "MainWindow::addInput()" << std::endl;
 	QString name = QInputDialog::getText( "Name", "Name for the Input" );
+	//std::cerr << "MainWindow::addInput() after dialog" << std::endl;
 	if ( !name.isEmpty() )
-		tmp = new ChannelWidget( name, mw );
+		_channelwidgets.append( new ChannelWidget( name, mw ) );
+	//std::cerr << "MainWindow::addInput() finished..." << std::endl;
 }
 void MainWindow::addOutput() {
-
+	VGSelectDialog *tmp = new VGSelectDialog( 0 );
+	if ( tmp->exec() == QDialog::Accepted ) {
+		for ( uint i=0; i<_channelwidgets.count(); i++ ) {
+			_channelwidgets[ i ]->newVG( tmp->newVG() );
+		}
+	}
+	_master->newVG( tmp->newVG() );
 }
 
 MasterWidgets::MasterWidgets( QWidget* p, const char* n ) : QDockWindow( p,n ) {
-	QBoxLayout* _layout = boxLayout();//new QVBoxLayout( this );
 	for ( int i=0; i<VolumeGroupFactory::the()->groups(); i++ ) {
-		_layout->addWidget( VolumeGroupFactory::the()->group( i )->masterWidget( this ) );
+		newVG( VolumeGroupFactory::the()->group( i ) );
 	}
 }
 MasterWidgets::~MasterWidgets() {
+}
+
+void MasterWidgets::newVG( VolumeGroup* n ) {
+std::cerr << "MasterWidgets::newVG( " << n << " )" << std::endl;
+	QBoxLayout* _layout = boxLayout();
+	_layout->addWidget( n->masterWidget( this ) );
+	n->masterWidget( this )->show();
 }
 

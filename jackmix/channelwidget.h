@@ -26,11 +26,15 @@
 
 namespace JackMix {
 
+class VolumeGroup;
+
 class ChannelWidget : public QFrame {
 Q_OBJECT
 public:
 	ChannelWidget( QString name, QWidget* =0, const char* =0 );
 	~ChannelWidget();
+public slots:
+	void newVG( VolumeGroup* );
 private slots:
 	void valueChanged( QString, float );
 private:

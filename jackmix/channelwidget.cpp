@@ -48,13 +48,9 @@ ChannelWidget::ChannelWidget( QString name, QWidget* p, const char* n ) : QFrame
 		this->show();
 	}
 	BACKEND->addInput( _name );
-	QWidget* tmp;
-	for ( int i=0; i<VolumeGroupFactory::the()->groups(); i++ ) {
-		std::cerr << "ChannelWidget::ChannelWidget " << i << std::endl;
-		tmp = VolumeGroupFactory::the()->group( i )->channelWidget( _name, this );
-		_layout->addWidget( tmp, 100 );
-		tmp->show();
-	}
+
+	for ( int i=0; i<VolumeGroupFactory::the()->groups(); i++ )
+		newVG( VolumeGroupFactory::the()->group( i ) );
 }
 ChannelWidget::~ChannelWidget() {
 	std::cerr << "ChannelWidget::~ChannelWidget()" << std::endl;
@@ -63,5 +59,12 @@ ChannelWidget::~ChannelWidget() {
 void ChannelWidget::valueChanged( QString out, float n ) {
 	std::cerr << "ChannelWidget::valueChanged( " << out << ", " << n << " )" << std::endl;
 	BACKEND->setVolume( _name, out, n );
+}
+
+void ChannelWidget::newVG( VolumeGroup* n ) {
+	std::cerr << "ChannelWidget::newVG( " << n << " )" << std::endl;
+	QWidget* tmp = n->channelWidget( _name, this );
+	layout()->add( tmp );
+	tmp->show();
 }
 

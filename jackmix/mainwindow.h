@@ -23,10 +23,15 @@
 
 #include <qmainwindow.h>
 #include <qdockwindow.h>
+#include <qvaluelist.h>
 
 class QHBox;
 
 namespace JackMix {
+
+class ChannelWidget;
+class VolumeGroup;
+class MasterWidgets;
 
 class MainWindow : public QMainWindow {
 Q_OBJECT
@@ -36,8 +41,12 @@ public:
 public slots:
 	void addInput();
 	void addOutput();
+private slots:
+	void init();
 private:
 	QHBox* mw;
+	QValueList<ChannelWidget*> _channelwidgets;
+	MasterWidgets* _master;
 };
 
 class MasterWidgets : public QDockWindow {
@@ -45,6 +54,8 @@ Q_OBJECT
 public:
 	MasterWidgets( QWidget* =0, const char* =0 );
 	~MasterWidgets();
+public slots:
+	void newVG( VolumeGroup* );
 };
 
 };
