@@ -23,13 +23,10 @@
 
 #include <qframe.h>
 #include <math.h>
-
+#include "common.h"
 #include "dbvolcalc.h"
 
 namespace JackMix {
-
-enum Direction { LeftToRight, RightToLeft, TopToBottom, BottomToTop };
-enum Position { posLeft=0x0001, posRight=0x0002, posTop=0x0004, posBottom=0x0008 };
 
 class QTickmarks : public QFrame, public dB2VolCalc {
    Q_OBJECT
