@@ -14,7 +14,7 @@ public:
 		\param QString name of the Channel
 		\param float initial volume value
 	*/
-	VolumeSlider( QString, float, QWidget* =0, const char* =0 );
+	VolumeSlider( QString, float, Qt::Orientation =Qt::Vertical, QWidget* =0, const char* =0 );
 	~VolumeSlider();
 signals:
 	void valueChanged( QString, float );

@@ -25,14 +25,11 @@ void VolumeGroupFactory::registerGroup( VolumeGroup* n ) {
 
 VolumeGroup::VolumeGroup( QString name, int channels, QObject* p, const char* n )
  : QObject( p,n )
- , _masterwidget( 0 )
  , _name( name )
  , _channels( channels )
+ , _masterwidget( 0 )
 {
 	VolumeGroupFactory::the()->registerGroup( this );
-	for ( int i=0; i<_channels; i++ ) {
-		BACKEND->addOutput( _name + QString::number( i ) );
-	}
 }
 VolumeGroup::~VolumeGroup() {
 }
@@ -65,21 +62,7 @@ VolumeGroupChannelWidget::VolumeGroupChannelWidget( QString in, VolumeGroup* gro
 	setMargin( 2 );
 	setLineWidth( 1 );
 	setFrameStyle( QFrame::Panel|QFrame::Raised );
-	QVBoxLayout* _layout = new QVBoxLayout( this );
-	_layout->setMargin( 2 );
-	_layout->addWidget( new QLabel( _in, this ) );
-	QHBoxLayout* _layout2 = new QHBoxLayout( _layout );
-	VolumeSlider* tmp;
-	for ( int i=0; i<_group->channels(); i++ ) {
-		tmp = new VolumeSlider( _group->name() + QString::number( i ), 1, this );
-		connect( tmp, SIGNAL( valueChanged( QString,float ) ), this, SLOT( valueChanged( QString,float ) ) );
-		_layout2->addWidget( tmp );
-	}
 }
 VolumeGroupChannelWidget::~VolumeGroupChannelWidget() {
-}
-void VolumeGroupChannelWidget::valueChanged( QString channel, float value ) {
-	//std::cerr << "VolumeGroupChannelWidget::valueChanged( " << channel << ", " << value << " )" << std::endl;
-	BACKEND->setVolume( _in, channel, value );
 }
 

@@ -31,23 +31,24 @@ public:
 		\param int number of channels
 	*/
 	VolumeGroup( QString, int, QObject* =0, const char* =0 );
-	~VolumeGroup();
+	virtual ~VolumeGroup();
 
 	/// returns the masterwidget. The argument is used the first time for parenting the widget.
-	VolumeGroupMasterWidget* masterWidget( QWidget* );
+	virtual VolumeGroupMasterWidget* masterWidget( QWidget* );
 	/**
 		returns a new channelwidget.
 		\param the name of the input channel
 		\param The parent for the widget
 	*/
-	VolumeGroupChannelWidget* channelWidget( QString, QWidget* );
+	virtual VolumeGroupChannelWidget* channelWidget( QString, QWidget* );
 
-	int channels();
+	virtual int channels();
 	QString name() { return _name; }
 private:
-	VolumeGroupMasterWidget* _masterwidget;
 	QString _name;
 	int _channels;
+private:
+	VolumeGroupMasterWidget* _masterwidget;
 };
 
 class VolumeGroupMasterWidget : public QFrame {
@@ -55,7 +56,7 @@ Q_OBJECT
 public:
 	VolumeGroupMasterWidget( VolumeGroup*, QWidget* =0, const char* =0 );
 	~VolumeGroupMasterWidget();
-private:
+protected:
 	VolumeGroup* _group;
 };
 
@@ -63,11 +64,9 @@ class VolumeGroupChannelWidget : public QFrame {
 Q_OBJECT
 public:
 	VolumeGroupChannelWidget( QString, VolumeGroup*, QWidget*, const char* =0 );
-	~VolumeGroupChannelWidget();
+	virtual ~VolumeGroupChannelWidget();
 	QString groupname() { return _group->name(); }
-private slots:
-	void valueChanged( QString, float );
-private:
+protected:
 	QString _in;
 	VolumeGroup* _group;
 };
