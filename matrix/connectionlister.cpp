@@ -21,7 +21,6 @@
 #include "connectionlister.h"
 #include "connectionlister.moc"
 #include "mixingmatrix.h"
-//#include "qjackctl_connect.h"
 
 #include <qlayout.h>
 #include <qlistbox.h>
@@ -61,9 +60,15 @@ ConnectionLister::ConnectionLister( Widget* w, QWidget* p, const char* n )
 	_box_slots->addColumn( "Slaves" );
 	_box_slots->setRootIsDecorated( true );
 
+	_btn_connect->setEnabled( false );
+	_btn_disconnectMaster->setEnabled( false );
+	_btn_disconnectSlave->setEnabled( false );
 	connect( _btn_close, SIGNAL( clicked() ), this, SLOT( close() ) );
 	connect( _btn_connect, SIGNAL( clicked() ), this, SLOT( connectControls() ) );
-	//connect( _btn_disconnect, SIGNAL( clicked() ), this, SLOT( disconnectControls() ) );
+	connect( _btn_disconnectMaster, SIGNAL( clicked() ), this, SLOT( disconnectMaster() ) );
+	connect( _btn_disconnectSlave, SIGNAL( clicked() ), this, SLOT( disconnectSlave() ) );
+	connect( _box_slots, SIGNAL( selectionChanged() ), this, SLOT( selectionChanged() ) );
+	connect( _box_signals, SIGNAL( selectionChanged() ), this, SLOT( selectionChanged() ) );
 
 	QValueList<Element*>::Iterator it;
 	for ( it=_widget->_elements.begin(); it!=_widget->_elements.end(); ++it ) {
@@ -74,48 +79,40 @@ ConnectionLister::ConnectionLister( Widget* w, QWidget* p, const char* n )
 			_box_slots->insertItem( new ElementConnectView( _box_slots, ( *it ) ) );
 		}
 	}
-
-	//qjackctlConnectView *view = new qjackctlConnectView( this );
-	//_layout->addMultiCellWidget( view, 0,0, 0,2 );
 }
 ConnectionLister::~ConnectionLister() {
 }
 
 void ConnectionLister::connectControls() {
 	qDebug( "ConnectionLister::connectControls()" );
-	if ( _box_signals->selectedItem() && _box_signals->selectedItem()->rtti() == 5282 ) {
-		ElementPropertyView* tmp = static_cast<ElementPropertyView*>( _box_signals->selectedItem() );
-		qDebug( " Selected Signals: %s", tmp->property().debug().latin1() );
+	if ( _box_signals->selectedItem() && _box_signals->selectedItem()->rtti() == 5282 && _box_slots->selectedItem() && _box_slots->selectedItem()->rtti() == 5282 ) {
+		ElementPropertyView* signal = static_cast<ElementPropertyView*>( _box_signals->selectedItem() );
+		//qDebug( " Selected Signals: %s", signal->property().debug().latin1() );
+		ElementPropertyView* slot = static_cast<ElementPropertyView*>( _box_slots->selectedItem() );
+		//qDebug( " Selected Slots: %s", slot->property().debug().latin1() );
+		_widget->connectMasterSlave( signal->property(), slot->property() );
 	}
-/*	if ( _box_signals->currentText() != "" && _box_slots->currentText() != "" ) {
-		qDebug( "Selected signals: %s\nSelected slots: %s", _box_signals->currentText().latin1(), _box_slots->currentText().latin1() );
-		QString master = _box_signals->currentText();
-		QString master_element = master.section( " ", 0, 0 );
-		QString master_signal = master.section( " ", 1, 1 );
-		qDebug( "Master: (%p,%s)", ( Element* )master_element.toInt(), master_signal.latin1() );
-		QString slave = _box_slots->currentText();
-		QString slave_element = slave.section( " ", 0, 0 );
-		QString slave_signal = slave.section( " ", 1, 1 );
-		qDebug( "Slave: (%p,%s)", ( Element* )slave_element.toInt(), slave_signal.latin1() );
-		_widget->connectMasterSlave( ( Element* )master_element.toInt(), master_signal, ( Element* )slave_element.toInt(), slave_signal );
-	}*/
 }
-void ConnectionLister::disconnectControls() {
-	qDebug( "ConnectionLister::disconnectControls()" );
-	//qDebug( "Selected signals: %s\nSelected slots: %s", _box_signals->currentText().latin1(), _box_slots->currentText().latin1() );
-/*	if ( _box_signals->currentText() != "" && _box_slots->currentText() != "" ) {
-		QString master = _box_signals->currentText();
-		QString master_element = master.section( " ", 0, 0 );
-		QString master_signal = master.section( " ", 1, 1 );
-		//qDebug( "Master: (%p,%s)", master_element.toInt(), master_signal.latin1() );
-		QString slave = _box_slots->currentText();
-		QString slave_element = slave.section( " ", 0, 0 );
-		QString slave_signal = slave.section( " ", 1, 1 );
-		//qDebug( "Slave: (%p,%s)", slave_element.toInt(), slave_signal.latin1() );
-		//_widget->disconnectMasterSlave( ( Element* )master_element.toInt(), master_signal, ( Element* )slave_element.toInt(), slave_signal );
-	}*/
+void ConnectionLister::disconnectMaster() {
+	//qDebug( "ConnectionLister::disconnectMaster()" );
+	if ( _box_signals->selectedItem() && _box_signals->selectedItem()->rtti() == 5282 ) {
+		ElementPropertyView* master = static_cast<ElementPropertyView*>( _box_signals->selectedItem() );
+		_widget->disconnectMaster( master->property() );
+	}
 }
-
+void ConnectionLister::disconnectSlave() {
+	//qDebug( "ConnectionLister::disconnectSlave()" );
+	if ( _box_slots->selectedItem() && _box_slots->selectedItem()->rtti() == 5282 ) {
+		ElementPropertyView* slave = static_cast<ElementPropertyView*>( _box_slots->selectedItem() );
+		_widget->disconnectSlave( slave->property() );
+	}
+}
+void ConnectionLister::selectionChanged() {
+	//qDebug( "ConnectionLister::selectionChanged()" );
+	_btn_disconnectMaster->setEnabled( _box_signals->selectedItem() );
+	_btn_disconnectSlave->setEnabled( _box_slots->selectedItem() );
+	_btn_connect->setEnabled( _box_slots->selectedItem() && _box_signals->selectedItem() );
+}
 
 ElementConnectView::ElementConnectView( QListView* p, Element* e ) : QListViewItem( p ), _element( e ) {
 	//qDebug( "ElementConnectView::ElementConnectView( %p, %p )", p, e );

@@ -34,12 +34,6 @@ class QListBox;
 namespace JackMix {
 namespace MixingMatrix {
 
-/*class ElementFactory;
-class Element;
-class Widget;*/
-
-class Global;
-
 class ConnectionLister : public QWidget
 {
 Q_OBJECT
@@ -49,7 +43,9 @@ public:
 
 private slots:
 	void connectControls();
-	void disconnectControls();
+	void disconnectMaster();
+	void disconnectSlave();
+	void selectionChanged();
 private:
 	Widget *_widget;
 	QGridLayout *_layout;

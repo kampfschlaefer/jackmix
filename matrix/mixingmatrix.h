@@ -33,21 +33,6 @@ namespace MixingMatrix {
 class Element;
 class ConnectionLister;
 
-/*struct Property {
-	Property( QString _name=QString::null, QString _signal=QString::null, QString _slot=QString::null, QString _type=QString::null )
-		: name( _name )
-		, signal( _signal )
-		, slot( _slot )
-		, type( _type )
-		{ }
-	QString name;
-	QString signal;
-	QString slot;
-	QString type;
-};
-
-typedef QMap<QString,Property> Properties;*/
-
 struct ElementSlotSignalPair {
 	ElementSlotSignalPair( Element* n=0, QString s=0 ) : element( n ), slot( s ) {}
 	Element* element;
@@ -65,6 +50,7 @@ struct ElementSlotSignalPair {
 	QString debug() {
 		return QString( "(%1,%2)" ).arg( int( element ) ).arg( slot );
 	}
+	bool exists() const;
 };
 
 
@@ -129,11 +115,14 @@ public slots:
 	// Connect a given master to a slave
 	void connectMaster( Element*, QString );
 	// Connect a given master to a given slave
+	void connectMasterSlave( ElementSlotSignalPair, ElementSlotSignalPair );
 	void connectMasterSlave( Element*, QString, Element*, QString );
 
 	// Disconnect a given slave from its master
+	void disconnectSlave( ElementSlotSignalPair );
 	void disconnectSlave( Element*, QString );
 	// Disconnect a given master from all its slaves
+	void disconnectMaster( ElementSlotSignalPair );
 	void disconnectMaster( Element*, QString );
 
 	// Toggle the ConnectionLister
@@ -185,9 +174,6 @@ public:
 
 	QString name() const { return QString( name() ); }
 	void name( QString n ) { setName( n.latin1() ); }
-	//void name( QString n );
-
-	//QWidget* getNameWidget( QWidget* );
 
 	// Properties
 	QStringList getPropertyList();
@@ -235,7 +221,6 @@ protected slots:
 private:
 	QStringList _in, _out;
 	bool _selected;
-	//Properties _properties;
 	Widget* _parent;
 	QPopupMenu *_menu;
 };

@@ -34,6 +34,9 @@
 namespace JackMix {
 namespace MixingMatrix {
 
+bool ElementSlotSignalPair::exists() const {
+	return !element->metaObject()->findProperty( slot );
+}
 
 Widget::Widget( QStringList ins, QStringList outs, QWidget* p, const char* n )
 	: QFrame( p,n )
@@ -224,33 +227,45 @@ void Widget::connectMaster( Element* master, QString signal ) {
 	qDebug( "Widget::connectMaster( %p, %s ) [ ! defunct ! ]", master, signal.latin1() );
 }
 void Widget::connectMasterSlave( Element* master, QString signal, Element* slave, QString slot ) {
-	qDebug( "Widget::connectMasterSlave( %p, %s, %p, %s )", master, signal.latin1(), slave, slot.latin1() );
-	if ( ! master->metaObject()->findProperty( signal ) && ! slave->metaObject()->findProperty( slot ) ) {
-		ElementSlotSignalPair sender( master, signal );
-		ElementSlotSignalPair receiver( slave, slot );
+	//qDebug( "Widget::connectMasterSlave( %p, %s, %p, %s )", master, signal.latin1(), slave, slot.latin1() );
+	ElementSlotSignalPair sender( master, signal );
+	ElementSlotSignalPair receiver( slave, slot );
+	connectMasterSlave( sender, receiver );
+}
+void Widget::connectMasterSlave( ElementSlotSignalPair sender, ElementSlotSignalPair receiver ) {
+	qDebug( "Widget::connectMasterSlave( %s, %s )", sender.debug().latin1(), receiver.debug().latin1() );
+	if ( sender.exists() && receiver.exists() ) {
 		if ( receiver == sender )
-			qWarning( "Tried to connect a property with itself! Cancelling this..." );
+			qWarning( " * Tried to connect a property with itself! Cancelling this..." );
+		else if ( _connections[ sender ] == receiver || _connections[ receiver ] == sender )
+			qWarning( " * Feedback-loop detected! Aborting..." );
 		else
 			_connections.insert( receiver,sender );
 	}
 }
+
 void Widget::disconnectSlave( Element* slave, QString slot ) {
-	qDebug( "Widget::disconnectSlave( %p, %s )", slave, slot.latin1() );
-	//_connections.remove( ElementSlotSignalPair( slave, slot ) );
+	//qDebug( "Widget::disconnectSlave( %p, %s )", slave, slot.latin1() );
+	disconnectSlave( ElementSlotSignalPair( slave, slot ) );
+}
+void Widget::disconnectSlave( ElementSlotSignalPair slave ) {
+	qDebug( "Widget::disconnectSlave( %s )", slave.debug().latin1() );
 	QMap<ElementSlotSignalPair,ElementSlotSignalPair>::Iterator it;
 	for ( it = _connections.begin(); it != _connections.end(); ++it ) {
-		//qDebug( "Trying slave (%p,%s)", it.key().element, it.key().slot.latin1() );
-		if ( it.key() == ElementSlotSignalPair( slave, slot ) ) {
-			//qDebug( "\nSecond try: remove connection!\n" );
+		if ( it.key() == slave ) {
 			_connections.remove( it );
 		}
 	}
 }
 void Widget::disconnectMaster( Element* master, QString signal ) {
-	qDebug( "Widget::disconnectMaster( %p, %s )", master, signal.latin1() );
+	//qDebug( "Widget::disconnectMaster( %p, %s )", master, signal.latin1() );
+	disconnectMaster( ElementSlotSignalPair( master, signal ) );
+}
+void Widget::disconnectMaster( ElementSlotSignalPair master ) {
+	qDebug( "Widget::disconnectMaster( %s )", master.debug().latin1() );
 	QMap<ElementSlotSignalPair,ElementSlotSignalPair>::Iterator it;
 	for ( it = _connections.begin(); it != _connections.end(); ++it )
-		if ( it.data() == ElementSlotSignalPair( master, signal ) )
+		if ( it.data() == master )
 			_connections.remove( it );
 }
 
