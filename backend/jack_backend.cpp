@@ -65,7 +65,7 @@ void JackBackend::removeInput( QString name ) {
 }
 
 void JackBackend::setVolume( QString channel, QString output, float volume ) {
-	std::cerr << "JackBackend::setVolume( " << channel << ", " << output << ", " << volume << " )" << std::endl;
+	//std::cerr << "JackBackend::setVolume( " << channel << ", " << output << ", " << volume << " )" << std::endl;
 	volumes[ channel ][ output ] = volume;
 }
 
@@ -148,7 +148,7 @@ void JackBackend::fromXML( QDomElement elem ) {
 
 
 int JackMix::process( jack_nframes_t nframes, void* /*arg*/ ) {
-//	std::cout << "JackMix::process( jack_nframes_t " << nframes << ", void* )" << std::endl;
+	//std::cout << "JackMix::process( jack_nframes_t " << nframes << ", void* )" << std::endl;
 	QMap<QString,jack_default_audio_sample_t*> ins;
 	JackMix::ports_it it;
 	for ( it = BACKEND->in_ports.begin(); it!=BACKEND->in_ports.end(); ++it )

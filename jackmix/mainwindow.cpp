@@ -32,11 +32,13 @@
 #include <qpopupmenu.h>
 #include <qmenubar.h>
 #include <qhbox.h>
+#include <qvbox.h>
 #include <qlayout.h>
 #include <qinputdialog.h>
 #include <qsettings.h>
 #include <qfiledialog.h>
 #include <qscrollview.h>
+#include <qmessagebox.h>
 
 #include "defaults.xml"
 
@@ -46,33 +48,49 @@ MainWindow::MainWindow( QWidget* p, const char* n ) : QMainWindow( p,n ), _setti
 	_settings->setPath( "arnoldarts.de", "jackmix", QSettings::User );
 	_settings->beginGroup( "jackmix" );
 std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
-	QPopupMenu *file = new QPopupMenu( this );
-	menuBar()->insertItem( "File", file );
-	file->insertItem( "Open File...", this, SLOT( openFile() ), CTRL+Key_O );
-	file->insertItem( "Save File...", this, SLOT( saveFile() ), CTRL+Key_S );
-	file->insertItem( "Quit", this, SLOT( close() ), CTRL+Key_Q );
+	_filemenu = new QPopupMenu( this );
+	menuBar()->insertItem( "File", _filemenu );
+	_filemenu->insertItem( "Open File...", this, SLOT( openFile() ), CTRL+Key_O );
+	_filemenu->insertItem( "Save File...", this, SLOT( saveFile() ), CTRL+Key_S );
+	_filemenu->insertSeparator();
+	_filemenu->insertItem( "Quit", this, SLOT( close() ), CTRL+Key_Q );
 
-	QPopupMenu *edit = new QPopupMenu( this );
-	menuBar()->insertItem( "Edit", edit );
-	edit->insertItem( "Add Input...", this, SLOT( addInput() ) );
-	edit->insertItem( "Add Output...", this, SLOT( addOutput() ) );
+	_editmenu = new QPopupMenu( this );
+	menuBar()->insertItem( "Edit", _editmenu );
+	_editmenu->insertItem( "Add Input...", this, SLOT( addInput() ) );
+	_editmenu->insertItem( "Add Output...", this, SLOT( addOutput() ) );
 
-//	mw = new QHBox( this );
-//	this->setCentralWidget( mw );
-//	mw->setSpacing( 3 );
+	_settingsmenu = new QPopupMenu( this );
+	menuBar()->insertItem( "Settings", _settingsmenu );
+	config_restore_id = _settingsmenu->insertItem( "Restore Last Session", this, SLOT( toggleRestore() ) );
+	_settingsmenu->setItemChecked( config_restore_id, _settings->readBoolEntry( "/Config/RestoreLastSession", true ) );
+
+	_helpmenu = new QPopupMenu( this );
+	menuBar()->insertItem( "Help", _helpmenu );
+	_helpmenu->insertItem( "About JackMix", this, SLOT( about() ) );
+	_helpmenu->insertItem( "About Qt", this, SLOT( aboutQt() ) );
 
 	QScrollView *tmp = new QScrollView( this );
 	mw = new QHBox( tmp->viewport() );
 	mw->setSpacing( 3 );
 	mw->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Expanding );
 	tmp->addChild( mw );
+	tmp->setVScrollBarMode( QScrollView::AlwaysOff );
+	tmp->setResizePolicy( QScrollView::AutoOneFit );
 	this->setCentralWidget( tmp );
 
-	readXML( _settings->readEntry( "/SaveOnExit/Config", DEFAULTSTRING ) );
+	if ( _settings->readBoolEntry( "/Config/RestoreLastSession", true ) )
+		readXML( _settings->readEntry( "/SaveOnExit/Config", DEFAULTSTRING ) );
+	else
+		readXML( DEFAULTSTRING );
 
 	_master = new MasterWidgets( this, "MasterControls" );
 	addDockWindow( _master, DockRight );
 	connect( VolumeGroupFactory::the(), SIGNAL( sNewVG( VolumeGroup* ) ), _master, SLOT( newVG( VolumeGroup* ) ) );
+}
+
+MainWindow::~MainWindow() {
+std::cerr << "MainWindow::~MainWindow()" << std::endl;
 }
 
 void MainWindow::readXML( QString xml ) {
@@ -96,10 +114,6 @@ void MainWindow::recursiveXML( QDomElement elem ) {
 		else recursiveXML( elem );
 		tmp = tmp.nextSibling();
 	}
-}
-
-MainWindow::~MainWindow() {
-std::cerr << "MainWindow::~MainWindow()" << std::endl;
 }
 
 void MainWindow::closeEvent( QCloseEvent* e ) {
@@ -194,7 +208,27 @@ void MainWindow::saveFile() {
 	}
 }
 
+void MainWindow::toggleRestore() {
+	bool newvalue = ! _settings->readBoolEntry( "/Config/RestoreLastSession", true );
+	_settings->writeEntry( "/Config/RestoreLastSession", newvalue );
+	_settingsmenu->setItemChecked( config_restore_id, _settings->readBoolEntry( "/Config/RestoreLastSession", true ) );
+}
+void MainWindow::about() {
+	QMessageBox::about( this, "JackMix: About JackMix", "<qt> \
+		<p><b>&copy;2004 by Arnold Krille</b> &lt;arnold@arnoldarts.de&gt;</p> \
+		<p>JackMix is the ultimative mixer application for Jack (<a href=\"http://jackit.sf.net/\">jackit.sf.net</a>). Check out <a href=\"http://roederberg.dyndns.org/~arnold/jackmix/\">roederberg.dyndns.org/~arnold/jackmix/</a> for more information and new versions of JackMix.</p> \
+		</qt>" );
+}
+void MainWindow::aboutQt() {
+	QMessageBox::aboutQt( this, "JackMix: About Qt" );
+}
+
+
 MasterWidgets::MasterWidgets( QWidget* p, const char* n ) : QDockWindow( p,n ) {
+	_layout = new QVBox( this );
+	setWidget( _layout );
+	setResizeEnabled( true );
+	setMovingEnabled( false );
 	for ( int i=0; i<VolumeGroupFactory::the()->groups(); i++ ) {
 		newVG( VolumeGroupFactory::the()->group( i ) );
 	}
@@ -204,9 +238,8 @@ MasterWidgets::~MasterWidgets() {
 
 void MasterWidgets::newVG( VolumeGroup* n ) {
 	//std::cerr << "MasterWidgets::newVG( " << n << " )" << std::endl;
-	//QBoxLayout* _layout = boxLayout();
-	//_layout->addWidget( n->masterWidget( this ) );
-	boxLayout()->add( n->masterWidget( this ) );
-	n->masterWidget( this )->show();
+	QWidget* tmp = n->masterWidget( _layout );
+	if ( tmp->isHidden() )
+		tmp->show();
 }
 

@@ -32,12 +32,12 @@
 using namespace JackMix;
 
 ChannelWidget::ChannelWidget( QString name, QWidget* p, const char* n ) : QFrame( p,n ), _name( name ) {
-	std::cerr << "ChannelWidget::ChannelWidget( " << name << ", " << p << ", n )" << std::endl;
+	//std::cerr << "ChannelWidget::ChannelWidget( " << name << ", " << p << ", n )" << std::endl;
 	init();
 }
 
 ChannelWidget::ChannelWidget( QDomElement elem, QWidget* p, const char* n ) : QFrame( p,n ), _element( elem ) {
-	std::cerr << "ChannelWidget::ChannelWidget( " << &elem << ", " << p << ", n )" << std::endl;
+	//std::cerr << "ChannelWidget::ChannelWidget( " << &elem << ", " << p << ", n )" << std::endl;
 	if ( elem.tagName() == "channel" )
 		_name = elem.attribute( "name" );
 	init();
@@ -77,7 +77,7 @@ void ChannelWidget::init() {
 	this->show();
 }
 ChannelWidget::~ChannelWidget() {
-	std::cerr << "ChannelWidget::~ChannelWidget()" << std::endl;
+	//std::cerr << "ChannelWidget::~ChannelWidget()" << std::endl;
 	BACKEND->removeInput( _name );
 	_element.clear();
 }

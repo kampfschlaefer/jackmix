@@ -28,6 +28,7 @@
 class QHBox;
 class QSettings;
 class QDomElement;
+class QVBox;
 
 namespace JackMix {
 
@@ -50,6 +51,9 @@ private slots:
 	void readXML( QString );
 	QString writeXML();
 	void closeEvent( QCloseEvent* );
+	void toggleRestore();
+	void about();
+	void aboutQt();
 private:
 	void recursiveXML( QDomElement );
 	void newChannel( ChannelWidget* );
@@ -57,6 +61,9 @@ private:
 	QValueList<ChannelWidget*> _channelwidgets;
 	MasterWidgets* _master;
 	QSettings* _settings;
+
+	int config_restore_id;
+	QPopupMenu *_filemenu, *_editmenu, *_settingsmenu, *_helpmenu;
 };
 
 class MasterWidgets : public QDockWindow {
@@ -66,6 +73,8 @@ public:
 	~MasterWidgets();
 public slots:
 	void newVG( VolumeGroup* );
+private:
+	QVBox* _layout;
 };
 
 };
