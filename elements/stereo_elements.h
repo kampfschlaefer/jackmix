@@ -67,8 +67,7 @@ private slots:
 	void slot_replace() { emit replace( this ); }
 	void calculateVolumes();
 	void slave();
-
-	void printSignals();
+	void deslave();
 private:
 	QString _inchannel, _outchannel1, _outchannel2;
 	::QFloatPoti *_balance;

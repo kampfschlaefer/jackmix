@@ -89,10 +89,10 @@ Mono2StereoElement::Mono2StereoElement( QStringList inchannel, QStringList outch
 	QPushButton* _btn_replace = new QPushButton( "R", this );
 	_layout->addWidget( _btn_replace, 0,1 );
 	connect( _btn_replace, SIGNAL( clicked() ), this, SLOT( slot_replace() ) );
-	QPushButton* _btn_print = new QPushButton( "p", this );
-	_layout->addWidget( _btn_print, 1,0 );
-	connect( _btn_print, SIGNAL( clicked() ), this, SLOT( printSignals() ) );
-	QPushButton* _btn_slave = new QPushButton( "S", this );
+	QPushButton* _btn_deslave = new QPushButton( "dC", this );
+	_layout->addWidget( _btn_deslave, 1,0 );
+	connect( _btn_deslave, SIGNAL( clicked() ), this, SLOT( deslave() ) );
+	QPushButton* _btn_slave = new QPushButton( "C", this );
 	_layout->addWidget( _btn_slave, 1,1 );
 	connect( _btn_slave, SIGNAL( clicked() ), this, SLOT( slave() ) );
 
@@ -138,31 +138,11 @@ void Mono2StereoElement::calculateVolumes() {
 void Mono2StereoElement::slave() {
 	emit connectSlave( this, QString( "volume" ) );
 }
-
-void Mono2StereoElement::printSignals() {
-/*	qDebug( "\n* Poperties: *" );
-	QObjectListIterator it( * parent()->children() );
-	while ( QObject* object = it.current() )  {
-		++it;
-		if ( strcmp( object->className(), "JackMix::MixerElements::AuxElement" ) ) {
-		qDebug( "  Child %s (%s)", object->name(), object->className() );
-			qDebug( "  with %i ins (%s) and %i outs (%s).", object->property( "ins" ).toInt(), object->property( "in" ).toStringList().join( "," ).latin1(), object->property( "outs" ).toInt(), object->property( "out" ).toStringList().join( "," ).latin1() );
-			qDebug( "    Properties:" );
-			QStrList tmp = object->metaObject()->propertyNames( false );
-			tmp.sort();
-			for ( uint i=0; i<tmp.count(); i++ ) {
-				QString signal = tmp.at( i )+QString( "_changed(" ) + object->metaObject()->property( i )->type() + ")";
-				QString slot = QString( "set_" ) + tmp.at( i ) + "(" + object->metaObject()->property( i )->type() + ")";
-				//qDebug( "? signal: %s slot: %s ?", signal.latin1(), slot.latin1() );
-				qDebug( "      %s (signal: %i, slot: %i)", tmp.at( i ),
-					object->metaObject()->signalNames().contains( signal.latin1() ),
-					object->metaObject()->slotNames().contains( slot.latin1() ) );
-			}
-		} else
-		qDebug( "  Child %s (%s) - ignoring...", object->name(), object->className() );
-	}
-	qDebug( "\n" );*/
+void Mono2StereoElement::deslave() {
+	emit disconnectSlave( this, QString( "volume" ) );
 }
+
+
 
 Stereo2StereoElement::Stereo2StereoElement( QStringList inchannels, QStringList outchannels, Widget* p, const char* n )
 	: Element( inchannels, outchannels, p, n )

@@ -61,6 +61,7 @@ void Widget::addElement( Element* n ) {
 	connect( n, SIGNAL( replace( Element* ) ), this, SLOT( replace( Element* ) ) );
 	connect( n, SIGNAL( valueChanged( Element*, QString ) ), this, SLOT( valueChanged( Element*, QString ) ) );
 	connect( n, SIGNAL( connectSlave( Element*, QString ) ), this, SLOT( connectSlave( Element*, QString ) ) );
+	connect( n, SIGNAL( disconnectSlave( Element*, QString ) ), this, SLOT( disconnectSlave( Element*, QString ) ) );
 }
 void Widget::removeElement( Element* n ) { _elements.remove( n ); }
 
@@ -224,6 +225,9 @@ void Widget::connectMasterSlave( Element* master, QString signal, Element* slave
 		ElementSlotSignalPair receiver( slave, slot );
 		_connections.insert( receiver,sender );
 	}
+}
+void Widget::disconnectSlave( Element* slave, QString slot ) {
+	_connections.remove( ElementSlotSignalPair( slave, slot ) );
 }
 
 void Widget::toggleConnectionLister( bool n ) {

@@ -109,6 +109,9 @@ public slots:
 	// Connect a given master to a given slave
 	void connectMasterSlave( Element*, QString, Element*, QString );
 
+	// Disconnect a given slave from its master
+	void disconnectSlave( Element*, QString );
+
 	// Toggle the ConnectionLister
 	void toggleConnectionLister();
 
@@ -198,6 +201,7 @@ public:
 signals:
 	void replace( Element* );
 	void connectSlave( Element*, QString );
+	void disconnectSlave( Element*, QString );
 
 	// Informs, that Element* n, Property s has changed.
 	void valueChanged( Element* n, QString s );
