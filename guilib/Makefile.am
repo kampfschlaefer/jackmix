@@ -15,7 +15,7 @@ INCLUDES         = $(QT_INCLUDES)
 
 # the library search path. 
 #jackmix_LDFLAGS = $(KDE_RPATH) $(all_libraries)
-libjackmix_gui_la_LDFLAGS = -module -avoid-version -no-undefined $(all_libraries)
+libjackmix_gui_la_LDFLAGS = -module -avoid-version -no-undefined
 poti_test_LDFLAGS = 
 
 # the libraries to link against.
