@@ -1,0 +1,5 @@
+
+dnl PKG_CHECK_MODULES( JACK, jack >= 0.34.0, OPTIONAL_PLUGINS="${OPTIONAL_PLUGINS} jack.la", AC_MSG_RESULT(jack not found) )
+
+PKG_CHECK_MODULES( JACK, jack >= 0.34.0, TOPSUBDIRS="${TOPSUBDIRS} jackmix", AC_MSG_RESULT(jack not found) )
+

@@ -9,13 +9,14 @@ SUBDIRS = .
 bin_PROGRAMS = jackmix
 
 # set the include path for X, qt and KDE
-INCLUDES         = $(all_includes)
+INCLUDES         = $(QT_INCLUDES)
 
 # the library search path. 
-jackmix_LDFLAGS = $(KDE_RPATH) $(all_libraries)
+#jackmix_LDFLAGS = $(KDE_RPATH) $(all_libraries)
+jackmix_LDFLAGS = $(JACK_CFLAGS)
 
 # the libraries to link against.
-jackmix_LDADD   = $(LIB_QT) -ljack -lrt -ldl -lpthread
+jackmix_LDADD   = $(LIB_QT) $(JACK_LIBS)
 
 # which sources should be compiled for jackmix
 jackmix_SOURCES = \
@@ -42,10 +43,10 @@ jackmix_SOURCES = \
 # let automoc handle all of the meta source files (moc)
 METASOURCES = AUTO
 
-messages: rc.cpp
-	$(XGETTEXT) *.cpp -o $(podir)/jackmix.pot
+#messages: rc.cpp
+#	$(XGETTEXT) *.cpp -o $(podir)/jackmix.pot
 
-KDE_ICON = jackmix
+#KDE_ICON = jackmix
 
 # this is where the kdelnk file will go 
 #xdg_apps_data = jackmix.desktop

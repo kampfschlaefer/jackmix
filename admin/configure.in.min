@@ -38,7 +38,7 @@ AC_ARG_PROGRAM
 dnl Automake doc recommends to do this only here. (Janos)
 AM_INIT_AUTOMAKE(@MODULENAME@, @VERSION@) dnl searches for some needed programs
 
-KDE_SET_PREFIX
+dnl KDE_SET_PREFIX
 
 dnl generate the config header
 AM_CONFIG_HEADER(config.h) dnl at the distribution this done
@@ -51,7 +51,8 @@ KDE_PROG_LIBTOOL
 
 dnl for NLS support. Call them in this order!
 dnl WITH_NLS is for the po files
-AM_KDE_WITH_NLS
+dnl AM_KDE_WITH_NLS
 
 dnl KDE_USE_QT
-AC_PATH_KDE
+AC_PATH_QT
+dnl AC_PATH_KDE
