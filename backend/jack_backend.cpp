@@ -37,7 +37,8 @@ JackBackend* JackBackend::backend( bool del ) {
 
 JackBackend::JackBackend() {
 	std::cout << "JackBackend::JackBackend()" << std::endl;
-	client = ::jack_client_new( "JackMix" );
+	//client = ::jack_client_new( "JackMix" );
+	client = 0;
 	if ( client ) {
 		::jack_set_process_callback( client, JackMix::process, 0 );
 		std::cout << "JackBackend::JackBackend() activate" << std::endl;

@@ -33,7 +33,8 @@ namespace MixingMatrix {
 class Element;
 class ConnectionLister;
 
-struct ElementSlotSignalPair {
+class ElementSlotSignalPair {
+public:
 	ElementSlotSignalPair( Element* n=0, QString s=0 ) : element( n ), slot( s ) {}
 	Element* element;
 	QString slot;

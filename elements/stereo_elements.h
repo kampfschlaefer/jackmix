@@ -44,7 +44,7 @@ class Mono2StereoElement : public JackMix::MixingMatrix::Element, public dB2VolC
 {
 Q_OBJECT
 Q_PROPERTY( double volume READ volume WRITE volume );
-Q_PROPERTY( double panorama READ panorama );
+Q_PROPERTY( double panorama READ panorama WRITE set_panorama );
 public:
 	Mono2StereoElement( QStringList, QStringList, MixingMatrix::Widget*, const char* =0 );
 	~Mono2StereoElement();
