@@ -37,6 +37,8 @@ namespace OSC {
 		Server( QObject*, const char* =0 );
 		Server( QString port="5282", QObject* =0, const char* =0 );
 		~Server();
+		int port() const { return lo_server_thread_get_port( _server ); }
+		QString url() const { return lo_server_thread_get_url( _server ); }
 		virtual void data( const char* data, QVariant=0 );
 	public slots:
 		void start( QString port="5282" );
