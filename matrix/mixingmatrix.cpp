@@ -172,6 +172,14 @@ QString Widget::nextOut( QString n ) const {
 	return 0;
 }
 
+void Widget::addinchannel( QString name ) {
+	_inchannels.push_back( name );
+	this->updateGeometry();
+}
+void Widget::addoutchannel( QString name ) {
+	_outchannels.push_back( name );
+	this->updateGeometry();
+}
 
 Element::Element( QStringList in, QStringList out, Widget* p, const char* n )
 	: QFrame( p,n )

@@ -46,6 +46,10 @@ public:
 	QString nextIn( QString ) const;
 	QString nextOut( QString ) const;
 
+	/// New input/output channels
+	void addinchannel( QString );
+	void addoutchannel( QString );
+
 	/// Create Controls
 	// Create controls. return true on success
 	bool createControl( QStringList inchannels, QStringList outchannels );

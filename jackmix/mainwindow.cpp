@@ -60,8 +60,8 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	_select_action->addTo( _editmenu );
 	//_select_action->addTo( new QToolBar( this ) );
 	_editmenu->setCheckable( true );
-	//_editmenu->insertItem( "Add Input...", this, SLOT( addInput() ) );
-	//_editmenu->insertItem( "Add Output...", this, SLOT( addOutput() ) );
+	_editmenu->insertItem( "Add Input...", this, SLOT( addInput() ) );
+	_editmenu->insertItem( "Add Output...", this, SLOT( addOutput() ) );
 
 	_helpmenu = new QPopupMenu( this );
 	menuBar()->insertItem( "Help", _helpmenu );
@@ -147,7 +147,33 @@ void MainWindow::toggleselectmode() {
 	_select_action->setOn( !select );
 }
 
+void MainWindow::addInput() {
+	QString tmp = QInputDialog::getText( "Inchannel name", "Channel name", QLineEdit::Normal, "(empty)", 0, this );
+	if ( tmp != "(empty)" )
+		addInput( tmp );
+}
+void MainWindow::addInput( QString name ) {
+	BACKEND->addInput( name );
+	_mixerwidget->addinchannel( name );
+	_mixerwidget->autoFill();
+	_inputswidget->addinchannel( name );
+	_inputswidget->autoFill();
+}
+void MainWindow::addOutput() {
+	QString tmp = QInputDialog::getText( "Outchannel name", "Channel name", QLineEdit::Normal, "(empty)", 0, this );
+	if ( tmp != "(empty)" )
+		addOutput( tmp );
+}
+void MainWindow::addOutput( QString name ) {
+	BACKEND->addOutput( name );
+	_mixerwidget->addoutchannel( name );
+	_mixerwidget->autoFill();
+	_outputswidget->addoutchannel( name );
+	_outputswidget->autoFill();
+}
+
+
 MainWindowHelperWidget::MainWindowHelperWidget( QWidget* p ) : QWidget( p ) {
-	layout = new QGridLayout( this, 2,2, 5 );
+	layout = new QGridLayout( this, 3,2, 5 );
 }
 

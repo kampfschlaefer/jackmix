@@ -25,6 +25,7 @@
 #include <qdockwindow.h>
 #include <qvaluelist.h>
 #include <qlayout.h>
+#include <qgrid.h>
 
 class QHBox;
 class QSettings;
@@ -43,7 +44,14 @@ Q_OBJECT
 public:
 	MainWindowHelperWidget( QWidget* =0 );
 	QGridLayout* layout;
+	QBoxLayout* in_layout;
 };
+
+/*class Channellist : public QGrid {
+Q_OBJECT
+public:
+	Channellist( 
+};*/
 
 class MainWindow : public QMainWindow {
 Q_OBJECT
@@ -56,6 +64,10 @@ public slots:
 private slots:
 	void toggleselectmode();
 	void closeEvent( QCloseEvent* );
+	void addInput();
+	void addInput( QString );
+	void addOutput();
+	void addOutput( QString );
 	void about();
 	void aboutQt();
 private:
