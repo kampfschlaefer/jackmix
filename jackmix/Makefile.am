@@ -9,14 +9,14 @@ SUBDIRS = .
 bin_PROGRAMS = jackmix
 
 # set the include path for X, qt and KDE
-INCLUDES         = $(QT_INCLUDES)
+INCLUDES         = -I$(top_srcdir)/guilib $(QT_INCLUDES)
 
 # the library search path. 
 #jackmix_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 jackmix_LDFLAGS = $(JACK_CFLAGS)
 
 # the libraries to link against.
-jackmix_LDADD   = $(LIB_QT) $(JACK_LIBS)
+jackmix_LDADD   = $(top_builddir)/guilib/libjackmix_gui.la $(LIB_QT) $(JACK_LIBS)
 
 # which sources should be compiled for jackmix
 jackmix_SOURCES = \
@@ -28,7 +28,6 @@ jackmix_SOURCES = \
 	volumegroup.cpp \
 	vg_aux.cpp \
 	vg_stereo.cpp \
-	qfloatslider.cpp \
 	qtickmarks.cpp \
 	main.cpp
 

@@ -6,25 +6,27 @@ SUBDIRS = .
 
 # this is the program that gets installed.  it's name is used for all
 # of the other Makefile.am variables
-noinst_LT_LIBRARIES = jackmix_guilib
+noinst_LTLIBRARIES = libjackmix_gui.la
 
 # set the include path for X, qt and KDE
 INCLUDES         = $(QT_INCLUDES)
 
 # the library search path. 
 #jackmix_LDFLAGS = $(KDE_RPATH) $(all_libraries)
-#jackmix_guilib_LDFLAGS = #$(JACK_CFLAGS)
+libjackmix_gui_la_LDFLAGS = -module -avoid-version -no-undefined $(all_libraries)
 #poti_test_LDFLAGS = 
 
 # the libraries to link against.
 #jackmix_guilib_LDADD   = $(LIB_QT) $(JACK_LIBS)
-jackmix_guilib_LDADD   = $(LIB_QT)
+libjackmix_gui_la_LIBADD   = $(LIB_QT)
 #poti_test_LDADD = $(LIB_QT)
 
 # which sources should be compiled for jackmix
-jackmix_guilib_SOURCES = \
+libjackmix_gui_la_SOURCES = \
 	qpixmapeffect.cpp \
 	qimageeffect.cpp \
+	qfloatslider.cpp \
+	qfloatpoti.cpp \
 	qpoti.cpp
 
 #poti_test_SOURCES = poti_test.cpp \
