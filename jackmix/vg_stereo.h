@@ -27,24 +27,6 @@ public:
 
 };
 
-class VGStereoMasterWidget : public VolumeGroupMasterWidget {
-Q_OBJECT
-public:
-	VGStereoMasterWidget( VGStereo*, QWidget* =0, const char* =0 );
-	~VGStereoMasterWidget();
-private slots:
-	void valueChanged( QString, float );
-};
-
-class VGStereoChannelWidget : public VolumeGroupChannelWidget {
-Q_OBJECT
-public:
-	VGStereoChannelWidget( QString, VolumeGroup*, QWidget*, const char* =0 );
-	virtual ~VGStereoChannelWidget();
-private slots:
-	void valueChanged( QString, float );
-};
-
 };
 
 #endif

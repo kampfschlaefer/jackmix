@@ -1,6 +1,8 @@
 
 #include "vg_aux.h"
 #include "vg_aux.moc"
+#include "vg_aux_private.h"
+#include "vg_aux_private.moc"
 
 #include "jack_backend.h"
 #include "volumeslider.h"
@@ -67,7 +69,7 @@ VGAuxChannelWidget::VGAuxChannelWidget( QString in, VGAux* group, QWidget* p, co
 		tmp = new VolumeSlider( _group->name() + "_" + QString::number( i ), 1, LeftToRight, this );
 		connect( tmp, SIGNAL( valueChanged( QString,float ) ), this, SLOT( valueChanged( QString,float ) ) );
 		_layout->addWidget( tmp );
-		_layout->addWidget( new QTickmarks( -36, 12, LeftToRight, posTop|posBottom, this ) );
+		_layout->addWidget( new QTickmarks( -36, 12, LeftToRight, posLeft, this ) );
 	}
 }
 VGAuxChannelWidget::~VGAuxChannelWidget() {

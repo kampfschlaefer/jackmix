@@ -1,6 +1,8 @@
 
 #include "vg_stereo.h"
 #include "vg_stereo.moc"
+#include "vg_stereo_private.h"
+#include "vg_stereo_private.moc"
 
 #include "jack_backend.h"
 #include "volumeslider.h"
