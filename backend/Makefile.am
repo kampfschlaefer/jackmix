@@ -13,7 +13,7 @@ INCLUDES         = $(QT_INCLUDES)
 
 # the library search path. 
 #jackmix_LDFLAGS = $(KDE_RPATH) $(all_libraries)
-libjackmix_backend_la_LDFLAGS = $(JACK_CFLAGS) -module -avoid-version -no-undefined
+libjackmix_backend_la_LDFLAGS = $(JACK_CFLAGS) $(QT_LDFLAGS) -module -avoid-version -no-undefined
 
 # the libraries to link against.
 #jackmix_guilib_LDADD   = $(LIB_QT) $(JACK_LIBS)

@@ -26,7 +26,6 @@
 #include "jack_backend.h"
 #include "volumeslider.h"
 #include "qtickmarks.h"
-#include "qfloatpoti.h"
 
 #include <iostream>
 #include <qlabel.h>
@@ -66,14 +65,16 @@ VGAuxMasterWidget::VGAuxMasterWidget( VGAux* g, QWidget* p, const char* n )
 	setMargin( 1 );
 	setLineWidth( 1 );
 	setFrameStyle( QFrame::Panel|QFrame::Raised );
-	QVBoxLayout* _layout = new QVBoxLayout( this );
+	QGridLayout* _layout = new QGridLayout( this, 1, 2 );
 	layout()->addItem( _layout );
 	_layout->setMargin( 1 );
-	VolumeSlider* tmp;
+	//_layout->setAutoAdd( true );
+	VolumeKnob* tmp;
 	for ( int i=0; i<group()->channels(); i++ ) {
-		tmp = new VolumeSlider( group()->name() + "_" + QString::number( i ), 1, LeftToRight, this );
+		tmp = new VolumeKnob( group()->name() + "_" + QString::number( i ), 1, this );
 		connect( tmp, SIGNAL( valueChanged( QString,float ) ), this, SLOT( newValue( QString,float ) ) );
-		_layout->addWidget( tmp );
+		_layout->addWidget( tmp, i/2, i%2 );
+		//_layout->addWidget( new QTickmarks( -36, 12, LeftToRight, posLeft, this, 7 ) );
 	}
 }
 VGAuxMasterWidget::~VGAuxMasterWidget() {
@@ -89,14 +90,15 @@ VGAuxChannelWidget::VGAuxChannelWidget( QString in, VGAux* g, QWidget* p, const 
 	setMargin( 1 );
 	setLineWidth( 1 );
 	setFrameStyle( QFrame::Panel|QFrame::Raised );
-	QVBoxLayout* _layout = new QVBoxLayout( this );
+	QGridLayout* _layout = new QGridLayout( this, 1,2 );
 	_layout->setMargin( 1 );
-	VolumeSlider* tmp;
+	_layout->setAutoAdd( true );
+	VolumeKnob* tmp;
 	for ( int i=0; i<group()->channels(); i++ ) {
-		tmp = new VolumeSlider( group()->name() + "_" + QString::number( i ), 1, LeftToRight, this );
+		tmp = new VolumeKnob( group()->name() + "_" + QString::number( i ), 1, this );
 		connect( tmp, SIGNAL( valueChanged( QString,float ) ), this, SLOT( valueChanged( QString,float ) ) );
-		_layout->addWidget( tmp );
-		_layout->addWidget( new QTickmarks( -36, 12, LeftToRight, posLeft, this, 7 ) );
+//		_layout->add( tmp );
+//		_layout->addWidget( new QTickmarks( -36, 12, LeftToRight, posLeft, this, 7 ) );
 	}
 }
 VGAuxChannelWidget::~VGAuxChannelWidget() {

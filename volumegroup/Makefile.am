@@ -15,8 +15,8 @@ INCLUDES         = -I$(top_srcdir)/backend -I$(top_srcdir)/guilib $(QT_INCLUDES)
 
 # the library search path. 
 #jackmix_LDFLAGS = $(KDE_RPATH) $(all_libraries)
-libjackmix_vg_la_LDFLAGS = -module -avoid-version -no-undefined
-dialog_test_LDFLAGS = 
+libjackmix_vg_la_LDFLAGS = $(QT_LDFLAGS) -module -avoid-version -no-undefined
+dialog_test_LDFLAGS = $(QT_LDFLAGS)
 
 # the libraries to link against.
 #jackmix_guilib_LDADD   = $(LIB_QT) $(JACK_LIBS)

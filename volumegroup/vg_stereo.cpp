@@ -85,7 +85,7 @@ VGStereoChannelWidget::VGStereoChannelWidget( QString in, VolumeGroup* g, QWidge
 {
 	setFrameStyle( QFrame::Panel|QFrame::Raised );
 	QVBoxLayout* _layout = new QVBoxLayout( this );
-	_layout->setMargin( 10 );
+	//_layout->setMargin( 10 );
 	_layout->addWidget( new QLabel( group()->name() + " L & R", this ), -1, Qt::AlignCenter );
 	QHBoxLayout* _layout2 = new QHBoxLayout( _layout );
 	_layout->setStretchFactor( _layout2, 100 );
