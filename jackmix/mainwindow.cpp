@@ -187,16 +187,13 @@ void MainWindow::openFile() {
 		QFile qfile( file );
 		qfile.open( IO_ReadOnly );
 		xml = QString( qfile.readAll() );
+		while ( _channelwidgets.size() >0 )
+			_channelwidgets[ 0 ]->remove();
+		while ( VolumeGroupFactory::the()->groups()>0 )
+			VolumeGroupFactory::the()->group( 0 )->remove();
+		_channelwidgets.clear();
+		readXML( xml );
 	}
-	//qDebug( xml );
-	//qDebug( "About to delete " + QString::number( _channelwidgets.size() ) + " Channels" );
-	while ( _channelwidgets.size() >0 )
-		_channelwidgets[ 0 ]->remove();
-	while ( VolumeGroupFactory::the()->groups()>0 )
-		VolumeGroupFactory::the()->group( 0 )->remove();
-	//qDebug( "Remaining " + QString::number( _channelwidgets.size() ) + " widgets" );
-	_channelwidgets.clear();
-	readXML( xml );
 }
 void MainWindow::saveFile() {
 	QString filename = QFileDialog::getSaveFileName( QString::null, "*.xml", this );
@@ -217,6 +214,7 @@ void MainWindow::about() {
 	QMessageBox::about( this, "JackMix: About JackMix", "<qt> \
 		<p><b>&copy;2004 by Arnold Krille</b> &lt;arnold@arnoldarts.de&gt;</p> \
 		<p>JackMix is the ultimative mixer application for Jack (<a href=\"http://jackit.sf.net/\">jackit.sf.net</a>). Check out <a href=\"http://roederberg.dyndns.org/~arnold/jackmix/\">roederberg.dyndns.org/~arnold/jackmix/</a> for more information and new versions of JackMix.</p> \
+		<p>This application and all its components are licensed under the GPL.</p> \
 		</qt>" );
 }
 void MainWindow::aboutQt() {
