@@ -28,15 +28,17 @@
 
 using namespace JackMix;
 
-QTickmarks::QTickmarks( float _dbmin, float _dbmax, Direction dir, long pos, QWidget* p, const char* n )
+QTickmarks::QTickmarks( float _dbmin, float _dbmax, Direction dir, long pos, QWidget* p, int _offset, const char* n )
  : QFrame( p,n )
  , dB2VolCalc( _dbmin, _dbmax )
  , _pos( pos )
  , _dir( dir )
  , minstep( 1 )
  , substep( 0.5 )
+ , offset( _offset )
 {
 	setMinimumSize( 20,20 );
+	//setBackgroundColor( QColor( 175,125,125 ) );
 }
 
 void QTickmarks::drawContents( QPainter* p ) {
@@ -58,7 +60,7 @@ void QTickmarks::drawContents( QPainter* p ) {
 	float _substep = substep; // this value gets changed
 	// Calculating minimum size of the widget
 	int _minsize;
-	// Shorcuts
+	// Shortcuts
 	int w,h;
 	QColor colornormal = colorGroup().foreground();
 	QColor colordiff = colorGroup().buttonText();
@@ -82,7 +84,7 @@ void QTickmarks::drawContents( QPainter* p ) {
 		// Painting substep marks
 		p->setPen( QPen( colordiff, 1 ) );
 		for ( float i=dbmax; i>=dbmin; i-=_substep ) {
-			h = int( -contentsRect().height() * dbtondb( i ) );
+			h = int( ( -contentsRect().height() + 2*offset ) * dbtondb( i ) - offset );
 			if ( _dir==TopToBottom ) h = 1 - h;
 			if ( left ) p->drawLine( 0, h, 3, h );
 			if ( right ) p->drawLine( w-3, h, w, h );
@@ -90,7 +92,7 @@ void QTickmarks::drawContents( QPainter* p ) {
 		// Painting step marks and texts
 		p->setPen( QPen( colornormal, 1 ) );
 		for ( float i=0; i>=dbmin; i-=_minstep ) {
-			h = int( -contentsRect().height() * dbtondb( i ) );
+			h = int( ( -contentsRect().height() + 2*offset ) * dbtondb( i ) - offset );
 			if ( _dir==TopToBottom ) h = 1 - h;
 			if ( left ) p->drawLine( 0, h, 6, h );
 			p->drawText( ( w - (left)*6 - (right)*6 - fontrect.width() )/2 + (left)*6
@@ -100,7 +102,7 @@ void QTickmarks::drawContents( QPainter* p ) {
 			if ( right ) p->drawLine( w-6, h, w, h );
 		}
 		for ( float i=_minstep; i<=dbmax; i+=_minstep ) {
-			h = int( -contentsRect().height() * dbtondb( i ) );
+			h = int( ( -contentsRect().height() + 2*offset ) * dbtondb( i ) - offset );
 			if ( _dir==TopToBottom ) h = 1 - h;
 			if ( left ) p->drawLine( 0, h, 6, h );
 			p->drawText( ( w - (left)*6 - (right)*6 - fontrect.width() )/2 + (left)*6
@@ -128,7 +130,7 @@ void QTickmarks::drawContents( QPainter* p ) {
 		// Painting substep marks
 		p->setPen( QPen( colordiff, 1 ) );
 		for ( float i=dbmax; i>=dbmin; i-=_substep ) {
-			w = this->frameWidth()+ int( contentsRect().width() * dbtondb( i ) );
+			w = int( ( contentsRect().width() - 2*offset ) * dbtondb( i ) + offset );
 			if ( _dir==RightToLeft ) w = 1 - w;
 			if ( left ) p->drawLine( w, frameWidth(), w, frameWidth() + 3 );
 			if ( right ) p->drawLine( w, h-3, w, h );
@@ -136,7 +138,7 @@ void QTickmarks::drawContents( QPainter* p ) {
 		// Painting step marks and texts
 		p->setPen( QPen( colornormal, 1 ) );
 		for ( float i=0; i>=dbmin; i-=_minstep ) {
-			w = int( contentsRect().width() * dbtondb( i ) );
+			w = int( ( contentsRect().width() - 2*offset ) * dbtondb( i ) + offset );
 			if ( _dir==RightToLeft ) w = 1 - w;
 			if ( left ) p->drawLine( w, 0, w, 6 );
 			p->drawText( w - fontrect.width()/2
@@ -146,7 +148,7 @@ void QTickmarks::drawContents( QPainter* p ) {
 			if ( right ) p->drawLine( w, h-6, w, h );
 		}
 		for ( float i=_minstep; i<=dbmax; i+=_minstep ) {
-			h = int( -contentsRect().height() * dbtondb( i ) );
+			w = int( ( contentsRect().width() - 2*offset ) * dbtondb( i ) + offset );
 			if ( _dir==RightToLeft ) w = 1 - w;
 			if ( left ) p->drawLine( w, 0, w, 6 );
 			p->drawText( w - fontrect.width()/2

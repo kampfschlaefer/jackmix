@@ -31,12 +31,13 @@ namespace JackMix {
 class QTickmarks : public QFrame, public dB2VolCalc {
    Q_OBJECT
 public:
-	QTickmarks( float, float, Direction, long, QWidget* =0, const char* =0 );
+	QTickmarks( float, float, Direction, long, QWidget*, int =0, const char* =0 );
 	void drawContents( QPainter* );
 private:
 	long _pos;
 	Direction _dir;
 	float minstep, substep;
+	int offset;
 };
 
 };

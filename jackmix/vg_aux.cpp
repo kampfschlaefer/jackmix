@@ -88,7 +88,7 @@ VGAuxChannelWidget::VGAuxChannelWidget( QString in, VGAux* group, QWidget* p, co
 		tmp = new VolumeSlider( _group->name() + "_" + QString::number( i ), 1, LeftToRight, this );
 		connect( tmp, SIGNAL( valueChanged( QString,float ) ), this, SLOT( valueChanged( QString,float ) ) );
 		_layout->addWidget( tmp );
-		_layout->addWidget( new QTickmarks( -36, 12, LeftToRight, posLeft, this ) );
+		_layout->addWidget( new QTickmarks( -36, 12, LeftToRight, posLeft, this, 7 ) );
 	}
 }
 VGAuxChannelWidget::~VGAuxChannelWidget() {

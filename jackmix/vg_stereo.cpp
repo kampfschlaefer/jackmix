@@ -90,7 +90,7 @@ VGStereoChannelWidget::VGStereoChannelWidget( QString in, VolumeGroup* group, QW
 	tmp = new VolumeSlider( _group->name()+"_L", 1, BottomToTop, this, false );
 	connect( tmp, SIGNAL( valueChanged( QString,float ) ), this, SLOT( valueChanged( QString,float ) ) );
 	_layout2->addWidget( tmp );
-	_layout2->addWidget( new QTickmarks( -36, 12, BottomToTop, posLeft|posRight, this ) );
+	_layout2->addWidget( new QTickmarks( -36, 12, BottomToTop, posLeft|posRight, this, 7 ) );
 	tmp = new VolumeSlider( _group->name()+"_R", 1, BottomToTop, this, false );
 	connect( tmp, SIGNAL( valueChanged( QString,float ) ), this, SLOT( valueChanged( QString,float ) ) );
 	_layout2->addWidget( tmp );
