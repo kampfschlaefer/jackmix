@@ -23,6 +23,9 @@
 
 #include <qwidget.h>
 #include <qvaluelist.h>
+#include <qlistview.h>
+
+#include "mixingmatrix.h"
 
 class QGridLayout;
 class QPushButton;
@@ -31,8 +34,9 @@ class QListBox;
 namespace JackMix {
 namespace MixingMatrix {
 
-class ElementFactory;
-class Widget;
+/*class ElementFactory;
+class Element;
+class Widget;*/
 
 class Global;
 
@@ -42,12 +46,39 @@ Q_OBJECT
 public:
 	ConnectionLister( Widget*, QWidget* =0, const char* =0 );
 	~ConnectionLister();
+
+private slots:
+	void connectControls();
+	void disconnectControls();
 private:
 	Widget *_widget;
 	QGridLayout *_layout;
-	QPushButton *_btn_connect, *_btn_disconnect;
-	QListBox *_box_signals, *_box_slots;
+	QPushButton *_btn_connect, *_btn_close, *_btn_disconnectMaster, *_btn_disconnectSlave;
+	QListView *_box_signals, *_box_slots;
 };
+
+class ElementConnectView : public QListViewItem
+{
+public:
+	ElementConnectView( QListView*, Element* );
+	~ElementConnectView();
+	Element* element() const { return _element; }
+	int rtti() const { return 5281; }
+private:
+	Element* _element;
+};
+class ElementPropertyView : public QListViewItem
+{
+public:
+	ElementPropertyView( ElementConnectView*, QString );
+	~ElementPropertyView();
+	ElementSlotSignalPair property() const;
+	int rtti() const { return 5282; }
+private:
+	QString _property;
+	Element* _element;
+};
+
 
 }; // MixingMatrix
 }; // JackMix

@@ -33,7 +33,7 @@ namespace MixingMatrix {
 class Element;
 class ConnectionLister;
 
-struct Property {
+/*struct Property {
 	Property( QString _name=QString::null, QString _signal=QString::null, QString _slot=QString::null, QString _type=QString::null )
 		: name( _name )
 		, signal( _signal )
@@ -46,7 +46,27 @@ struct Property {
 	QString type;
 };
 
-typedef QMap<QString,Property> Properties;
+typedef QMap<QString,Property> Properties;*/
+
+struct ElementSlotSignalPair {
+	ElementSlotSignalPair( Element* n=0, QString s=0 ) : element( n ), slot( s ) {}
+	Element* element;
+	QString slot;
+	bool operator< ( const ElementSlotSignalPair n ) const {
+		return ( ( element < n.element ) || ( slot < n.slot ) );
+	}
+	bool operator== ( const ElementSlotSignalPair n ) const {
+		if ( ( element == n.element ) && ( n.slot == 0 ) )
+			return true;
+		if ( ( n.element == 0 ) && ( slot == n.slot ) )
+			return true;
+		return ( ( element == n.element ) && ( slot == n.slot ) );
+	}
+	QString debug() {
+		return QString( "(%1,%2)" ).arg( int( element ) ).arg( slot );
+	}
+};
+
 
 class Widget : public QFrame
 {
@@ -130,21 +150,6 @@ private:
 	QValueList <Element*> _elements;
 	QStringList _inchannels, _outchannels;
 	ConnectionLister* _connectionlister;
-	struct ElementSlotSignalPair {
-		ElementSlotSignalPair( Element* n=0, QString s=0 ) : element( n ), slot( s ) {}
-		Element* element;
-		QString slot;
-		bool operator< ( const ElementSlotSignalPair n ) const {
-			return ( ( element < n.element ) || ( slot < n.slot ) );
-		}
-		bool operator== ( const ElementSlotSignalPair n ) const {
-			if ( ( element == n.element ) && ( n.slot == 0 ) )
-				return true;
-			if ( ( n.element == 0 ) && ( slot == n.slot ) )
-				return true;
-			return ( ( element == n.element ) && ( slot == n.slot ) );
-		}
-	};
 	QMap <ElementSlotSignalPair,ElementSlotSignalPair> _connections;
 };
 
@@ -230,7 +235,7 @@ protected slots:
 private:
 	QStringList _in, _out;
 	bool _selected;
-	Properties _properties;
+	//Properties _properties;
 	Widget* _parent;
 	QPopupMenu *_menu;
 };
