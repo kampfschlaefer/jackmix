@@ -40,9 +40,9 @@ public:
 		\param the name of the input channel
 		\param The parent for the widget
 	*/
-	virtual VolumeGroupChannelWidget* channelWidget( QString, QWidget* );
+	virtual VolumeGroupChannelWidget* channelWidget( QString, QWidget* ) =0;
 
-	virtual int channels();
+	int channels();
 	QString name() { return _name; }
 private:
 	QString _name;

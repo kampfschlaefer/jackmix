@@ -3,7 +3,6 @@
 #include "volumegroup.moc"
 
 #include "jack_backend.h"
-#include "volumeslider.h"
 
 #include <iostream>
 #include <qlabel.h>
@@ -39,9 +38,9 @@ VolumeGroupMasterWidget* VolumeGroup::masterWidget( QWidget* parent ) {
 		_masterwidget = new VolumeGroupMasterWidget( this, parent );
 	return _masterwidget;
 }
-VolumeGroupChannelWidget* VolumeGroup::channelWidget( QString name, QWidget* parent ) {
+/*VolumeGroupChannelWidget* VolumeGroup::channelWidget( QString name, QWidget* parent ) {
 	return new VolumeGroupChannelWidget( name, this, parent );
-}
+}*/
 
 int VolumeGroup::channels() { return _channels; }
 
@@ -59,7 +58,7 @@ VolumeGroupChannelWidget::VolumeGroupChannelWidget( QString in, VolumeGroup* gro
  , _in( in )
  , _group( group )
 {
-	setMargin( 2 );
+	setMargin( 1 );
 	setLineWidth( 1 );
 	setFrameStyle( QFrame::Panel|QFrame::Raised );
 }
