@@ -401,7 +401,7 @@ ConnectionLister::ConnectionLister( Widget* w, QWidget* p, const char* n )
 	for ( it=_widget->_elements.begin(); it!=_widget->_elements.end(); ++it ) {
 		qDebug( "  %p : %s", ( *it ), ( *it )->getPropertyList().join( "," ).latin1() );
 		QStringList tmp = ( *it )->getPropertyList();
-		for ( int i=0; i<tmp.count(); i++ ) {
+		for ( uint i=0; i<tmp.count(); i++ ) {
 			_box_slots->insertItem( QString( "%1 %2" ).arg( int( *it ) ).arg( tmp[ i ] ) );
 			_box_signals->insertItem( QString( "%1 %2" ).arg( int( *it ) ).arg( tmp[ i ] ) );
 		}

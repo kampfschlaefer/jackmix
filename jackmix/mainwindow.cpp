@@ -148,7 +148,6 @@ std::cerr << "MainWindow::~MainWindow()" << std::endl;
 
 void MainWindow::closeEvent( QCloseEvent* e ) {
 std::cerr << "MainWindow::closeEvent( QCloseEvent " << e << " )" << std::endl;
-	delete _mixerwidget;
 	e->accept();
 }
 
