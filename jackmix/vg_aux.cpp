@@ -31,8 +31,6 @@ VolumeGroupChannelWidget* VGAux::channelWidget( QString name, QWidget* parent ) 
 	return new VGAuxChannelWidget( name, this, parent );
 }
 
-//int VolumeGroup::channels() { return _channels; }
-
 /*VolumeGroupMasterWidget::VolumeGroupMasterWidget( VolumeGroup* group, QWidget* p, const char* n )
  : QFrame( p,n )
  , _group( group )
@@ -44,12 +42,12 @@ VolumeGroupMasterWidget::~VolumeGroupMasterWidget() {
 
 VGAuxChannelWidget::VGAuxChannelWidget( QString in, VGAux* group, QWidget* p, const char* n )
  : VolumeGroupChannelWidget( in, group, p,n )
- , _in( in )
 {
 	setMargin( 1 );
 	setLineWidth( 1 );
 	setFrameStyle( QFrame::Panel|QFrame::Raised );
 	QVBoxLayout* _layout = new QVBoxLayout( this );
+	_layout->setMargin( 1 );
 	VolumeSlider* tmp;
 	for ( int i=0; i<_group->channels(); i++ ) {
 		tmp = new VolumeSlider( _group->name() + "_" + QString::number( i ), 1, Qt::Horizontal, this );
