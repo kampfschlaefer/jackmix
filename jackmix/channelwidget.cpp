@@ -23,11 +23,11 @@ ChannelWidget::ChannelWidget( QString name, QWidget* p, const char* n ) : QFrame
 		tmp->setMargin( 2 );
 		tmp->setAlignment( Qt::AlignCenter );
 		tmp->setFont( QFont( "", 14, QFont::Bold ) );;
-		_layout->addWidget( tmp, -10 );
+		_layout->addWidget( tmp, 0 );
 	}
 	BACKEND->addInput( _name );
 	for ( int i=0; i<VolumeGroupFactory::the()->groups(); i++ ) {
-		_layout->addWidget( VolumeGroupFactory::the()->group( i )->channelWidget( _name, this ) );
+		_layout->addWidget( VolumeGroupFactory::the()->group( i )->channelWidget( _name, this ), 100 );
 	}
 }
 ChannelWidget::~ChannelWidget() {
