@@ -1126,9 +1126,9 @@ EOF
 AC_DEFUN([KDE_USE_QT],
 [
 if test -z "$1"; then
-  # Current default Qt version: 3.2
+  # Current default Qt version: 3.1
   kde_qtver=3
-  kde_qtsubver=2
+  kde_qtsubver=1
 else
   kde_qtsubver=`echo "$1" | sed -e 's#[0-9][0-9]*\.\([0-9][0-9]*\).*#\1#'`
   # following is the check if subversion isnt found in passed argument
