@@ -1,7 +1,7 @@
 %define distversion %( perl -e 'Creating /home/arnold/programme/jackmix-0.1/jackmix.spec...=\<\>;/(\d+)\.(\d)\.?(\d)?/; print "".(||0)' /etc/*-release)
 Name: jackmix
 Summary: JackMix -- Mixer for Jack
-Version: 0.0.1
+Version: 0.0.3
 Release: %{_vendor}_%{distversion}
 Copyright: GPL
 Group: X11/KDE/Utilities
