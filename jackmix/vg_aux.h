@@ -22,8 +22,12 @@
 #define JACKMIX_VOLUMEGROUP_AUX_H
 
 #include "volumegroup.h"
+#include <qvaluevector.h>
 
 namespace JackMix {
+
+class VGAuxChannelWidget;
+class VGAuxMasterWidget;
 
 class VGAux : public VolumeGroup {
 Q_OBJECT
@@ -43,6 +47,10 @@ public:
 		\param The parent for the widget
 	*/
 	VolumeGroupChannelWidget* channelWidget( QString, QWidget* );
+public:
+	void removeVG();
+private:
+	QValueVector<VGAuxChannelWidget*> _channelwidgets;
 };
 
 };

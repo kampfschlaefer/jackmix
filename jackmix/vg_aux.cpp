@@ -51,7 +51,23 @@ VolumeGroupMasterWidget* VGAux::masterWidget( QWidget* parent ) {
 	return _masterwidget;
 }
 VolumeGroupChannelWidget* VGAux::channelWidget( QString name, QWidget* parent ) {
-	return new VGAuxChannelWidget( name, this, parent );
+std::cerr << "VGAux::channelWidget( " << name << ", " << parent << " )" << std::endl;
+	VGAuxChannelWidget *tmp = new VGAuxChannelWidget( name, this, parent );
+	_channelwidgets.push_back( tmp );
+	return tmp;
+}
+void VGAux::removeVG() {
+std::cerr << "VGAux::removeVG() removing widgets" << std::endl;
+	for ( QValueVector<VGAuxChannelWidget*>::iterator tmp = _channelwidgets.begin(); tmp != _channelwidgets.end(); tmp++ )
+		delete *tmp;
+	delete _masterwidget;
+	std::cerr << "VGAux::removeVG() remove channels" << std::endl;
+	for ( int i=0; i<channels(); i++ ) {
+		BACKEND->removeOutput( name() + "_" + QString::number( i ) );
+	}
+	std::cerr << "VGAux::removeVG() unregister & delete" << std::endl;
+	VolumeGroupFactory::the()->unregisterGroup( this );
+	delete this;
 }
 
 VGAuxMasterWidget::VGAuxMasterWidget( VGAux* group, QWidget* p, const char* n )
@@ -61,8 +77,8 @@ VGAuxMasterWidget::VGAuxMasterWidget( VGAux* group, QWidget* p, const char* n )
 	setLineWidth( 1 );
 	setFrameStyle( QFrame::Panel|QFrame::Raised );
 	QVBoxLayout* _layout = new QVBoxLayout( this );
+	layout()->addItem( _layout );
 	_layout->setMargin( 1 );
-	_layout->addWidget( new QFloatPoti( this ) );
 	VolumeSlider* tmp;
 	for ( int i=0; i<_group->channels(); i++ ) {
 		tmp = new VolumeSlider( _group->name() + "_" + QString::number( i ), 1, LeftToRight, this );

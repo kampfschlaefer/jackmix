@@ -50,9 +50,19 @@ VolumeGroupMasterWidget* VGStereo::masterWidget( QWidget* parent ) {
 	return _masterwidget;
 }
 VolumeGroupChannelWidget* VGStereo::channelWidget( QString name, QWidget* parent ) {
-	return new VGStereoChannelWidget( name, this, parent );
+	VGStereoChannelWidget *tmp = new VGStereoChannelWidget( name, this, parent );
+	_channelwidgets.append( tmp );
+	return tmp;
 }
-
+void VGStereo::removeVG() {
+std::cerr << "VGStereo::removeVG()" << std::endl;
+	for (  QValueVector<VGStereoChannelWidget*>::iterator tmp = _channelwidgets.begin(); tmp != _channelwidgets.end(); tmp++ )
+		delete *tmp;
+	delete _masterwidget;
+	VolumeGroupFactory::the()->unregisterGroup(  this );
+	std::cerr << "VGStereo::removeVG() before delete" << std::endl;
+	delete this;
+}
 
 VGStereoMasterWidget::VGStereoMasterWidget( VGStereo* group, QWidget* p, const char* n )
  : VolumeGroupMasterWidget( group, p,n )
@@ -61,6 +71,7 @@ VGStereoMasterWidget::VGStereoMasterWidget( VGStereo* group, QWidget* p, const c
 	setLineWidth( 1 );
 	setFrameStyle( QFrame::Panel|QFrame::Raised );
 	QVBoxLayout* _layout = new QVBoxLayout( this );
+	layout()->addItem( _layout );
 	_layout->setMargin( 1 );
 	_layout->addWidget( new QLabel( _group->name(), this ), -1, Qt::AlignCenter );
 	StereoVolumeSlider* tmp2 = new StereoVolumeSlider( _group->name()+"_L", _group->name()+"_R", -36, 12, this );

@@ -26,6 +26,7 @@
 #include <iostream>
 #include <qlabel.h>
 #include <qlayout.h>
+#include <qpushbutton.h>
 
 using namespace JackMix;
 
@@ -38,7 +39,13 @@ VolumeGroupFactory* VolumeGroupFactory::the() {
 	return factory;
 }
 void VolumeGroupFactory::registerGroup( VolumeGroup* n ) {
-	_groups.push_back( n );
+	_groups.append( n );
+}
+void VolumeGroupFactory::unregisterGroup( VolumeGroup* n ) {
+	//std::cerr << "VolumeGroupFactory::unregisterGroup( " << n << " )" << std::endl;
+	_groups.remove( n );
+	//std::cerr << "VolumeGroupFactory::unregisterGroup() finished." << std::endl;
+//	delete n;
 }
 
 VolumeGroup::VolumeGroup( QString name, int channels, QObject* p, const char* n )
@@ -52,25 +59,23 @@ VolumeGroup::VolumeGroup( QString name, int channels, QObject* p, const char* n 
 VolumeGroup::~VolumeGroup() {
 }
 
-/*VolumeGroupMasterWidget* VolumeGroup::masterWidget( QWidget* parent ) {
-	if ( !_masterwidget )
-		_masterwidget = new VolumeGroupMasterWidget( this, parent );
-	return _masterwidget;
-}*/
-/*VolumeGroupChannelWidget* VolumeGroup::channelWidget( QString name, QWidget* parent ) {
-	return new VolumeGroupChannelWidget( name, this, parent );
-}*/
-
 int VolumeGroup::channels() { return _channels; }
 
 VolumeGroupMasterWidget::VolumeGroupMasterWidget( VolumeGroup* group, QWidget* p, const char* n )
  : QFrame( p,n )
  , _group( group )
 {
+	{ void* tmp = new QVBoxLayout( this ); }
+	QPushButton *tmp = new QPushButton( "remove", this );
+	layout()->add( tmp );
+	connect( tmp, SIGNAL( clicked() ), this, SLOT( removeVG() ) );
 }
 VolumeGroupMasterWidget::~VolumeGroupMasterWidget() {
 }
 
+void VolumeGroupMasterWidget::removeVG() {
+	_group->removeVG();
+}
 
 VolumeGroupChannelWidget::VolumeGroupChannelWidget( QString in, VolumeGroup* group, QWidget* p, const char* n )
  : QFrame( p,n )

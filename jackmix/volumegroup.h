@@ -23,6 +23,7 @@
 
 #include <qframe.h>
 #include <qvaluevector.h>
+#include <qptrlist.h>
 
 namespace JackMix {
 
@@ -34,12 +35,13 @@ class VolumeGroupFactory {
 private:
 	VolumeGroupFactory();
 	~VolumeGroupFactory();
-	QValueVector <VolumeGroup*> _groups;
+	QPtrList <VolumeGroup> _groups;
 public:
 	static VolumeGroupFactory* the();
 	void registerGroup( VolumeGroup* );
-	int groups() { return _groups.size(); }
-	VolumeGroup* group( int n ) { return _groups[ n ]; }
+	void unregisterGroup( VolumeGroup* );
+	int groups() { return _groups.count(); }
+	VolumeGroup* group( int n ) { return _groups.at( n ); }
 };
 
 class VolumeGroup : public QObject {
@@ -62,7 +64,13 @@ public:
 	virtual VolumeGroupChannelWidget* channelWidget( QString, QWidget* ) =0;
 
 	int channels();
-	QString name() { return _name; }
+	QString name() const { return _name; }
+//protected:
+	/*
+		in this function you have to remove every widget and than call
+		VolumeGroupFactory::the()->unregisterGroup( this );
+	*/
+	virtual void removeVG() =0;
 private:
 	QString _name;
 	int _channels;
@@ -75,6 +83,8 @@ Q_OBJECT
 public:
 	VolumeGroupMasterWidget( VolumeGroup*, QWidget* =0, const char* =0 );
 	~VolumeGroupMasterWidget();
+public slots:
+	void removeVG();
 protected:
 	VolumeGroup* _group;
 };

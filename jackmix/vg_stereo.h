@@ -25,6 +25,9 @@
 
 namespace JackMix {
 
+class VGStereoChannelWidget;
+class VGStereoMasterWidget;
+
 class VGStereo : public VolumeGroup {
 Q_OBJECT
 public:
@@ -44,6 +47,9 @@ public:
 	*/
 	VolumeGroupChannelWidget* channelWidget( QString, QWidget* );
 
+	void removeVG();
+private:
+	QValueVector<VGStereoChannelWidget*> _channelwidgets;
 };
 
 };
