@@ -26,6 +26,7 @@
 #include "jack_backend.h"
 #include "volumeslider.h"
 #include "qtickmarks.h"
+#include "qfloatpoti.h"
 
 #include <iostream>
 #include <qlabel.h>
@@ -61,6 +62,7 @@ VGAuxMasterWidget::VGAuxMasterWidget( VGAux* group, QWidget* p, const char* n )
 	setFrameStyle( QFrame::Panel|QFrame::Raised );
 	QVBoxLayout* _layout = new QVBoxLayout( this );
 	_layout->setMargin( 1 );
+	_layout->addWidget( new QFloatPoti( this ) );
 	VolumeSlider* tmp;
 	for ( int i=0; i<_group->channels(); i++ ) {
 		tmp = new VolumeSlider( _group->name() + "_" + QString::number( i ), 1, LeftToRight, this );
