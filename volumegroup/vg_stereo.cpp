@@ -42,6 +42,8 @@ std::cerr << "VGStereo::VGStereo( " << name() << ", " << p << ", n )" << std::en
 	BACKEND->addOutput( name() + "_R" );
 }
 VGStereo::~VGStereo() {
+	BACKEND->removeOutput( name() + "_L" );
+	BACKEND->removeOutput( name() + "_R" );
 }
 
 VolumeGroupMasterWidget* VGStereo::masterWidget( QWidget* parent ) {
