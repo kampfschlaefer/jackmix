@@ -21,10 +21,14 @@
 #include "vgselect.h"
 #include "vgselect.moc"
 
+#include "vg_aux.h"
+#include "vg_stereo.h"
+
 #include <qlayout.h>
 #include <qpushbutton.h>
 #include <qbuttongroup.h>
 #include <qradiobutton.h>
+#include <qinputdialog.h>
 
 using namespace JackMix;
 
@@ -58,10 +62,16 @@ VGSelectDialog::~VGSelectDialog() {
 void VGSelectDialog::finish() {
 	qDebug( "VGSelectDialog::finish()" );
 	qDebug( QString::number( _btngroup->selectedId() ) );
+	QString name = QInputDialog::getText( "Name", "Name for the VolumeGroup" );
 	switch ( _btngroup->selectedId() ) {
 		case 0:
+			{
+			int channels = QInputDialog::getInteger( "Channels", "Number auf Channels", 2, 1, 10, 2 );
+			_vg = new VGAux( name, channels, 0 );
+			}
 			break;
 		case 1:
+			_vg = new VGStereo( name, 0 );
 			break;
 		default:
 			break;

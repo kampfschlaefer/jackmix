@@ -34,6 +34,6 @@ int main( int argc, char** argv ) {
 
 //	int ret = qapp->exec();
 	int ret = mw->exec();
-	std::cerr << "return: " << ret << std::endl;
+	std::cerr << "return: " << ret << " | " << mw->newVG() << std::endl;
 	return ret;
 }
