@@ -47,7 +47,7 @@ void QTickmarks::drawContents( QPainter* p ) {
 	if ( _pos&posLeft ) left=true;
 	if ( _pos&posRight ) right=true;
 	// Setting the font
-	QFont font;
+	QFont font( "Arial" );
 	font.setPixelSize( 8 /*font.pixelSize()/2*/ ); // Maybe this could be adjusted...
 	p->setFont( font );
 	// Determining the size of the largest text (currently the text at the minimum-scale)
