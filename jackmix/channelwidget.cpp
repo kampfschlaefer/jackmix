@@ -4,6 +4,7 @@
 
 #include "jack_backend.h"
 #include "volumeslider.h"
+#include "volumegroup.h"
 #include <qstringlist.h>
 #include <qlayout.h>
 #include <qlabel.h>
@@ -26,11 +27,8 @@ ChannelWidget::ChannelWidget( QString name, QWidget* p, const char* n ) : QFrame
 		_layout->addWidget( tmp, -10 );
 	}
 	BACKEND->addInput( _name );
-	QStringList tmp = BACKEND->outchannels();
-	for ( QStringList::Iterator it = tmp.begin(); it != tmp.end(); ++it ) {
-		VolumeSlider *tmp = new VolumeSlider( ( *it ), BACKEND->getVolume( _name, ( *it ) ), this );
-		connect( tmp, SIGNAL( valueChanged( QString, float ) ), this, SLOT( valueChanged( QString, float ) ) );
-		_layout->addWidget( tmp,100 );
+	for ( int i=0; i<VolumeGroupFactory::the()->groups(); i++ ) {
+		_layout->addWidget( VolumeGroupFactory::the()->group( i )->channelWidget( _name, this ) );
 	}
 }
 ChannelWidget::~ChannelWidget() {

@@ -27,6 +27,7 @@ void JackBackend::addInput( QString name ) {
 }
 
 void JackBackend::setVolume( QString channel, QString output, float volume ) {
+	//std::cerr << "JackBackend::setVolume( " << channel << ", " << output << ", " << volume << " )" << std::endl;
 	volumes[ channel ][ output ] = volume;
 }
 
