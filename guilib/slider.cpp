@@ -55,6 +55,7 @@ void Slider::value( float n ) {
 }
 
 void Slider::paintEvent( QPaintEvent* ) {
+	bool rotated = false;
 	QPainter p( this );
 
 	QString tmp = QString::number( _value );
@@ -73,6 +74,7 @@ void Slider::paintEvent( QPaintEvent* ) {
 		w = height()-4;
 		h = width()-4;
 		p.rotate( -90 );
+		rotated = true;
 	}
 
 	if ( hasFocus() ) {
@@ -92,24 +94,25 @@ void Slider::paintEvent( QPaintEvent* ) {
 	p.drawLine( int( pos ), -( h/3-1 ), int( pos ), h/3-2 );
 	// Surrounding rect
 	p.setPen( colorGroup().foreground() );
-	p.drawRect( -w/2,-h/3, w, h/3*2 );
+	QRect tmp2 = QRect( -w/2, -h/3, w, h/3*2 );
+	p.drawRect( tmp2 );
+	_faderarea = p.worldMatrix().mapRect( tmp2 );
 }
 
 void Slider::mousePressEvent( QMouseEvent* ev ) {
-	if ( ev->button() == LeftButton )
+	if ( ev->button() == LeftButton && _faderarea.contains( ev->pos() ) )
 		if ( width()>=height() )
 			value( ndbtodb( ( ev->x() ) / float( width() ) ) );
 		else
 			value( ndbtodb( ( height() - ev->y() ) / float( height() ) ) );
-	//qDebug( "_value=%f", _value );
 }
 
 void Slider::mouseMoveEvent( QMouseEvent* ev ) {
-	//if ( ev->button() == LeftButton ) // Dont constrain to leftButton...
-	if ( width()>=height() )
-		value( ndbtodb( ( ev->pos().x() ) / float( width() ) ) );
-	else
-		value( ndbtodb( ( height() - ev->pos().y() ) / float( height() ) ) );
+	if ( _faderarea.contains( ev->pos() ) )
+		if ( width()>=height() )
+			value( ndbtodb( ( ev->pos().x() ) / float( width() ) ) );
+		else
+			value( ndbtodb( ( height() - ev->pos().y() ) / float( height() ) ) );
 }
 
 void Slider::wheelEvent( QWheelEvent* ev ) {

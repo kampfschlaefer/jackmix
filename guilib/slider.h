@@ -51,6 +51,7 @@ private:
 	bool _value_inupdate;
 	int _precision;
 	QString _valuestring;
+	QRect _faderarea;
 };
 
 }; // GUI
