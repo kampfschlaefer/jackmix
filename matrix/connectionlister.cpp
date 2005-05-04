@@ -80,11 +80,14 @@ ConnectionLister::~ConnectionLister() {
 }
 
 void ConnectionLister::addElement( Element* elem ) {
-		QStringList tmp = elem->getPropertyList();
-		if ( !tmp.empty() ) {
-			_box_signals->insertItem( new ElementConnectView( _box_signals, elem ) );
-			_box_slots->insertItem( new ElementConnectView( _box_slots, elem ) );
-		}
+	qDebug( "ConnectionLister::addElement( %p [%s] )", elem, elem->getPropertyList().join( "," ).latin1() );
+	QStringList tmp = elem->getPropertyList();
+	if ( !tmp.empty() ) {
+		qDebug( "_box_signals->childCount() = %i", _box_signals->childCount() );
+		_box_signals->insertItem( new ElementConnectView( _box_signals, elem ) );
+		qDebug( "_box_signals->childCount() = %i", _box_signals->childCount() );
+		_box_slots->insertItem( new ElementConnectView( _box_slots, elem ) );
+	}
 }
 void ConnectionLister::removeElement( Element* elem ) {
 //	qDebug( "ConnectionLister::removeElement( %p )", elem );

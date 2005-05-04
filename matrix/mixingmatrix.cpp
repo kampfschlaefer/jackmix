@@ -24,12 +24,13 @@
 //#include "mixingmatrix_privat.moc"
 #include "connectionlister.h"
 
-#include "qlayout.h"
-#include "qlistbox.h"
-#include "qpushbutton.h"
-#include "qpopupmenu.h"
-#include "qaction.h"
-#include "qcursor.h"
+#include <qlayout.h>
+#include <qlistbox.h>
+#include <qpushbutton.h>
+#include <qpopupmenu.h>
+#include <qaction.h>
+#include <qcursor.h>
+#include <qtimer.h>
 
 namespace JackMix {
 namespace MixingMatrix {
@@ -70,6 +71,9 @@ void Widget::addElement( Element* n ) {
 	connect( n, SIGNAL( connectSlave( Element*, QString ) ), this, SLOT( connectSlave( Element*, QString ) ) );
 	connect( n, SIGNAL( disconnectSlave( Element*, QString ) ), this, SLOT( disconnectSlave( Element*, QString ) ) );
 	connect( n, SIGNAL( disconnectMaster( Element*, QString ) ), this, SLOT( disconnectMaster( Element*, QString ) ) );
+	if ( _connectionlister )
+		_connectionlister->addElement( n );
+	resizeEvent( 0 );
 }
 void Widget::removeElement( Element* n ) {
 	disconnectMaster( n, 0 );
@@ -98,7 +102,7 @@ qDebug( " and %i selected followers.", n->followers( n->neighbors() ) );
 		}
 	}
 	createControl( in, out );
-	autoFill();
+	//autoFill();
 }
 
 Element* Widget::getResponsible( QString in, QString out ) const {
@@ -348,14 +352,17 @@ Element::Element( QStringList in, QStringList out, Widget* p, const char* n )
 	, _menu( new QPopupMenu( this ) )
 {
 	//qDebug( "MixingMatrix::Element::Element( QStringList '%s', QStringList '%s' )", in.join(",").latin1(), out.join(",").latin1() );
-	_parent->addElement( this );
 	setMargin( 2 );
 	setFrameStyle( QFrame::Raised|QFrame::StyledPanel );
 	setLineWidth( 2 );
+	QTimer::singleShot( 0, this, SLOT( lazyInit() ) );
 }
 Element::~Element() {
 	//qDebug( "MixingMatrix::Element::~Element()" );
 	_parent->removeElement( this );
+}
+void Element::lazyInit() {
+	_parent->addElement( this );
 }
 
 bool Element::isResponsible( QString in, QString out ) {

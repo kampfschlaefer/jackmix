@@ -158,12 +158,12 @@ private:
 class Element : public QFrame
 {
 Q_OBJECT
-Q_PROPERTY( bool selected READ isSelected WRITE select )
+/*Q_PROPERTY( bool selected READ isSelected WRITE select )
 Q_PROPERTY( QStringList in READ in )
 Q_PROPERTY( QStringList out READ out )
 Q_PROPERTY( int ins READ inchannels )
 Q_PROPERTY( int outs READ outchannels )
-Q_PROPERTY( QString name READ name WRITE name )
+Q_PROPERTY( QString name READ name WRITE name )*/
 public:
 	/**
 	 * Gets the upper left corner in channelnames.
@@ -187,7 +187,7 @@ public:
 
 	bool isSelected() const { return _selected; }
 
-	QString name() const { return QString( name() ); }
+	QString name() const { return QString( QObject::name() ); }
 	void name( QString n ) { setName( n.latin1() ); }
 
 	// Properties
@@ -234,6 +234,8 @@ protected slots:
 	void slot_simple_select() { select( !isSelected() ); }
 
 	void contextMenuEvent( QContextMenuEvent* );
+private slots:
+	void lazyInit();
 private:
 	QStringList _in, _out;
 	bool _selected;

@@ -111,7 +111,7 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	_mixerwidget->createControl( QStringList()<<"in_3"<<"in_4", QStringList()<<"out_1"<<"out_2" );
 	_mixerwidget->createControl( QStringList()<<"in_5", QStringList()<<"out_1"<<"out_2" );
 	_mixerwidget->createControl( QStringList()<<"in_6", QStringList()<<"out_1"<<"out_2" );
-	_mixerwidget->autoFill();
+	//_mixerwidget->autoFill();
 
 	//_inputswidget->createControl( QStringList()<<"in_1"<<"in_2", QStringList()<<"in_1"<<"in_2" );
 	//_inputswidget->createControl( QStringList()<<"in_3"<<"in_4", QStringList()<<"in_3"<<"in_4" );
