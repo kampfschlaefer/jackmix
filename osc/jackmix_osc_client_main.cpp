@@ -21,10 +21,11 @@
 #include <iostream>
 #include <qapplication.h>
 #include <qvbox.h>
+#include <qslider.h>
 
 #include "lineinput.h"
 #include "osc_client.h"
-#include "osc_server.h"
+//#include "osc_server.h"
 
 int main( int argc, char** argv ) {
 //	std::cout << "JackMix-Server starting" << std::endl;
@@ -44,10 +45,10 @@ int main( int argc, char** argv ) {
 	QVBox *mw = new QVBox();
 	LineInput *_lineinput = new LineInput( mw );
 	OSC::Client* _client = new OSC::Client( host, port, _lineinput );
-	OSC::Server* _server = new OSC::Server( QString::number( rand() ), _lineinput );
-	qDebug( "My address is \"%s\"", _server->url().latin1() );
+//	OSC::Server* _server = new OSC::Server( QString::number( rand() ), _lineinput );
+//	qDebug( "My address is \"%s\"", _server->url().latin1() );
 
-	_client->sendData( "/registerclient", _server->url() );
+//	_client->sendData( "/registerclient", _server->url() );
 	_client->sendData( "/test/string", "Halli" );
 	_client->sendData( "/test/string", QString( "Galli" ) );
 	_client->sendData( "/test/double", 0.005 );
@@ -55,6 +56,9 @@ int main( int argc, char** argv ) {
 
 	_lineinput->connect( _lineinput, SIGNAL( textChanged( QString ) ), _client, SLOT( sendData( QString ) ) );
 
+	QSlider* slider = new QSlider( 0, 100, 10, 50, Qt::Horizontal, mw );
+	OSC::ClientPath* slideraction = new OSC::ClientPath( _client, "/slider", QVariant::Int );
+	QObject::connect( slider, SIGNAL( valueChanged( int ) ), slideraction, SLOT( data( int ) ) );
 	mw->show();
 
 	qapp->setMainWidget( mw );

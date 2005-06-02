@@ -24,14 +24,18 @@
 #include <lo/lo.h>
 #include <qobject.h>
 #include <qvariant.h>
+#include <qmap.h>
 
 namespace OSC {
 
 	int generic_handler( const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data );
 	void error( int num, const char *m, const char *path );
 
+	class ServerPath;
+
 	class Server : public QObject
 	{
+		friend class ServerPath;
 	Q_OBJECT
 	public:
 		Server( QObject*, const char* =0 );
@@ -46,9 +50,27 @@ namespace OSC {
 	signals:
 		void gotData( QString, QVariant );
 	private:
+		QMap <QString,ServerPath*> _paths;
 		lo_server_thread _server;
 	};
 
+	class ServerPath : public QObject
+	{
+		Q_OBJECT
+		public:
+			ServerPath( Server*, QString path, QVariant::Type type );
+			~ServerPath();
+			void emitdata( QVariant d );
+		signals:
+			void data();
+			void data( QVariant );
+			void data( QString );
+			void data( int );
+		private:
+			Server* _server;
+			QString _path;
+			QVariant::Type _type;
+	};
 };
 
 #endif // OSCSERVER_H

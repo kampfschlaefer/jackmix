@@ -20,8 +20,9 @@
 
 #include <iostream>
 #include <qapplication.h>
+#include <qslider.h>
 
-#include "textedit.h"
+//#include "textedit.h"
 #include "osc_server.h"
 
 int main( int argc, char** argv ) {
@@ -31,13 +32,24 @@ int main( int argc, char** argv ) {
 
 	OSC::Server* _oscserver = new OSC::Server();
 
-	TextEdit *mw = new TextEdit();
-	const char* signal = SIGNAL( gotData( QString, QVariant ) );
-	const char* slot = SLOT( appendData( QString, QVariant ) );
-	qDebug( "! %s -> %s ? %s", signal, slot, ( QObject::connect( _oscserver, signal, mw, slot ) )?"True":"False" );
-	mw->show();
+	OSC::ServerPath *quitaction = new OSC::ServerPath( _oscserver, "/quit", QVariant::Invalid );
+	QObject::connect( quitaction, SIGNAL( data() ), qapp, SLOT( quit() ) );
 
-	qapp->setMainWidget( mw );
+//	TextEdit *mw = new TextEdit();
+//	const char* signal = SIGNAL( gotData( QString, QVariant ) );
+//	const char* slot = SLOT( appendData( QString, QVariant ) );
+//	qDebug( "! %s -> %s ? %s", signal, slot, ( QObject::connect( _oscserver, signal, mw, slot ) )?"True":"False" );
+//	mw->show();
+
+//	qapp->setMainWidget( mw );
+
+	QSlider *slider = new QSlider( 0, 100, 10, 50, Qt::Horizontal, 0 );
+	slider->setDisabled( true );
+	OSC::ServerPath* _slideraction = new OSC::ServerPath( _oscserver, "/slider", QVariant::Int );
+	QObject::connect( _slideraction, SIGNAL( data( int ) ), slider, SLOT( setValue( int ) ) );
+
+	qapp->setMainWidget( slider );
+	slider->show();
 
 	int ret = qapp->exec();
 	delete _oscserver;

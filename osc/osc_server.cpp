@@ -52,8 +52,10 @@ void Server::stop() {
 }
 
 void Server::data( const char* path, QVariant data ) {
-//	qDebug( "Server::data( %s, %s(%s) )", path, data.toString().latin1(), data.typeName() );
-	emit gotData( path, data );
+	qDebug( "Server::data( %s, %s(%s) )", path, data.toString().latin1(), data.typeName() );
+	//emit gotData( path, data );
+	if ( _paths[ path ] )
+		_paths[ path ]->emitdata( data );
 }
 
 void OSC::error( int num, const char *msg, const char *path ) {
@@ -89,5 +91,34 @@ int OSC::generic_handler( const char *path, const char *types, lo_arg **argv, in
 		_server->data( path );
 //	printf( "\n" );
 
+	qApp->wakeUpGuiThread();
 	return 1;
 }
+
+ServerPath::ServerPath( Server* server, QString path, QVariant::Type type )
+	: QObject( server )
+	, _server( server )
+	, _path( path )
+	, _type( type )
+{
+	qDebug( "ServerPath: Size of _paths: %i", _server->_paths.size() );
+	_server->_paths.insert( _path, this, false );
+	qDebug( "ServerPath: Size of _paths: %i", _server->_paths.size() );
+}
+
+ServerPath::~ServerPath() {
+	qDebug( "~ServerPath: Size of _paths: %i", _server->_paths.size() );
+	_server->_paths.remove( _path );
+	qDebug( "~ServerPath: Size of _paths: %i", _server->_paths.size() );
+}
+
+void ServerPath::emitdata( QVariant d ) {
+	if ( _type == QVariant::Invalid )
+		emit data();
+	else if ( _type == QVariant::String )
+		emit data( d.toString() );
+	else if ( _type == QVariant::Int )
+		emit data( d.toInt() );
+	else emit data( d );
+}
+

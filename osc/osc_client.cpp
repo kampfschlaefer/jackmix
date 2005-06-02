@@ -48,15 +48,15 @@ void Client::sendData( QString path, QVariant data ) {
 	if ( _connection ) {
 		if ( !data.isNull() ) {
 			if ( data.type() == QVariant::String || data.type() == QVariant::CString )
-				qDebug( "Return %i", lo_send( _connection, path.latin1(), "s", data.toString().latin1() ) );
+				/*qDebug( "Return %i",*/ lo_send( _connection, path.latin1(), "s", data.toString().latin1() )/* )*/;
 			else
 				if ( data.type()==QVariant::Double )
-				qDebug( "Return %i", lo_send( _connection, path.latin1(), "d", data.toDouble() ) );
+				/*qDebug( "Return %i",*/ lo_send( _connection, path.latin1(), "d", data.toDouble() )/* )*/;
 			else
 				if ( data.type()==QVariant::Int || data.type()==QVariant::UInt )
-				qDebug( "Return %i", lo_send( _connection, path.latin1(), "i", data.toInt() ) );
+				/*qDebug( "Return %i",*/ lo_send( _connection, path.latin1(), "i", data.toInt() )/* )*/;
 		} else {
-			qDebug( "Return %i", lo_send( _connection, path.latin1(), NULL ) );
+			/*qDebug( "Return %i",*/ lo_send( _connection, path.latin1(), NULL )/* )*/;
 		}
 		qDebug( "Error of the last command: %i:%s", lo_address_errno( _connection ), lo_address_errstr( _connection ) );
 		if ( lo_address_errno( _connection ) == 111 ) {
@@ -66,3 +66,22 @@ void Client::sendData( QString path, QVariant data ) {
 	} else qWarning( "Not Connected!" );
 }
 
+ClientPath::ClientPath( Client* client, QString path, QVariant::Type type )
+	: QObject( client )
+	, _client( client )
+	, _path( path )
+	, _type( type )
+{
+	qDebug( "ClientPath: Size of _paths: %i", _client->_paths.size() );
+	_client->_paths.insert( _path, this, false );
+	qDebug( "ClientPath: Size of _paths: %i", _client->_paths.size() );
+}
+ClientPath::~ClientPath() {
+	qDebug( "~ClientPath: Size of _paths: %i", _client->_paths.size() );
+	_client->_paths.remove( _path );
+	qDebug( "~ClientPath: Size of _paths: %i", _client->_paths.size() );
+}
+
+void ClientPath::data() { _client->sendData( _path ); }
+void ClientPath::data( QString d ) { _client->sendData( _path, d ); }
+void ClientPath::data( int d ) { _client->sendData( _path, d ); }

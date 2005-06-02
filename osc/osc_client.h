@@ -23,12 +23,16 @@
 
 #include <qobject.h>
 #include <qvariant.h>
+#include <qmap.h>
 #include <lo/lo.h>
 
 namespace OSC {
 
+	class ClientPath;
+
 	class Client : public QObject
 	{
+		friend class ClientPath;
 	Q_OBJECT
 	public:
 		Client( QObject*, const char* =0 );
@@ -42,9 +46,25 @@ namespace OSC {
 		void disconnected();
 		void connected();
 	private:
+		QMap <QString,ClientPath*> _paths;
 		lo_address _connection;
 	};
 
+	class ClientPath : public QObject
+	{
+	Q_OBJECT
+	public:
+		ClientPath( Client* client, QString path, QVariant::Type type );
+		~ClientPath();
+	public slots:
+		void data();
+		void data( QString );
+		void data( int );
+	private:
+		Client* _client;
+		QString _path;
+		QVariant::Type _type;
+	};
 };
 
 #endif // OSC_CLIENT_H
