@@ -21,6 +21,7 @@
 #include <iostream>
 #include <qapplication.h>
 #include <qslider.h>
+#include <qlabel.h>
 
 #include "osc_server.h"
 #include "osc_connection.h"
@@ -31,16 +32,20 @@ int main( int argc, char** argv ) {
 
 	OSC::ConnectionServer* _oscconnectionserver = new OSC::ConnectionServer( "5282", qapp );
 
-	OSC::ServerPath *quitaction = _oscconnectionserver->newServerPath( "/quit", QVariant::Invalid );
+	OSC::ServerPath *quitaction = _oscconnectionserver->newServerPath( "/quit", QVariant::Invalid, false );
 	QObject::connect( quitaction, SIGNAL( data() ), qapp, SLOT( quit() ) );
 
-	QSlider *slider = new QSlider( 0, 100, 10, 50, Qt::Horizontal, 0 );
-	slider->setDisabled( true );
-	OSC::ServerPath* _slideraction = _oscconnectionserver->newServerPath( "/slider", QVariant::Int );
-	QObject::connect( _slideraction, SIGNAL( data( int ) ), slider, SLOT( setValue( int ) ) );
+//	QSlider *slider = new QSlider( 0, 100, 10, 50, Qt::Horizontal, 0 );
+//	slider->setDisabled( true );
+	( void* ) /*OSC::ServerPath* _slideraction = */_oscconnectionserver->newServerPath( "/slider", QVariant::Int );
+//	QObject::connect( _slideraction, SIGNAL( data( int ) ), slider, SLOT( setValue( int ) ) );
 
-	qapp->setMainWidget( slider );
-	slider->show();
+//	qapp->setMainWidget( slider );
+//	slider->show();
+
+	QWidget* w = new QLabel( "No slider needed anymore...", 0 );
+	w->show();
+	qapp->setMainWidget( w );
 
 	int ret = qapp->exec();
 	delete _oscconnectionserver;

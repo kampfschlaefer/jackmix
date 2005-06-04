@@ -1,5 +1,5 @@
 /*
-    Copyright ( C ) 2004 Arnold Krille <arnold@arnoldarts.de>
+    Copyright ( C ) 2005 Arnold Krille <arnold@arnoldarts.de>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -34,14 +34,16 @@ ConnectionServer::ConnectionServer( QString port, QObject* p, const char* n )
 	// Müsste StringList sein, aber String für URL geht auch...
 	_newClient = new ServerPath( _server, "/newclient", QVariant::String );
 	connect( _newClient, SIGNAL( data( QString ) ), this, SLOT( newClient( QString ) ) );
-	connect( _server, SIGNAL( gotData( QString, QVariant ) ), this, SLOT( sendData( QString, QVariant ) ) );
+	connect( _server, SIGNAL( gotData( QString, QVariant ) ), this, SLOT( forwardData( QString, QVariant ) ) );
 }
 ConnectionServer::~ConnectionServer() {
 	qDebug( "ConnectionServer::~ConnectionServer()" );
 	delete _server;
 }
 
-ServerPath* ConnectionServer::newServerPath( QString path, QVariant::Type type ) {
+ServerPath* ConnectionServer::newServerPath( QString path, QVariant::Type type, bool forward ) {
+	if ( forward )
+		_forwardpaths.append( path );
 	return new ServerPath( _server, path, type );
 }
 
@@ -59,6 +61,12 @@ void ConnectionServer::sendData( QString path, QVariant data ) {
 	for ( it = _clients.begin(); it != _clients.end(); ++it ) {
 		( *it )->sendData( path, data );
 	}
+}
+
+void ConnectionServer::forwardData( QString path, QVariant data ) {
+	qDebug( "ConnectionServer::forwardData( %s, %s )", path.latin1(), data.toString().latin1() );
+	if ( _forwardpaths.contains( path ) )
+		sendData( path, data );
 }
 
 ConnectionClient::ConnectionClient( QString host, QString port, QObject* p, const char* n )

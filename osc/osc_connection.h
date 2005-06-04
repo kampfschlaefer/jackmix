@@ -1,5 +1,5 @@
 /*
-    Copyright ( C ) 2004 Arnold Krille <arnold@arnoldarts.de>
+    Copyright ( C ) 2005 Arnold Krille <arnold@arnoldarts.de>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -36,17 +36,19 @@ namespace OSC {
 	public:
 		ConnectionServer( QString port, QObject*, const char* =0 );
 		~ConnectionServer();
-		ServerPath* newServerPath( QString path, QVariant::Type type );
+		ServerPath* newServerPath( QString path, QVariant::Type type, bool forward=true );
 	public slots:
 		void sendData( QString path, QVariant data=QVariant() );
 	private slots:
 		void newClient( QString );
 		void clientDisconnected( Client* );
+		void forwardData( QString path, QVariant data=QVariant() );
 	private:
 		Server* _server;
 		typedef QValueList <Client*> ClientList;
 		ClientList _clients;
 		ServerPath *_newClient;
+		QStringList _forwardpaths;
 	};
 
 	class ConnectionClient : public QObject {

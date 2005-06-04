@@ -28,6 +28,7 @@
 #include "osc_client.h"
 #include "osc_server.h"
 #include "osc_connection.h"
+#include "updatefilter.h"
 
 int main( int argc, char** argv ) {
 	srand( QTime::currentTime().msec() );
@@ -50,10 +51,13 @@ int main( int argc, char** argv ) {
 	_lineinput->connect( _lineinput, SIGNAL( textChanged( QString ) ), _connectionclient->client(), SLOT( sendData( QString ) ) );
 
 	QSlider* slider = new QSlider( 0, 100, 10, 50, Qt::Horizontal, mw );
+	UpdateFilter* sliderfilter = new UpdateFilter( slider );
+	QObject::connect( slider, SIGNAL( valueChanged( int ) ), sliderfilter, SLOT( dataInInternal( int ) ) );
+	QObject::connect( sliderfilter, SIGNAL( dataOutInternal( int ) ), slider, SLOT( setValue( int ) ) );
 	OSC::ClientPath* slideraction = _connectionclient->newClientPath( "/slider", QVariant::Int );
-	QObject::connect( slider, SIGNAL( valueChanged( int ) ), slideraction, SLOT( data( int ) ) );
+	QObject::connect( sliderfilter, SIGNAL( dataOut( int ) ), slideraction, SLOT( data( int ) ) );
 	OSC::ServerPath* sliderupdate = _connectionclient->newServerPath( "/slider", QVariant::Int );
-	QObject::connect( sliderupdate, SIGNAL( data( int ) ), slider, SLOT( setValue( int ) ) );
+	QObject::connect( sliderupdate, SIGNAL( data( int ) ), sliderfilter, SLOT( dataIn( int ) ) );
 	mw->show();
 
 	qapp->setMainWidget( mw );
