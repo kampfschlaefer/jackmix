@@ -1,5 +1,5 @@
 /*
-    Copyright ( C ) 2005 Arnold Krille <arnold@arnoldarts.de>
+    Copyright ( C ) 2004 Arnold Krille <arnold@arnoldarts.de>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,57 +17,52 @@
     Boston, MA 02111-1307, USA.
 
 */
-
-#ifndef OSC_CLIENT_H
-#define OSC_CLIENT_H
+#ifndef OSC_CONNECTION_H
+#define OSC_CONNECTION_H
 
 #include <qobject.h>
+#include <qvaluelist.h>
 #include <qvariant.h>
-#include <qmap.h>
-#include <lo/lo.h>
 
 namespace OSC {
 
+	class Server;
+	class ServerPath;
+	class Client;
 	class ClientPath;
 
-	class Client : public QObject
-	{
-		friend class ClientPath;
+	class ConnectionServer : public QObject {
 	Q_OBJECT
 	public:
-		Client( QObject*, const char* =0 );
-		Client( QString url, QObject*, const char* =0 );
-		Client( QString host=0, QString port="7770", QObject* =0, const char* =0 );
-		~Client();
+		ConnectionServer( QString port, QObject*, const char* =0 );
+		~ConnectionServer();
+		ServerPath* newServerPath( QString path, QVariant::Type type );
 	public slots:
-		void connect( QString host=0, QString port="7770" );
 		void sendData( QString path, QVariant data=QVariant() );
-
-	signals:
-		void disconnected();
-		void disconnected( Client* );
-		void connected();
+	private slots:
+		void newClient( QString );
+		void clientDisconnected( Client* );
 	private:
-		void connect( lo_address address );
-		QMap <QString,ClientPath*> _paths;
-		lo_address _connection;
+		Server* _server;
+		typedef QValueList <Client*> ClientList;
+		ClientList _clients;
+		ServerPath *_newClient;
 	};
 
-	class ClientPath : public QObject
-	{
+	class ConnectionClient : public QObject {
 	Q_OBJECT
 	public:
-		ClientPath( Client* client, QString path, QVariant::Type type );
-		~ClientPath();
-	public slots:
-		void data();
-		void data( QString );
-		void data( int );
+		ConnectionClient( QString host, QString port, QObject*, const char* =0 );
+		~ConnectionClient();
+		ClientPath* newClientPath( QString path, QVariant::Type type );
+		ServerPath* newServerPath( QString path, QVariant::Type type );
+		Client* client() { return _client; }
 	private:
+		Server* _server;
 		Client* _client;
-		QString _path;
-		QVariant::Type _type;
 	};
+
 };
 
-#endif // OSC_CLIENT_H
+#endif // OSC_CONNECTION_H
+

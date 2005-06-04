@@ -22,36 +22,27 @@
 #include <qapplication.h>
 #include <qslider.h>
 
-//#include "textedit.h"
 #include "osc_server.h"
+#include "osc_connection.h"
 
 int main( int argc, char** argv ) {
-	//std::cout << "JackMix-Server starting" << std::endl;
 
 	QApplication *qapp = new QApplication( argc, argv );
 
-	OSC::Server* _oscserver = new OSC::Server();
+	OSC::ConnectionServer* _oscconnectionserver = new OSC::ConnectionServer( "5282", qapp );
 
-	OSC::ServerPath *quitaction = new OSC::ServerPath( _oscserver, "/quit", QVariant::Invalid );
+	OSC::ServerPath *quitaction = _oscconnectionserver->newServerPath( "/quit", QVariant::Invalid );
 	QObject::connect( quitaction, SIGNAL( data() ), qapp, SLOT( quit() ) );
-
-//	TextEdit *mw = new TextEdit();
-//	const char* signal = SIGNAL( gotData( QString, QVariant ) );
-//	const char* slot = SLOT( appendData( QString, QVariant ) );
-//	qDebug( "! %s -> %s ? %s", signal, slot, ( QObject::connect( _oscserver, signal, mw, slot ) )?"True":"False" );
-//	mw->show();
-
-//	qapp->setMainWidget( mw );
 
 	QSlider *slider = new QSlider( 0, 100, 10, 50, Qt::Horizontal, 0 );
 	slider->setDisabled( true );
-	OSC::ServerPath* _slideraction = new OSC::ServerPath( _oscserver, "/slider", QVariant::Int );
+	OSC::ServerPath* _slideraction = _oscconnectionserver->newServerPath( "/slider", QVariant::Int );
 	QObject::connect( _slideraction, SIGNAL( data( int ) ), slider, SLOT( setValue( int ) ) );
 
 	qapp->setMainWidget( slider );
 	slider->show();
 
 	int ret = qapp->exec();
-	delete _oscserver;
+	delete _oscconnectionserver;
 	return ret;
 }

@@ -35,6 +35,7 @@ jackmix_osc_server_SOURCES = \
 	textedit.cpp \
 	jackmix_osc_server_main.cpp
 libqosc_la_SOURCES = \
+	osc_connection.cpp \
 	osc_server.cpp \
 	osc_client.cpp
 

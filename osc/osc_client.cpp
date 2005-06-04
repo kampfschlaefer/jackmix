@@ -27,6 +27,11 @@ Client::Client( QObject* p, const char* n ) : QObject( p,n ), _connection( 0 ) {
 	qDebug( "Client::Client( QObject %p, const char* %s )", p, n );
 	qDebug( "Client::Client() _connection = %p", _connection );
 }
+Client::Client( QString url, QObject* p, const char* n ) : QObject( p,n ), _connection( 0 ) {
+	qDebug( "Client::Client( url %s, QObject %p, const char* %s )", url.latin1(), p, n );
+	connect( lo_address_new_from_url( url.latin1() ) );
+	qDebug( "Client::Client() _connection = %p", _connection );
+}
 Client::Client( QString host, QString port, QObject* p, const char* n ) : QObject( p,n ), _connection( 0 ) {
 	qDebug( "Client::Client( host %s, port %s, QObject %p, const char* %s )", host.latin1(), port.latin1(), p, n );
 	connect( host, port );
@@ -37,9 +42,12 @@ Client::~Client() {
 
 void Client::connect( QString host, QString port ) {
 	qDebug( "Client::connect( %s, %s )", host.latin1(), port.latin1() );
-	_connection = lo_address_new( host.latin1(), port.latin1() );
+	connect( lo_address_new( host.latin1(), port.latin1() ) );
+}
+void Client::connect( lo_address address ) {
+	_connection = address;
 	qDebug( "error: %s", lo_address_errstr( _connection ) );
-	qDebug( "_connection: %p", _connection );
+//	qDebug( "_connection: %p", _connection );
 	if ( _connection ) emit connected();
 }
 
@@ -62,6 +70,8 @@ void Client::sendData( QString path, QVariant data ) {
 		if ( lo_address_errno( _connection ) == 111 ) {
 			_connection = 0;
 			emit disconnected();
+			emit disconnected( this );
+			qWarning( "Got disconnected!" );
 		}
 	} else qWarning( "Not Connected!" );
 }

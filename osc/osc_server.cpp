@@ -52,8 +52,8 @@ void Server::stop() {
 }
 
 void Server::data( const char* path, QVariant data ) {
-	qDebug( "Server::data( %s, %s(%s) )", path, data.toString().latin1(), data.typeName() );
-	//emit gotData( path, data );
+	//qDebug( "Server::data( %s, %s(%s) )", path, data.toString().latin1(), data.typeName() );
+	emit gotData( path, data );
 	if ( _paths[ path ] )
 		_paths[ path ]->emitdata( data );
 }
@@ -101,15 +101,14 @@ ServerPath::ServerPath( Server* server, QString path, QVariant::Type type )
 	, _path( path )
 	, _type( type )
 {
-	qDebug( "ServerPath: Size of _paths: %i", _server->_paths.size() );
+//	qDebug( "ServerPath: Size of _paths: %i", _server->_paths.size() );
 	_server->_paths.insert( _path, this, false );
-	qDebug( "ServerPath: Size of _paths: %i", _server->_paths.size() );
+	qDebug( "ServerPath: Added path \"%s\"... \nNew size of _paths: %i", _path.latin1(), _server->_paths.size() );
 }
 
 ServerPath::~ServerPath() {
-	qDebug( "~ServerPath: Size of _paths: %i", _server->_paths.size() );
 	_server->_paths.remove( _path );
-	qDebug( "~ServerPath: Size of _paths: %i", _server->_paths.size() );
+	qDebug( "~ServerPath: Deleting... Size of _paths: %i", _server->_paths.size() );
 }
 
 void ServerPath::emitdata( QVariant d ) {
