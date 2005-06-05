@@ -25,7 +25,7 @@
 #include <qstyle.h>
 
 using namespace JackMix;
-using namespace GUI;
+using namespace JackMix::GUI;
 
 Slider::Slider( float value, float min, float max, int precision, float pagestep, QWidget* p, QString valuestring, const char* n )
 	: QWidget( p,n )

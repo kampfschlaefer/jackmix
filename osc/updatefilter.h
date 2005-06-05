@@ -22,25 +22,54 @@
 
 #include <qobject.h>
 
+/// Stopps an internal signal being sent outside if there is already a signal relayed from the outside to the inside.
 /**
- * Stopps an internal signal being sent outside if there is already a signal
- * relayed from the outside to the inside.
+ * <dl>
+ * <dt>The Setup:<dd>
+ *    A slider representing a value of an object but the object being far
+ *    away. And there are several Sliders representing the objects value in
+ *    different hosts. And all the sliders should get the changes from the
+ *    others.
+ * <dl>The Solution:<dd>
+ *    Connect every slider with the connections from an to the server and let
+ *    the server update all the clients.
+ * <dt>The Problem:<dd>
+ *    A slider being updated by the server sends the valueChanged-signal
+ *    himself to the server, which in return notifies all the sliders, an
+ *    infinite loop is born.
+ * <dt>The <b>REAL</b> Solution:<dd>
+ *    Plug the UpdateFilter between the server-connection and the slider.
+ *    Everytime the server sends updates the filter will block the signals
+ *    from the inside.
+ * </dl>
+ *
+ * <dl>
+ * <dt>The ports ( signals/slots ) to use:<dd>
+ *    Connect the externals to dataIn() / dataOut() and the internal, to-be-filtered
+ *    objects to dataInInternal() / dataOutInternal().
+ * </dl>
  */
 class UpdateFilter : public QObject
 {
 	Q_OBJECT
 	public:
+		/// Simple Qt constructor
 		UpdateFilter( QObject* p, const char* n=0 ) 
 			: QObject( p,n )
 			, _inupdate( false )
 			, c( 0 )
 		{ }
+		/// Simple destructor
 		~UpdateFilter() {}
 	public slots:
+		/// External data input for integer
 		void dataIn( int );
+		/// Internal filtered data input for integer
 		void dataInInternal( int );
 	signals:
+		/// External filtered data output for integer
 		void dataOut( int );
+		/// Internal data output for integer
 		void dataOutInternal( int );
 	private:
 		bool _inupdate;

@@ -26,6 +26,8 @@
 #include <qlayout.h>
 #include <qaction.h>
 
+using namespace JackMix;
+
 MatrixWidget::MatrixWidget( QWidget* p, const char* n ) : MixingMatrix::Widget( p,n ) {
 	QAction* quit = new QAction( "Quit", CTRL+Key_Q, this );
 	connect( quit, SIGNAL( activated() ), this, SLOT( deleteSelf() ) );

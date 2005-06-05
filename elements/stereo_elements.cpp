@@ -34,11 +34,11 @@
 #include <qaction.h>
 
 using namespace JackMix;
-using namespace MixerElements;
-using namespace MixingMatrix;
+using namespace JackMix::MixerElements;
+using namespace JackMix::MixingMatrix;
 
 /// The Factory for creating this things...
-class StereoFactory : public ElementFactory
+class StereoFactory : public JackMix::MixingMatrix::ElementFactory
 {
 public:
 	StereoFactory() : ElementFactory() { globaldebug(); }

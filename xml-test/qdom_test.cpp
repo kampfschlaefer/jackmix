@@ -22,7 +22,7 @@
 #include <iostream>
 #include <qfile.h>
 
-using namespace std;
+//using namespace std;
 
 int main() {
 	QDomDocument doc(  "mydocument" );
@@ -38,26 +38,26 @@ int main() {
 	// print out the element names of all elements that are direct children
 	// of the outermost element.
 	QDomElement docElem = doc.documentElement();
-	cout << "1: " << docElem.tagName() <<endl;
+	std::cout << "1: " << docElem.tagName() <<std::endl;
 
 	QDomElement title = doc.createElement( "title" );
 	title.appendChild( doc.createTextNode( "Testseite" ) );
-	cout << "2:" << endl;
+	std::cout << "2:" << std::endl;
 	doc.documentElement().appendChild( title );
 
-	cout << "3:" << endl;
+	std::cout << "3:" << std::endl;
 
 	QDomNode n = docElem.firstChild();
 	while (  !n.isNull() ) {
 		QDomElement e = n.toElement(); // try to convert the node to an element.
 		if (  !e.isNull() ) {
-			cout << e.tagName() << endl; // the node really is an element.
-			cout << e.text() << " childs:" << e.hasChildNodes() << endl;
+			std::cout << e.tagName() << std::endl; // the node really is an element.
+			std::cout << e.text() << " childs:" << e.hasChildNodes() << std::endl;
 		}
 		n = n.nextSibling();
 	}
 
-	cout << doc.toString() << endl;
+	std::cout << doc.toString() << std::endl;
 
 	return 0;
 }

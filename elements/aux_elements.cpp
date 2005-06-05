@@ -30,11 +30,11 @@
 #include <qpushbutton.h>
 
 using namespace JackMix;
-using namespace MixerElements;
-using namespace MixingMatrix;
+using namespace JackMix::MixerElements;
+using namespace JackMix::MixingMatrix;
 
 /// The Factory for creating this things...
-class AuxFactory : public ElementFactory
+class AuxFactory : public JackMix::MixingMatrix::ElementFactory
 {
 public:
 	AuxFactory() : ElementFactory() { globaldebug(); }

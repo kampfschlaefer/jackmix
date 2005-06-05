@@ -20,3 +20,6 @@ EXTRA_DIST = admin
 dist-hook:
 	cd $(top_distdir) && perl admin/am_edit -padmin
 	cd $(top_distdir) && $(MAKE) -f admin/Makefile.common subdirs
+
+apidocs: jackmix.doxyfile
+	doxygen $(srcdir)/jackmix.doxyfile

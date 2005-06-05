@@ -41,7 +41,7 @@
 //#include "defaults.xml"
 
 using namespace JackMix;
-using namespace MixingMatrix;
+using namespace JackMix::MixingMatrix;
 
 MainWindow::MainWindow( QWidget* p, const char* n ) : QMainWindow( p,n ), _backend( new JackBackend() ) {
 std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;

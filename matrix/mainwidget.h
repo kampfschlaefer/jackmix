@@ -28,7 +28,7 @@
 class MatrixElement;
 class QGridLayout;
 
-class MatrixWidget : public MixingMatrix::Widget {
+class MatrixWidget : public JackMix::MixingMatrix::Widget {
 Q_OBJECT
 public:
 	MatrixWidget( QWidget*, const char* =0 );
