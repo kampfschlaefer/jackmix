@@ -64,7 +64,7 @@ public:
 StereoFactory* _stereofactory = new StereoFactory();
 
 
-Mono2StereoElement::Mono2StereoElement( QStringList inchannel, QStringList outchannels, Widget* p, const char* n )
+Mono2StereoElement::Mono2StereoElement( QStringList inchannel, QStringList outchannels, MixingMatrix::Widget* p, const char* n )
 	: Element( inchannel, outchannels, p, n )
 	, dB2VolCalc( -42, 6 )
 	, _inchannel( inchannel[ 0 ] )
@@ -140,7 +140,7 @@ void Mono2StereoElement::deslave() {
 
 
 
-Stereo2StereoElement::Stereo2StereoElement( QStringList inchannels, QStringList outchannels, Widget* p, const char* n )
+Stereo2StereoElement::Stereo2StereoElement( QStringList inchannels, QStringList outchannels, MixingMatrix::Widget* p, const char* n )
 	: Element( inchannels, outchannels, p, n )
 	, dB2VolCalc( -42, 6 )
 	, _inchannel1( inchannels[ 0 ] )

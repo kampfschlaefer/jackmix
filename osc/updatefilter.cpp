@@ -34,3 +34,29 @@ void UpdateFilter::dataInInternal( int d ) {
 		emit dataOut( d );
 }
 
+void UpdateFilter::dataIn( float d )
+{
+	if ( !_inupdate ) {
+		_inupdate = true;
+		emit dataOutInternal( d );
+		_inupdate = false;
+	}
+}
+void UpdateFilter::dataInInternal( float d ) {
+	if ( !_inupdate )
+		emit dataOut( d );
+}
+
+void UpdateFilter::dataIn( QString d )
+{
+	if ( !_inupdate ) {
+		_inupdate = true;
+		emit dataOutInternal( d );
+		_inupdate = false;
+	}
+}
+void UpdateFilter::dataInInternal( QString d ) {
+	if ( !_inupdate )
+		emit dataOut( d );
+}
+

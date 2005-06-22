@@ -38,7 +38,7 @@ class AuxElement : public JackMix::MixingMatrix::Element, public dB2VolCalc
 {
 Q_OBJECT
 public:
-	AuxElement( QStringList, QStringList, MixingMatrix::Widget*, const char* =0 );
+	AuxElement( QStringList inchannel, QStringList outchannel, MixingMatrix::Widget*, const char* =0 );
 	~AuxElement();
 
 	int inchannels() const { return 1; }

@@ -22,7 +22,7 @@
 
 #include <qobject.h>
 
-/// Stopps an internal signal being sent outside if there is already a signal relayed from the outside to the inside.
+/// Stops an internal signal being sent outside if there is already a signal relayed from the outside to the inside.
 /**
  * <dl>
  * <dt>The Setup:<dd>
@@ -30,7 +30,7 @@
  *    away. And there are several Sliders representing the objects value in
  *    different hosts. And all the sliders should get the changes from the
  *    others.
- * <dl>The Solution:<dd>
+ * <dt>The Solution:<dd>
  *    Connect every slider with the connections from an to the server and let
  *    the server update all the clients.
  * <dt>The Problem:<dd>
@@ -57,7 +57,6 @@ class UpdateFilter : public QObject
 		UpdateFilter( QObject* p, const char* n=0 ) 
 			: QObject( p,n )
 			, _inupdate( false )
-			, c( 0 )
 		{ }
 		/// Simple destructor
 		~UpdateFilter() {}
@@ -66,14 +65,29 @@ class UpdateFilter : public QObject
 		void dataIn( int );
 		/// Internal filtered data input for integer
 		void dataInInternal( int );
+		/// External data input for float
+		void dataIn( float );
+		/// Internal filtered data input for float
+		void dataInInternal( float );
+		/// External data input for QString
+		void dataIn( QString );
+		/// Internal filtered data input for QString
+		void dataInInternal( QString );
 	signals:
 		/// External filtered data output for integer
 		void dataOut( int );
 		/// Internal data output for integer
 		void dataOutInternal( int );
+		/// External filtered data output for float
+		void dataOut( float );
+		/// Internal data output for float
+		void dataOutInternal( float );
+		/// External filtered data output for QString
+		void dataOut( QString );
+		/// Internal data output for QString
+		void dataOutInternal( QString );
 	private:
 		bool _inupdate;
-		int c;
 };
 
 #endif // UPDATEFILTER_H

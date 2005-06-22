@@ -60,7 +60,7 @@ public:
 };
 AuxFactory* _auxfactory = new AuxFactory();
 
-AuxElement::AuxElement( QStringList inchannel, QStringList outchannel, Widget* p, const char* n )
+AuxElement::AuxElement( QStringList inchannel, QStringList outchannel, MixingMatrix::Widget* p, const char* n )
 	: Element( inchannel, outchannel, p, n )
 	, dB2VolCalc( -42, 6 )
 	, _inchannel( inchannel[ 0 ] )

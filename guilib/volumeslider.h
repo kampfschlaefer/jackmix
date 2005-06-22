@@ -32,10 +32,14 @@ class VolumeSlider : public QFrame, public dB2VolCalc {
 Q_OBJECT
 public:
 	/**
-		\param QString name of the Channel
-		\param float initial volume value
+		\param name name of the Channel
+		\param value initial volume value
+		\param dir the direction to slide
+		\param p the parent QWidget
+		\param showlabel wether to show a label with the name
+		\param showvalue wether to show the value as a number
 	*/
-	VolumeSlider( QString, float, Direction, QWidget*, bool showlabel=true, bool showvalue=false, const char* =0 );
+	VolumeSlider( QString name, float value, Direction dir, QWidget* p, bool showlabel=true, bool showvalue=false, const char* =0 );
 	~VolumeSlider();
 signals:
 	void valueChanged( QString, float );

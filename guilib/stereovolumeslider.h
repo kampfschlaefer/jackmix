@@ -32,12 +32,12 @@ class StereoVolumeSlider : public QFrame, public dB2VolCalc {
 Q_OBJECT
 public:
 	/**
-		\param QString channel1
-		\param QString channel2
-		\param float dbmin
-		\param float dbmax
+		\param ch1 channel1
+		\param ch2 channel2
+		\param _dbmin dbmin
+		\param _dbmax dbmax
 	*/
-	StereoVolumeSlider( QString, QString, float, float, QWidget*, const char* =0 );
+	StereoVolumeSlider( QString ch1, QString ch2, float _dbmin, float _dbmax, QWidget*, const char* =0 );
 	~StereoVolumeSlider();
 signals:
 	void valueChanged( QString, float );
