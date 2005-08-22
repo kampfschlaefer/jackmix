@@ -37,6 +37,7 @@
 #include <qscrollview.h>
 #include <qmessagebox.h>
 #include <qaction.h>
+#include <qtimer.h>
 
 //#include "defaults.xml"
 
@@ -60,7 +61,7 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	_select_action->addTo( _editmenu );
 	//_select_action->addTo( new QToolBar( this ) );
 	_editmenu->setCheckable( true );
-	_editmenu->insertItem( "Autofill", this, SLOT( autofill() ) );
+	_editmenu->insertItem( "Fill empty spaces", this, SLOT( autofill() ) );
 	_editmenu->insertSeparator();
 	_add_inchannel_action = new QAction( "Add Input...", 0, this );
 	connect( _add_inchannel_action, SIGNAL( activated() ), this, SLOT( addInput() ) );
@@ -112,6 +113,7 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	_mixerwidget->createControl( QStringList()<<"in_5", QStringList()<<"out_1"<<"out_2" );
 	_mixerwidget->createControl( QStringList()<<"in_6", QStringList()<<"out_1"<<"out_2" );
 	//_mixerwidget->autoFill();
+	QTimer::singleShot( 1, this, SLOT( autofill() ) );
 
 	//_inputswidget->createControl( QStringList()<<"in_1"<<"in_2", QStringList()<<"in_1"<<"in_2" );
 	//_inputswidget->createControl( QStringList()<<"in_3"<<"in_4", QStringList()<<"in_3"<<"in_4" );
@@ -132,9 +134,9 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	_backend->addOutput( "out_2" );
 	_backend->addOutput( "out_3" );
 
-	_debugPrint = new QAction( "DebugPrint", CTRL+Key_P, this );
-	connect( _debugPrint, SIGNAL( activated() ), _mixerwidget, SLOT( debugPrint() ) );
-	_debugPrint->addTo( _filemenu );
+//	_debugPrint = new QAction( "DebugPrint", CTRL+Key_P, this );
+//	connect( _debugPrint, SIGNAL( activated() ), _mixerwidget, SLOT( debugPrint() ) );
+//	_debugPrint->addTo( _filemenu );
 
 	connect( _showLister, SIGNAL( activated() ), _mixerwidget, SLOT( toggleConnectionLister() ) );
 }

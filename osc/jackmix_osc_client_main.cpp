@@ -28,10 +28,10 @@
 #include "osc_client.h"
 #include "osc_server.h"
 #include "osc_connection.h"
-#include "updatefilter.h"
+#include <updatefilter.h>
 
 int main( int argc, char** argv ) {
-	srand( QTime::currentTime().msec() );
+//	srand( QTime::currentTime().msec() );
 
 	QString host="localhost", port="7770";
 	for ( int i=0; i<argc; i++ ) {
