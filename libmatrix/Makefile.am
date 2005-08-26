@@ -7,27 +7,27 @@ SUBDIRS = .
 # this is the program that gets installed.  it's name is used for all
 # of the other Makefile.am variables
 #check_PROGRAMS = matrix
-noinst_LTLIBRARIES = libmixingmatrix.la
+noinst_LTLIBRARIES = libjackmix_mixingmatrix.la
 
 # set the include path for X, qt and KDE
 INCLUDES = -I$(top_srcdir)/guilib -I$(top_srcdir)/backend $(QT_INCLUDES) $(X_INCLUDES)
 
 # the library search path. 
 #jackmix_LDFLAGS = $(KDE_RPATH) $(all_libraries)
-matrix_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS)
-libmixingmatrix_la_LDFLAGS = $(QT_LDFLAGS)
+#matrix_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS)
+libjackmix_mixingmatrix_la_LDFLAGS = $(QT_LDFLAGS)
 
 # the libraries to link against.
-matrix_LDADD = libmixingmatrix.la $(top_builddir)/guilib/libjackmix_gui.la $(LIB_QT) $(LIB_XEXT) $(LIB_X11)
-libmixingmatrix_la_LIBADD = $(LIB_QT) $(LIB_XEXT) $(LIB_X11)
+#matrix_LDADD = libmixingmatrix.la $(top_builddir)/guilib/libjackmix_gui.la $(LIB_QT) $(LIB_XEXT) $(LIB_X11)
+libjackmix_mixingmatrix_la_LIBADD = $(LIB_QT) $(LIB_XEXT) $(LIB_X11)
 
 # which sources should be compiled for jackmix
-matrix_SOURCES = \
-	matrixelements.cpp \
-	mainwidget.cpp \
-	main.cpp
+#matrix_SOURCES = \
+#	matrixelements.cpp \
+#	mainwidget.cpp \
+#	main.cpp
 
-libmixingmatrix_la_SOURCES = \
+libjackmix_mixingmatrix_la_SOURCES = \
 	connectionlister.cpp \
 	mixingmatrix.cpp
 

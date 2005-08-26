@@ -8,7 +8,7 @@ lib_LTLIBRARIES = libqosc.la
 
 # set the include path for X, qt and KDE
 INCLUDES = \
-	-I$(top_srcdir)/core \
+	-I$(top_srcdir)/libcore \
 	$(LIBLO_INCLUDES) $(QT_INCLUDES)
 
 # the library search path. 
@@ -20,7 +20,7 @@ libqosc_la_LDFLAGS = $(QT_LDFLAGS) $(JACK_CFLAGS) $(LIBLO_CFLAGS)
 # the libraries to link against.
 jackmix_osc_client_LDADD = \
 	$(top_builddir)/osc/libqosc.la \
-	$(top_builddir)/core/libcore.la \
+	$(top_builddir)/libcore/libcore.la \
 	$(LIB_QT) $(JACK_LIBS)
 jackmix_osc_server_LDADD = \
 	$(top_builddir)/osc/libqosc.la \

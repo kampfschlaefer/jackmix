@@ -14,7 +14,7 @@ widgetdir = $(libdir)/designer
 
 # set the include path for X, qt and KDE
 INCLUDES         = \
-	-I$(top_srcdir)/guilib \
+	-I$(top_srcdir)/libgui \
 	$(QT_INCLUDES)
 
 # the library search path. 

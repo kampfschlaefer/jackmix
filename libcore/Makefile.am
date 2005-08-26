@@ -4,7 +4,7 @@ SUBDIRS=.
 # this is the program that gets installed.  it's name is used for all
 # of the other Makefile.am variables
 #check_PROGRAMS = jackmix_osc_client jackmix_osc_server
-lib_LTLIBRARIES = libcore.la
+lib_LTLIBRARIES = libjackmix_core.la
 
 # set the include path for X, qt and KDE
 INCLUDES = \
@@ -14,14 +14,14 @@ INCLUDES = \
 #jackmix_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 #jackmix_osc_client_LDFLAGS = $(QT_LDFLAGS) $(JACK_CFLAGS)
 #jackmix_osc_server_LDFLAGS = $(QT_LDFLAGS) $(JACK_CFLAGS)
-libcore_la_LDFLAGS = $(QT_LDFLAGS) $(JACK_CFLAGS) $(LIBLO_CFLAGS)
+libjackmix_core_la_LDFLAGS = $(QT_LDFLAGS) $(JACK_CFLAGS) $(LIBLO_CFLAGS)
 
 # the libraries to link against.
 #jackmix_osc_client_LDADD = \
 #	$(LIB_QT) $(JACK_LIBS)
 #jackmix_osc_server_LDADD = \
 #	$(LIB_QT) $(JACK_LIBS)
-libcore_la_LIBADD = \
+libjackmix_core_la_LIBADD = \
 	$(LIBLO_LIBS) \
 	$(LIB_QT)
 
@@ -32,7 +32,7 @@ libcore_la_LIBADD = \
 #jackmix_osc_server_SOURCES = \
 #	textedit.cpp \
 #	jackmix_osc_server_main.cpp
-libcore_la_SOURCES = \
+libjackmix_core_la_SOURCES = \
 	updatefilter.cpp
 
 # these are the headers for your project

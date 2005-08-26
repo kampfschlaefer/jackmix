@@ -10,10 +10,10 @@ bin_PROGRAMS = jackmix
 
 # set the include path for X, qt and KDE
 INCLUDES = \
-	-I$(top_srcdir)/matrix \
+	-I$(top_srcdir)/libmatrix \
 	-I$(top_srcdir)/backend \
-	-I$(top_srcdir)/guilib \
-	-I$(top_srcdir)/elements \
+	-I$(top_srcdir)/libgui \
+	-I$(top_srcdir)/libelements \
 	$(QT_INCLUDES)
 
 # the library search path. 
@@ -22,9 +22,9 @@ jackmix_LDFLAGS = $(QT_LDFLAGS) $(JACK_CFLAGS)
 
 # the libraries to link against.
 jackmix_LDADD = \
-	$(top_builddir)/matrix/libmixingmatrix.la \
-	$(top_builddir)/elements/libmixingelements.la \
-	../guilib/libjackmix_gui.la \
+	$(top_builddir)/libmatrix/libjackmix_mixingmatrix.la \
+	$(top_builddir)/libelements/libjackmix_mixingelements.la \
+	../libgui/libjackmix_gui.la \
 	$(top_builddir)/backend/libjackmix_backend.la \
 	$(LIB_QT) $(JACK_LIBS)
 
