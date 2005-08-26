@@ -3,7 +3,7 @@ SUBDIRS=.
 
 # this is the program that gets installed.  it's name is used for all
 # of the other Makefile.am variables
-#check_PROGRAMS = jackmix_osc_client jackmix_osc_server
+check_PROGRAMS = config_test
 lib_LTLIBRARIES = libjackmix_core.la
 
 # set the include path for X, qt and KDE
@@ -13,14 +13,13 @@ INCLUDES = \
 # the library search path. 
 #jackmix_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 #jackmix_osc_client_LDFLAGS = $(QT_LDFLAGS) $(JACK_CFLAGS)
-#jackmix_osc_server_LDFLAGS = $(QT_LDFLAGS) $(JACK_CFLAGS)
+#config_test_LDFLAGS = $(QT_LDFLAGS) $(JACK_CFLAGS)
 libjackmix_core_la_LDFLAGS = $(QT_LDFLAGS) $(JACK_CFLAGS) $(LIBLO_CFLAGS)
 
 # the libraries to link against.
 #jackmix_osc_client_LDADD = \
 #	$(LIB_QT) $(JACK_LIBS)
-#jackmix_osc_server_LDADD = \
-#	$(LIB_QT) $(JACK_LIBS)
+config_test_LDFLAGS_LDADD = libjackmix_core.la
 libjackmix_core_la_LIBADD = \
 	$(LIBLO_LIBS) \
 	$(LIB_QT)
@@ -29,10 +28,12 @@ libjackmix_core_la_LIBADD = \
 #jackmix_osc_client_SOURCES = \
 #	lineinput.cpp \
 #	jackmix_osc_client_main.cpp
-#jackmix_osc_server_SOURCES = \
-#	textedit.cpp \
-#	jackmix_osc_server_main.cpp
+
+config_test_SOURCES = \
+	configoption_test.cpp
+
 libjackmix_core_la_SOURCES = \
+	configoption.cpp \
 	updatefilter.cpp
 
 # these are the headers for your project
