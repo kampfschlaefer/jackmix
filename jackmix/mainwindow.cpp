@@ -139,6 +139,8 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 //	_debugPrint->addTo( _filemenu );
 
 	connect( _showLister, SIGNAL( activated() ), _mixerwidget, SLOT( toggleConnectionLister() ) );
+	_select_action->toggle();
+	toggleselectmode();
 }
 
 MainWindow::~MainWindow() {
