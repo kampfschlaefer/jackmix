@@ -1,2 +1,7 @@
 Wed Mar  3 22:58:36 CET 2004 - Arnold Krille <arnold@arnoldarts.de>
     o Initial Creation
+
+Fri Aug 26 10:46:00 CEST 2005 - Arnold Krille <arnold@arnoldarts.de>
+    o Preparing for version 0.1.0 including a lot of new features. This is
+      mainly meant as a preview of the things comming up
+    o The dir osc/ contains some experimental stuff for osc.
