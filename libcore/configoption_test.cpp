@@ -9,35 +9,32 @@
 int main( int, void* )
 {
 
-	ConfigOption _config( "test", QVariant::Invalid );
+	ConfigOption* _config = new ConfigOption( "test", QVariant::Invalid );
 	ConfigOption c_int( "int", QVariant::Int );
 	c_int.value( 42 );
-	_config.addChild( &c_int );
-	_config.newChild( "double", QVariant::Double );
-	_config.newChild( "string", "test" );
-	_config.newChild( "dir" );
-	_config.getOption( "test/dir" )->newChild( "first", QVariant::Int );
-	qDebug( "main.cpp: newest type is %s", QVariant::typeToName( _config.getOption( "test/dir/first" )->type() ) );
-	_config.getOption( "test/dir" )->newChild( "second" );
-	_config.getOption( "test/dir/first" )->value( 2 );
+	_config->addChild( &c_int );
+	_config->newChild( "double", QVariant::Double );
+	_config->newChild( "string", "test" );
+	_config->newChild( "dir" );
+	qDebug( "main.cpp: newest type is %s", QVariant::typeToName( _config->getOption( "test/dir" )->type() ) );
+	_config->getOption( "test/dir" )->newChild( "first", QVariant::Int );
+	qDebug( "main.cpp: newest type is %s", QVariant::typeToName( _config->getOption( "test/dir/first" )->type() ) );
+	_config->getOption( "test/dir" )->newChild( "second" );
+	_config->getOption( "test/dir/first" )->value( 2 );
 
-	_config.getOption( "test/double" )->value( 5.4 );
-	_config.debugPrint();
-	_config.getOption( "test/double" )->value( 6.0 );
-	_config.getOption( "test/double" )->debugPrint();
-
-	std::cout << _config.getOption( "test" ) << std::endl;
-	std::cout << _config.getOption( "test/int" ) << std::endl;
-	std::cout << _config.getOption( "test/dir/first" ) << std::endl;
-//	std::cout << _config.getOption( "//settings/test" ) << std::endl;
-//	std::cout << _config.getOption( "settings/test/int" ) << std::endl;
+	_config->getOption( "test/double" )->value( 5.4 );
+	_config->debugPrint();
+	_config->getOption( "test/double" )->value( 6.0 );
+	_config->getOption( "test/double" )->debugPrint();
 
 	QFile file( ".test.out" );
 	if ( file.open( IO_WriteOnly ) ) {
 		QDataStream stream( &file );
-		stream << &_config;
+		stream << _config;
 		file.close();
 	}
+	delete _config;
+	_config = 0;
 
 	ConfigOption* test = 0;
 	QFile file2( ".test.out" );
@@ -47,10 +44,19 @@ int main( int, void* )
 		test = new ConfigOption( stream );
 		file.close();
 	}
-//	std::cout << "Int's value: " << intconf.value() << std::endl;
+	test->debugPrint();
 
-//	IntOption::type tmp = intconf.value();
-//	std::cout << "IntOption::type tmp = " << tmp << std::endl;
+
+/*	ConfigOption* test2 = new ConfigOption( "test2" );
+	test2->newChild( "int", QVariant::Int );
+
+	std::cout << "Bla 1" << std::endl;
+	test2->debugPrint();
+	test2->getOption( "test2/int" )->value( 2 );
+	test2->debugPrint();
+	std::cout << "Bla 2" << std::endl;*/
+
+	std::cout << ".\n ConfigOption_Test finished!" << std::endl;
 	return 0;
 }
 

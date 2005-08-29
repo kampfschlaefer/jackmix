@@ -4,15 +4,26 @@
 
 #include <iostream>
 
+ConfigOption::~ConfigOption() {
+	qDebug( "(%s) ConfigOption::~ConfigOption()", _name.latin1() );
+	for ( ChildList::Iterator it=_childs.begin(); it!=_childs.end(); it=_childs.begin() ) {
+		qDebug( "(%s) about to delete %p", _name.latin1(), *it );
+		delete ( *it );
+		_childs.remove( it );
+		qDebug( "(%s) childcount is now: %i", _name.latin1(), _childs.size() );
+	}
+	qDebug( "(%s)...done", _name.latin1() );
+}
+
 void ConfigOption::newChild( QString n, QVariant v ) {
-	if ( _type == QVariant::Invalid )
+	if ( type() == QVariant::Invalid )
 		addChild( new ConfigOption( n, v ) );
 }
 void ConfigOption::newChild( QString n, QVariant::Type t ) {
-	qDebug( "ConfigOption::newChild( QString %s, QVariant::Type %s )", n.latin1(), QVariant::typeToName( t ) );
-	if ( _type == QVariant::Invalid )
+//	qDebug( "ConfigOption::newChild( QString %s, QVariant::Type %s )", n.latin1(), QVariant::typeToName( t ) );
+	if ( type() == QVariant::Invalid )
 		addChild( new ConfigOption( n, t ) );
-	qDebug( "New child has type %s", QVariant::typeToName( _childs[ n ]->type() ) );
+//	qDebug( "New child has type %s \nI (%s) have now %i childs.", QVariant::typeToName( _childs[ n ]->type() ), _name.latin1(), _childs.size() );
 }
 void ConfigOption::addChild( ConfigOption* n ) {
 	if ( _type == QVariant::Invalid )
@@ -32,7 +43,7 @@ ConfigOption* ConfigOption::getOption( QString n ) {
 		if ( levels == 0 )
 			return this;
 		else {
-			QString tmp = n.section( "/", 1,1 );
+			QString tmp = n.section( "/", 1,levels );
 //			qDebug( "tmp = %s", tmp.latin1() );
 			ConfigOption* ret = 0;
 			for ( ChildList::Iterator it=_childs.begin(); it!=_childs.end() && ret == 0; ++it ) {
@@ -47,8 +58,8 @@ ConfigOption* ConfigOption::getOption( QString n ) {
 
 void ConfigOption::value( QVariant n ) {
 	static bool _inupdate = false;
-	if ( !_inupdate && _type!=QVariant::Invalid ) {
-		if ( n.canCast( _type ) )
+	if ( !_inupdate && type() != QVariant::Invalid ) {
+		if ( n.canCast( type() ) )
 			_value = n;
 		_inupdate = true;
 		emit changed( _value );
@@ -57,24 +68,29 @@ void ConfigOption::value( QVariant n ) {
 		if ( _value.canCast( QVariant::String ) ) emit changed( _value.toString() );
 		_inupdate = false;
 	} else
-		qWarning( "ConfigOption::value() Either in inupdate or wrong datatype! (_inupdate=%i,_type=%s[%s|%s])", _inupdate, QVariant::typeToName( n.type() ), QVariant::typeToName( _type ), QVariant::typeToName( _value.type() ) );
+		qWarning( "ConfigOption::value() Either in inupdate or wrong datatype! (_inupdate=%i,_type=%s[%s|%s])", _inupdate, QVariant::typeToName( n.type() ), QVariant::typeToName( type() ), QVariant::typeToName( _value.type() ) );
 }
 
 
 
-ConfigOption::operator QVariant( void ) {
-	Q_ASSERT( _value.isValid() );
-	return _value;
-}
+//X ConfigOption::operator QVariant( void ) {
+//X 	Q_ASSERT( _value.isValid() );
+//X 	return _value;
+//X }
 
 void ConfigOption::debugPrint( int level ) {
 //	std::cout << "ConfigOption::debugPrint( int " << level << " )" << std::endl;
 	for ( int i=0; i<level; ++i )
 		std::cout << " + ";
 //	std::cout << _name.latin1() << "(" << QVariant::typeToName( _type ) << ")" << std::endl;
-	if ( _value.isValid() )
-		std::cout << _name.latin1() << "(" << QVariant::typeToName( _type ) << ") = " << _value.toString() << std::endl;
-	else {
+	if ( type() != QVariant::Invalid ) {
+		std::cout << _name.latin1() << "(" << QVariant::typeToName( type() ) << ") = '";
+		if ( _value.canCast( QVariant::String ) )
+			std::cout << _value.toString().latin1();
+		else
+			std::cout << "[can't cast " << QVariant::typeToName( _value.type() ) << " to string]";
+		std::cout << "'" << std::endl;
+	} else {
 		std::cout << _name.latin1() << "(Invalid)" << /*"(" << QVariant::typeToName( _type ) << ")" <<*/ std::endl;
 		for ( ChildList::Iterator it = _childs.begin(); it!=_childs.end(); ++it )
 			( *it )->debugPrint( level + 1 );

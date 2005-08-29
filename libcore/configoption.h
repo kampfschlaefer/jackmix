@@ -11,11 +11,11 @@ class ConfigOption : public QObject
 	Q_OBJECT
 	public:
 		QVariant::Type type() { return _type; }
-		ConfigOption( QString n, QVariant::Type t /*= QVariant::Invalid*/ )
-			: _type( t ) , _name( n )//, _value( 4.23 )
+		ConfigOption( QString n, QVariant::Type t = QVariant::Invalid )
+			: _type( t ) , _name( n )
 			{
-				qDebug( "ConfigOption::ConfigOption( QString %s, QVariant::Type %s )", n.latin1(), QVariant::typeToName( t ) );
-				qDebug( " Internals: _name = %s  _type = %s", _name.latin1(), QVariant::typeToName( _type ) );
+//				qDebug( "ConfigOption::ConfigOption( QString %s, QVariant::Type %s )", n.latin1(), QVariant::typeToName( t ) );
+//				qDebug( " Internals: _name = %s  _type = %s", _name.latin1(), QVariant::typeToName( type() ) );
 			}
 		ConfigOption( QString n, QVariant v )
 			: _type( v.type() ) , _name( n ), _value( v )
@@ -24,7 +24,7 @@ class ConfigOption : public QObject
 			qDebug( "ConfigOption::ConfigOption( QDataStream )" );
 			s >> _name >> _value;
 			_type = _value.type();
-			if ( _type == QVariant::Invalid ) {
+			if ( type() == QVariant::Invalid ) {
 				int count;
 				s >> count;
 				qDebug( "Found %i childs", count );
@@ -34,7 +34,7 @@ class ConfigOption : public QObject
 				qDebug( "I have now %i childs", _childs.count() );
 			}
 		}
-		virtual ~ConfigOption() {}
+		virtual ~ConfigOption();
 
 		void newChild( QString, QVariant );
 		void newChild( QString, QVariant::Type = QVariant::Invalid );
@@ -46,7 +46,7 @@ class ConfigOption : public QObject
 
 		QVariant value() const { return _value; }
 
-		operator QVariant( void );
+//		operator QVariant( void );
 		friend QDataStream& operator<<( QDataStream&, const ConfigOption* );
 		friend QDataStream& operator>>( QDataStream&, ConfigOption* );
 
