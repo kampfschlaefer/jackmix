@@ -4,33 +4,41 @@
 
 #include <iostream>
 
+ConfigOption::ConfigOption( QDataStream& s, QObject* p ) : QObject( p )/*, _value( s )*/, _value( QVariant() ) {
+//	qDebug( "ConfigOption::ConfigOption( QDataStream )" );
+	s >> _name >> _value;
+	_type = _value.type();
+//	qDebug( " _name=%s, _value=%s", _name.latin1(), _value.toString().latin1() );
+	if ( type() == QVariant::Invalid ) {
+		int count;
+		s >> count;
+//		qDebug( "Found %i childs", count );
+		for ( int i=0; i<count; ++i )
+			addChild( new ConfigOption( s, this ) );
+//		qDebug( "I have now %i childs", _childs.count() );
+	}
+}
+
 ConfigOption::~ConfigOption() {
 	qDebug( "(%s) ConfigOption::~ConfigOption()", _name.latin1() );
-	for ( ChildList::Iterator it=_childs.begin(); it!=_childs.end(); it=_childs.begin() ) {
-		qDebug( "(%s) about to delete %p", _name.latin1(), *it );
-		delete ( *it );
-		_childs.remove( it );
-		qDebug( "(%s) childcount is now: %i", _name.latin1(), _childs.size() );
-	}
-	qDebug( "(%s)...done", _name.latin1() );
 }
 
 void ConfigOption::newChild( QString n, QVariant v ) {
 	if ( type() == QVariant::Invalid )
-		addChild( new ConfigOption( n, v ) );
+		addChild( new ConfigOption( n, v, this ) );
 }
 void ConfigOption::newChild( QString n, QVariant::Type t ) {
 //	qDebug( "ConfigOption::newChild( QString %s, QVariant::Type %s )", n.latin1(), QVariant::typeToName( t ) );
 	if ( type() == QVariant::Invalid )
-		addChild( new ConfigOption( n, t ) );
+		addChild( new ConfigOption( n, t, this ) );
 //	qDebug( "New child has type %s \nI (%s) have now %i childs.", QVariant::typeToName( _childs[ n ]->type() ), _name.latin1(), _childs.size() );
 }
 void ConfigOption::addChild( ConfigOption* n ) {
 	if ( _type == QVariant::Invalid )
-		_childs[ n->_name ] = n;
+		_childs.append( n );
 }
-void ConfigOption::removeChild( ConfigOption* n ) {
-	_childs.remove( n->_name );
+void ConfigOption::removeChild( ConfigOption* /*n*/ ) {
+//	_childs.remove( n->_name ); // XXX
 }
 
 ConfigOption* ConfigOption::getOption( QString n ) {
@@ -39,15 +47,13 @@ ConfigOption* ConfigOption::getOption( QString n ) {
 	int levels = n.contains( "/" ); // + 1
 	if ( n.section( "/",0,0 ) == _name ) {
 		// The first part is our name, go on...
-//		qDebug( "levels = %i", levels );
 		if ( levels == 0 )
 			return this;
 		else {
 			QString tmp = n.section( "/", 1,levels );
-//			qDebug( "tmp = %s", tmp.latin1() );
 			ConfigOption* ret = 0;
-			for ( ChildList::Iterator it=_childs.begin(); it!=_childs.end() && ret == 0; ++it ) {
-				ret = ( *it )->getOption( tmp );
+			for ( ConfigOption* it=_childs.first(); it && ret == 0; it = _childs.next() ) {
+				ret = it->getOption( tmp );
 			}
 			return ret;
 		}
@@ -91,20 +97,18 @@ void ConfigOption::debugPrint( int level ) {
 			std::cout << "[can't cast " << QVariant::typeToName( _value.type() ) << " to string]";
 		std::cout << "'" << std::endl;
 	} else {
-		std::cout << _name.latin1() << "(Invalid)" << /*"(" << QVariant::typeToName( _type ) << ")" <<*/ std::endl;
-		for ( ChildList::Iterator it = _childs.begin(); it!=_childs.end(); ++it )
-			( *it )->debugPrint( level + 1 );
+		std::cout << _name.latin1() << "(Invalid)" << std::endl;
+		for ( ConfigOption* it = _childs.first(); it; it = _childs.next() )
+			it->debugPrint( level + 1 );
 	}
 }
 
-QDataStream& operator<<( QDataStream& s, const ConfigOption* c ) {
+QDataStream& operator<<( QDataStream& s, ConfigOption* c ) {
 	s << c->_name << c->_value;
 	if ( c->_type == QVariant::Invalid ) {
 		s << c->childrenCount();
-		for ( ConfigOption::ChildList::ConstIterator it= c->_childs.begin(); it!=c->_childs.end(); ++it ) {
-//			it.data()->debugPrint();
-			s << it.data();
-		}
+		for ( ConfigOption* it= c->_childs.first(); it; it = c->_childs.next() )
+			s << it;
 	}
 	return s;
 }
@@ -113,6 +117,7 @@ QDataStream& operator>>( QDataStream& s, ConfigOption* c ) {
 	if ( c->_type == QVariant::Invalid ) {
 		int count=0;
 		s >> count;
+		// TODO
 /*		for ( int i=0; i<count; ++i ) {
 			ConfigOption* tmp = new ConfigOption( "" );
 			s >> tmp;

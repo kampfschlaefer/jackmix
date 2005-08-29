@@ -20,7 +20,7 @@ libqosc_la_LDFLAGS = $(QT_LDFLAGS) $(JACK_CFLAGS) $(LIBLO_CFLAGS)
 # the libraries to link against.
 jackmix_osc_client_LDADD = \
 	$(top_builddir)/osc/libqosc.la \
-	$(top_builddir)/libcore/libcore.la \
+	$(top_builddir)/libcore/libjackmix_core.la \
 	$(LIB_QT) $(JACK_LIBS)
 jackmix_osc_server_LDADD = \
 	$(top_builddir)/osc/libqosc.la \

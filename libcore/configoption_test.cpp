@@ -36,6 +36,8 @@ int main( int, void* )
 	delete _config;
 	_config = 0;
 
+	qDebug( "\n\nTesting disk-IO\nLoading a config...\n\n" );
+
 	ConfigOption* test = 0;
 	QFile file2( ".test.out" );
 	if ( file.open( IO_ReadOnly ) ) {
