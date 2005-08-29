@@ -8,22 +8,23 @@ lib_LTLIBRARIES = libjackmix_core.la
 
 # set the include path for X, qt and KDE
 INCLUDES = \
-	$(LIBLO_INCLUDES) $(QT_INCLUDES)
+	$(QT_INCLUDES)
 
 # the library search path. 
 #jackmix_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 #jackmix_osc_client_LDFLAGS = $(QT_LDFLAGS) $(JACK_CFLAGS)
-#config_test_LDFLAGS = $(QT_LDFLAGS) $(JACK_CFLAGS)
-libjackmix_core_la_LDFLAGS = $(QT_LDFLAGS) $(JACK_CFLAGS) $(LIBLO_CFLAGS)
+config_test_LDFLAGS = $(QT_LDFLAGS)
+libjackmix_core_la_LDFLAGS = $(QT_LDFLAGS)
 
 # the libraries to link against.
 #jackmix_osc_client_LDADD = \
 #	$(LIB_QT) $(JACK_LIBS)
-config_test_LDFLAGS_LDADD = libjackmix_core.la
+config_test_LDADD = libjackmix_core.la $(LIB_QT)
 libjackmix_core_la_LIBADD = \
 	$(LIBLO_LIBS) \
 	$(LIB_QT)
 
+libjackmix_core_la_CXXFLAGS = -DQT_FATAL_ASSERT
 # which sources should be compiled for jackmix
 #jackmix_osc_client_SOURCES = \
 #	lineinput.cpp \
