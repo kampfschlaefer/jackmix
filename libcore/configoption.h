@@ -10,6 +10,7 @@ class ConfigOption : public QObject
 {
 	Q_OBJECT
 	public:
+		enum OverwriteMode { OnlyNew, ValuesandNew, Everything };
 		QVariant::Type type() { return _type; }
 		ConfigOption( QString n, QVariant::Type t = QVariant::Invalid, QObject* p=0 )
 			: QObject( p ), _type( t ) , _name( n )
@@ -32,6 +33,8 @@ class ConfigOption : public QObject
 		ConfigOption* getOption( QString );
 
 		QVariant value() const { return _value; }
+
+		void fromDataStream( QDataStream&, OverwriteMode );
 
 //		operator QVariant( void );
 		friend QDataStream& operator<<( QDataStream&, ConfigOption* );

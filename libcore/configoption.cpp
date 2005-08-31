@@ -78,6 +78,22 @@ void ConfigOption::value( QVariant n ) {
 }
 
 
+void ConfigOption::fromDataStream( QDataStream& s, OverwriteMode m ) {
+	QString new_name;
+	QVariant new_value;
+	s >> new_name >> new_value;
+	if ( m == Everything ) {
+		_name = new_name;
+		_value = new_value;
+		_type = _value.type();
+	} else if ( m == ValuesandNew && new_name == _name && new_value.type() == _type ) {
+		_value = new_value;
+	}
+	int childcount;
+	s >> childcount;
+	/* TODO
+	 */
+}
 
 //X ConfigOption::operator QVariant( void ) {
 //X 	Q_ASSERT( _value.isValid() );
@@ -113,6 +129,7 @@ QDataStream& operator<<( QDataStream& s, ConfigOption* c ) {
 	return s;
 }
 QDataStream& operator>>( QDataStream& s, ConfigOption* c ) {
+#if 0
 	s >> c->_name >> c->_value;
 	if ( c->_type == QVariant::Invalid ) {
 		int count=0;
@@ -125,6 +142,7 @@ QDataStream& operator>>( QDataStream& s, ConfigOption* c ) {
 		}*/
 		qDebug( "Said to be %i childs", count );
 	}
+#endif
 	return s;
 }
 
