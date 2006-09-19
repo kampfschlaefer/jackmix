@@ -21,16 +21,16 @@
 #include "qfloatslider.h"
 #include "qfloatslider.moc"
 
-#include <qslider.h>
-#include <qlayout.h>
+#include <QtGui/QSlider>
+#include <QtGui/QLayout>
 
-QFloatSlider::QFloatSlider( QWidget* p, const char* n ) : QFrame( p,n ) {
+QFloatSlider::QFloatSlider( QWidget* p, const char* n ) : QFrame( p ) {
 	init( 0,0,0,0,1,JackMix::LeftToRight );
 }
-QFloatSlider::QFloatSlider( JackMix::Direction o, QWidget* p, const char* n ) : QFrame( p,n ) {
+QFloatSlider::QFloatSlider( JackMix::Direction o, QWidget* p, const char* n ) : QFrame( p ) {
 	init( 0,0,0,0,1,o );
 }
-QFloatSlider::QFloatSlider( float value, float min, float max, float pagestep, int precision, JackMix::Direction o, QWidget* p, const char* n ) : QFrame( p,n ) {
+QFloatSlider::QFloatSlider( float value, float min, float max, float pagestep, int precision, JackMix::Direction o, QWidget* p, const char* n ) : QFrame( p ) {
 	init( value, min, max, pagestep, precision, o );
 }
 
@@ -42,7 +42,7 @@ void QFloatSlider::init( float value, float min, float max, float pagestep, int 
 	//setFrameStyle( QFrame::Panel|QFrame::Sunken );
 	//setMargin( 1 );
 	//setLineWidth( 1 );
-	QBoxLayout* _layout = new QBoxLayout( this, QBoxLayout::LeftToRight, 2 );
+	QBoxLayout* _layout = new QBoxLayout( QBoxLayout::LeftToRight, this );
 	if ( _dir == JackMix::LeftToRight || _dir == JackMix::RightToLeft )
 		_slider = new QSlider( Qt::Horizontal, this );
 	else

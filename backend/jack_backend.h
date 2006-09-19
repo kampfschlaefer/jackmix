@@ -21,9 +21,9 @@
 #ifndef JACKMIX_JACK_BACKEND_H
 #define JACKMIX_JACK_BACKEND_H
 
-#include <qmap.h>
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtCore/QMap>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 #include <jack/jack.h>
 
 #include "backend_interface.h"

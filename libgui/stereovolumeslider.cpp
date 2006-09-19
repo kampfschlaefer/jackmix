@@ -23,12 +23,12 @@
 
 #include "qfloatslider.h"
 #include "qtickmarks.h"
-#include <qlayout.h>
+#include <QtGui/QLayout>
 
 using namespace JackMix;
 
 StereoVolumeSlider::StereoVolumeSlider( QString ch1, QString ch2, float _dbmin, float _dbmax, QWidget* p, const char* n )
- : QFrame( p,n )
+ : QFrame( p )
  , dB2VolCalc( _dbmin, _dbmax )
  , _balance( 0 )
  , _volume( 1 )
@@ -39,7 +39,8 @@ StereoVolumeSlider::StereoVolumeSlider( QString ch1, QString ch2, float _dbmin, 
 	QFloatSlider* tmp = new QFloatSlider( 0,-1,1,0.1,200, LeftToRight,this );
 	connect( tmp, SIGNAL( valueChanged( float ) ), this, SLOT( balanceChanged( float ) ) );
 	layout->addWidget( tmp );
-	QHBoxLayout* layout2 = new QHBoxLayout( layout );
+	QHBoxLayout* layout2 = new QHBoxLayout( this );
+	layout->addLayout( layout2 );
 	layout2->addWidget( new QTickmarks( dbmin, dbmax, BottomToTop, posRight, this, 7 ) );
 	tmp = new QFloatSlider( 0, dbmin, dbmax, 0.1, 100, BottomToTop, this );
 	connect( tmp, SIGNAL( valueChanged( float ) ), this, SLOT( volumeChanged( float ) ) );

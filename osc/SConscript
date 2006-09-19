@@ -1,0 +1,48 @@
+#! /usr/bin/env python
+## This script is a quick test to demonstrate (and test) 
+## the bksys moc handling '#include "file.moc"' can be added .. or not
+##
+## Thomas Nagy, 2005
+## This file can be reused freely for any project (see COPYING)
+
+Import( 'env' )
+
+obj=env.qt4obj('staticlib', env)
+obj.target='libqosc'
+obj.source='\
+	osc_connection.cpp \
+	osc_server.cpp \
+	osc_client.cpp \
+'
+obj.libs="QtCore" + env['liblo_LIBS']
+obj.includes='#/ ./'
+obj.execute()
+
+testapp=env.qt4obj('program', env)
+testapp.target="jackmix_osc_client"
+testapp.source="lineinput.cpp jackmix_osc_client_main.cpp"
+testapp.libs="libqosc libjackmix_core QtCore QtGui Qt3Support" + env['liblo_LIBS']
+testapp.libpaths="#/ ./ ../libcore"
+testapp.includes="../libcore"
+testapp.execute()
+
+testapp2=env.qt4obj('program', env)
+testapp2.target="jackmix_osc_server"
+testapp2.source="textedit.cpp jackmix_osc_server_main.cpp"
+testapp2.libs="libqosc QtCore QtGui" + env['liblo_LIBS']
+testapp2.libpaths="#/ ./"
+testapp2.execute()
+#
+#testapp3=env.qt4obj('program', env)
+#testapp3.target="abstractnamedtreeitem_test"
+#testapp3.source="abstractnamedtreeitem_test.cpp"
+#testapp3.libs="libcore QtCore QtXml"
+#testapp3.libpaths="#/ ./"
+#testapp3.execute()
+#
+#testapp4=env.qt4obj('program', env)
+#testapp4.target="datasetchain_test"
+#testapp4.source="datasetchain_test.cpp"
+#testapp4.libs="libcore QtCore"
+#testapp4.libpaths="#/ ./"
+#testapp4.execute()

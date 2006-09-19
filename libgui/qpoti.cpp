@@ -20,21 +20,22 @@
 #include "qpoti.h"
 #include "qpoti.moc"
 
-#include <qbitmap.h>
-#include <qpainter.h>
-#include <qcolor.h>
-#include <qdrawutil.h>
-#include <qtimer.h>
-#include <qkeycode.h>
-#include <qpen.h>
-#include <qstring.h>
-#include <qstyle.h>
+#include <QtGui/QBitmap>
+#include <QtGui/QPainter>
+#include <QtGui/QColor>
+#include <QtGui/QMouseEvent>
+#include <QtGui/QColorGroup>
+#include <QtCore/QTimer>
+//#include <qkeycode>
+#include <QtGui/QPen>
+#include <QtCore/QString>
+#include <QtGui/QStyle>
 
 #include <math.h>
 
-#include <qpixmap.h>
-#include <qglobal.h>
-#include <qapplication.h>
+#include <QtGui/QPixmap>
+//#include <QtCore/QGlobal>
+#include <QtGui/QApplication>
 
 #include "qpixmapeffect.h"
 
@@ -55,17 +56,17 @@ struct QPoti::QPotiPrivate
 
 	bool bgDirty;
 	QPixmap bgdb;
-	QPixmap bgPixmap( const QColorGroup & colorGroup )
+	QPixmap bgPixmap( const QPalette & palette )
 	{
 		if( bgDirty || bgdb.isNull() )
 		{
-			bgdb.resize( buttonRect.size() );
+			bgdb.scaled( buttonRect.size() );
 			QPainter dbp( &bgdb );
 			dbp.setPen( Qt::NoPen );
 			QRect drawRect = bgdb.rect();
 
 			// create mask
-			QBitmap mask( bgdb.size(), true );
+			QBitmap mask( bgdb.size() );
 			QPainter maskpainter( &mask );
 			maskpainter.setPen( Qt::NoPen );
 			maskpainter.setBrush( Qt::color1 );
@@ -75,9 +76,9 @@ struct QPoti::QPotiPrivate
 
 			// inset shadow
 			QPixmap gradient( bgdb.size() );
-			gradient.fill( colorGroup.light() );
-			QPixmapEffect::gradient( gradient, colorGroup.light(), colorGroup.dark(), QPixmapEffect::DiagonalGradient );
-			dbp.setBrush( QBrush( colorGroup.button(), gradient ) );
+			gradient.fill( palette.light().color() );
+			QPixmapEffect::gradient( gradient, palette.light().color(), palette.dark().color(), QPixmapEffect::DiagonalGradient );
+			dbp.setBrush( QBrush( palette.button().color(), gradient ) );
 			dbp.drawEllipse( drawRect );
 
 			potiRect.setSize( drawRect.size() * 0.9 );
@@ -100,13 +101,13 @@ struct QPoti::QPotiPrivate
 	{
 		if( ( potiDirty || potidb.isNull() ) && ! potiRect.size().isEmpty() )
 		{
-			potidb.resize( potiRect.size() );
+			potidb.scaled( potiRect.size() );
 			QPainter dbp( &potidb );
 			dbp.setPen( Qt::NoPen );
 			QRect drawRect( potidb.rect() );
 
 			// create mask
-			QBitmap mask( potidb.size(), true );
+			QBitmap mask( potidb.size() );
 			QPainter maskpainter( &mask );
 			maskpainter.setPen( Qt::NoPen );
 			maskpainter.setBrush( Qt::color1 );
@@ -151,7 +152,7 @@ QSize QPoti::minimumSizeHint() const
 		QFontMetrics metrics( font() );
 		d->labelRect = metrics.boundingRect( d->label );
 		d->labelRect.setHeight( metrics.lineSpacing() );
-		width = QMAX( width, d->labelRect.width() + frameRect().width() - contentsRect().width() );
+		width = int( fmax( width, d->labelRect.width() + frameRect().width() - contentsRect().width() ) );
 		height += metrics.lineSpacing();
 	}
 	return QSize( width, height );
@@ -175,7 +176,7 @@ void QPoti::setText( const QString & text )
   The \e parent and \e name arguments are sent to the QWidget constructor.
 */
 QPoti::QPoti( QWidget *parent, const char *name )
-    : QFrame( parent, name, WResizeNoErase | WRepaintNoErase )
+    : QFrame( parent )
 	, d( 0 )
 {
     init();
@@ -196,8 +197,8 @@ QPoti::QPoti( QWidget *parent, const char *name )
 
 QPoti::QPoti( int minValue, int maxValue, int step,
 		  int value, QWidget *parent, const char *name )
-    : QFrame( parent, name, WResizeNoErase | WRepaintNoErase )
-	, QRangeControl( minValue, maxValue, 1, step, value )
+    : QFrame( parent )
+	, Q3RangeControl( minValue, maxValue, 1, step, value )
 	, d( 0 )
 {
     init(value);
@@ -211,8 +212,9 @@ QPoti::~QPoti()
 
 void QPoti::init(int value)
 {
+	setAttribute( Qt::WA_NoBackground );
 	d = new QPotiPrivate;
-	font().setPointSize( 8 );
+	//font().setPointSize( 8 );
 	d->potiColor.setNamedColor( "red" );
 
   timer = 0;
@@ -225,7 +227,7 @@ void QPoti::init(int value)
   m_bLabel = true;
   tickInt = 0;
 
-  setFocusPolicy( TabFocus );
+  setFocusPolicy( Qt::TabFocus );
   initTicks();
 }
 
@@ -238,7 +240,7 @@ void QPoti::initTicks()
 {
 	QRect available = contentsRect();
 	if( m_bLabel )
-		available.rTop() += d->labelRect.height();
+		available.setTop( available.top() + d->labelRect.height() );
 	d->center = available.center();
 	// make the width and height equal
 	if( available.width() > available.height() )
@@ -253,10 +255,10 @@ void QPoti::initTicks()
 	{
 		buttonRadius -= tickLength;
 		int tickSpace = static_cast<int>( tickLength );
-		d->buttonRect.rTop() += tickSpace;
-		d->buttonRect.rLeft() += tickSpace;
-		d->buttonRect.rRight() -= tickSpace;
-		d->buttonRect.rBottom() -= tickSpace;
+		d->buttonRect.setTop( d->buttonRect.top() + tickSpace );
+		d->buttonRect.setLeft( d->buttonRect.left() + tickSpace );
+		d->buttonRect.setRight( d->buttonRect.right() - tickSpace );
+		d->buttonRect.setBottom( d->buttonRect.bottom() - tickSpace );
 	}
 
 	d->potiDirty = true;
@@ -410,8 +412,8 @@ void QPoti::paintPoti( QPainter * p )
 		p2.translate( db.rect().center().x(), db.rect().center().y() );
 		p2.rotate( potiPos * 180.0 / PI );
 		QRect pointer( db.width() / -20, db.width() / -2, db.width() / 10, db.width() / 2 );
-		QBrush buttonbrush( colorGroup().button() );
-		qDrawShadePanel( &p2, pointer, colorGroup(), true, 1, &buttonbrush );
+		QBrush buttonbrush( palette().button() );
+		qDrawShadePanel( &p2, pointer, palette(), true, 1, &buttonbrush );
 		p2.end();
 
 		p->drawPixmap( d->potiRect, db );
@@ -426,7 +428,7 @@ void QPoti::reallyMovePoti( float newPos )
 {
   QPainter p;
   p.begin( this );
-  p.setPen(NoPen);
+  p.setPen(Qt::NoPen);
   potiPos = newPos;
   paintPoti(&p);
   p.end();
@@ -443,7 +445,7 @@ void QPoti::drawContents( QPainter * p )
 {
 //std::cout << "void QPoti::drawContents( QPainter * p )" << std::endl;
 	QPixmap doublebuffer( contentsRect().size() );
-	doublebuffer.fill( colorGroup().background() );
+	doublebuffer.fill( palette().background().color() );
 	QPainter dbp( &doublebuffer );
 	if( m_bLabel )
 	{
@@ -458,10 +460,10 @@ void QPoti::drawContents( QPainter * p )
 	if( ticks )
 		drawTicks( &dbp, buttonRadius, tickLength, interval );
 
-	dbp.drawPixmap( d->buttonRect, d->bgPixmap( colorGroup() ) );
+	dbp.drawPixmap( d->buttonRect, d->bgPixmap( palette() ) );
 
 	if( hasFocus() )
-		style().drawPrimitive( QStyle::PE_FocusRect, &dbp, d->buttonRect, colorGroup() );
+		style()->drawPrimitive( QStyle::PE_FrameFocusRect, 0, &dbp, /*d->buttonRect,*/ this );
 
 	paintPoti( &dbp );
 	dbp.end();
@@ -477,13 +479,13 @@ void QPoti::mousePressEvent( QMouseEvent *e )
 {
   resetState();
 
-  if ( e->button() == MidButton ) {
+  if ( e->button() == Qt::MidButton ) {
     double pos = atan2( double(e->pos().x()-d->center.x()),
                        double(- e->pos().y() + d->center.y()) );
     movePoti( pos );
     return;
   }
-  if ( e->button() != LeftButton )
+  if ( e->button() != Qt::LeftButton )
     return;
 
 
@@ -499,14 +501,16 @@ void QPoti::mousePressEvent( QMouseEvent *e )
     if ( !timer )
       timer = new QTimer( this );
     connect( timer, SIGNAL(timeout()), SLOT(repeatTimeout()) );
-    timer->start( thresholdTime, TRUE );
+    timer->setSingleShot( true );
+    timer->start( thresholdTime );
   } else  {
     state = TimingUp;
     addPage();
     if ( !timer )
       timer = new QTimer( this );
     connect( timer, SIGNAL(timeout()), SLOT(repeatTimeout()) );
-    timer->start( thresholdTime, TRUE );
+    timer->setSingleShot( true );
+    timer->start( thresholdTime );
   }
 }
 
@@ -516,13 +520,13 @@ void QPoti::mousePressEvent( QMouseEvent *e )
 void QPoti::mouseMoveEvent( QMouseEvent *e )
 {
 
-    if ( (e->state() & MidButton) ) { 		// middle button wins
+    if ( (e->buttons() & Qt::MidButton) ) { 		// middle button wins
       double pos = atan2( double(e->pos().x()-d->center.x()),
                           double(- e->pos().y()+d->center.y()) );
       movePoti( pos );
       return;
     }
-    if ( !(e->state() & LeftButton) )
+    if ( !(e->buttons() & Qt::LeftButton) )
 	return;					// left mouse button is up
     if ( state != Dragging )
 	return;
@@ -538,7 +542,7 @@ void QPoti::mouseMoveEvent( QMouseEvent *e )
 
 void QPoti::mouseReleaseEvent( QMouseEvent *e )
 {
-    if ( !(e->button() & LeftButton) )
+    if ( !(e->button() & Qt::LeftButton) )
 	return;
     resetState();
 }
@@ -571,7 +575,7 @@ void QPoti::enterEvent( QEvent * )
 
 void QPoti::movePoti( float pos )
 {
-    float newPos = QMIN( maxAngle, QMAX( -maxAngle, pos ) );
+    float newPos = fmin( maxAngle, fmax( -maxAngle, pos ) );
     int newVal = valueFromPosition( newPos );
     if ( potiVal != newVal ) {
 	potiVal = newVal;
@@ -625,28 +629,28 @@ void QPoti::keyPressEvent( QKeyEvent *e )
 {
 
     switch ( e->key() ) {
-    case Key_Left:
+    case Qt::Key_Left:
       subtractLine();
       break;
-    case Key_Right:
+    case Qt::Key_Right:
       addLine();
       break;
-    case Key_Up:
+    case Qt::Key_Up:
       addLine();
       break;
-    case Key_Down:
+    case Qt::Key_Down:
       subtractLine();
       break;
-    case Key_Prior:
+    case Qt::Key_PageUp:
       subtractPage();
       break;
-    case Key_Next:
+    case Qt::Key_PageDown:
       addPage();
       break;
-    case Key_Home:
+    case Qt::Key_Home:
       setValue( minValue() );
       break;
-    case Key_End:
+    case Qt::Key_End:
       setValue( maxValue() );
       break;
     default:
@@ -666,7 +670,7 @@ void QPoti::keyPressEvent( QKeyEvent *e )
 
 void QPoti::setValue( int value )
 {
-	QRangeControl::setValue( value );
+	Q3RangeControl::setValue( value );
 	valueChange();
 	update();
 }
@@ -704,7 +708,7 @@ void QPoti::repeatTimeout()
 	connect( timer, SIGNAL(timeout()), SLOT(subtractStep()) );
     else if ( state == TimingUp )
 	connect( timer, SIGNAL(timeout()), SLOT(addStep()) );
-    timer->start( repeatTime, FALSE );
+    timer->start( repeatTime );
 }
 
 
@@ -717,7 +721,7 @@ void QPoti::repeatTimeout()
 
 void QPoti::drawTicks( QPainter *p, double dist, double w, int i ) const
 {
-	p->setPen( colorGroup().foreground() );
+	p->setPen( palette().foreground().color() );
 	double angle,s,c;
 	double x, y;
 	for (int v=0; v<=i; v++)
@@ -772,7 +776,7 @@ void QPoti::setTickmarks( bool s )
 
 void QPoti::setTickInterval( int i )
 {
-    tickInt = QMAX( 0, i );
+    tickInt = int( fmax( 0, i ) );
     update();
 }
 

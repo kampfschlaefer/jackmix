@@ -25,11 +25,11 @@
 
 using namespace OSC;
 
-Server::Server( QObject* p, const char* n ) : QObject( p,n ), _server( 0 ) {
+Server::Server( QObject* p, const char* n ) : QObject( p ), _server( 0 ) {
 	qDebug( "Server::Server( %p, %s )", p, n );
 }
-Server::Server( QString port, QObject* p, const char* n ) : QObject( p,n ), _server( 0 ) {
-	qDebug( "Server::Server( %s, %p, %s )", port.latin1(), p, n );
+Server::Server( QString port, QObject* p, const char* n ) : QObject( p ), _server( 0 ) {
+	qDebug( "Server::Server( %s, %p, %s )", port.toStdString().c_str(), p, n );
 	start( port );
 }
 Server::~Server() {
@@ -39,7 +39,7 @@ Server::~Server() {
 
 void Server::start( QString port ) {
 	if ( !_server ) {
-		_server = lo_server_thread_new( port, OSC::error );
+		_server = lo_server_thread_new( port.toStdString().c_str(), OSC::error );
 		lo_server_thread_add_method( _server, NULL, NULL, OSC::generic_handler, this );
 		lo_server_thread_start( _server );
 	}
@@ -52,7 +52,7 @@ void Server::stop() {
 }
 
 void Server::data( const char* path, QVariant data ) {
-	//qDebug( "Server::data( %s, %s(%s) )", path, data.toString().latin1(), data.typeName() );
+	//qDebug( "Server::data( %s, %s(%s) )", path, data.toString().toStdString().c_str(), data.typeName() );
 	emit gotData( path, data );
 	if ( _paths[ path ] )
 		_paths[ path ]->emitdata( data );
@@ -77,7 +77,7 @@ int OSC::generic_handler( const char *path, const char *types, lo_arg **argv, in
 	QString qtypes = types;
 	for ( int i=0; i<argc; i++ ) {
 		QString tmp = &( argv[ i ]->S );
-		qDebug( "arg %i '%c' %p %s", i, qtypes.ref( i ).latin1(), argv[ i ], tmp.latin1() );
+		qDebug( "arg %i '%c' %p %s", i, qtypes.ref( i ).toStdString().c_str(), argv[ i ], tmp.toStdString().c_str() );
 	}
 	qDebug( "\n" );*/
 	if ( argc>=1 ) {
@@ -91,7 +91,7 @@ int OSC::generic_handler( const char *path, const char *types, lo_arg **argv, in
 		_server->data( path );
 //	printf( "\n" );
 
-	qApp->wakeUpGuiThread();
+	//qApp->wakeUpGuiThread();
 	return 1;
 }
 
@@ -102,8 +102,8 @@ ServerPath::ServerPath( Server* server, QString path, QVariant::Type type )
 	, _type( type )
 {
 //	qDebug( "ServerPath: Size of _paths: %i", _server->_paths.size() );
-	_server->_paths.insert( _path, this, false );
-	qDebug( "ServerPath: Added path \"%s\"... \nNew size of _paths: %i", _path.latin1(), _server->_paths.size() );
+	_server->_paths.insert( _path, this );
+	qDebug( "ServerPath: Added path \"%s\"... \nNew size of _paths: %i", _path.toStdString().c_str(), _server->_paths.size() );
 }
 
 ServerPath::~ServerPath() {

@@ -21,7 +21,7 @@
 #ifndef QFLOATPOTI_H
 #define QFLOATPOTI_H
 
-#include <qframe.h>
+#include <QtGui/QFrame>
 #include "float_base.h"
 
 class QFloatPoti_private;

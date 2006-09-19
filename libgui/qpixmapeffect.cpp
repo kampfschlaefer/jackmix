@@ -5,11 +5,11 @@
 
 */
 
-#include <qimage.h>
-#include <qpainter.h>
+#include <QtGui/QImage>
+#include <QtGui/QPainter>
 
 #include "qpixmapeffect.h"
-#include <qpixmap.h>
+#include <QtGui/QPixmap>
 #include "qimageeffect.h"
 
 //======================================================================
@@ -74,7 +74,7 @@ QPixmap& QPixmapEffect::gradient(QPixmap &pixmap, const QColor &ca,
     else {
         QImage image = QImageEffect::gradient(pixmap.size(), ca, cb,
                                               (QImageEffect::GradientType) eff, ncols);
-        pixmap.convertFromImage(image);
+        pixmap.fromImage(image);
     }
 
     return pixmap;
@@ -90,7 +90,7 @@ QPixmap& QPixmapEffect::unbalancedGradient(QPixmap &pixmap, const QColor &ca,
     QImage image = QImageEffect::unbalancedGradient(pixmap.size(), ca, cb,
                                  (QImageEffect::GradientType) eff,
                                  xfactor, yfactor, ncols);
-    pixmap.convertFromImage(image);
+    pixmap.fromImage(image);
 
     return pixmap;
 }
@@ -106,9 +106,9 @@ QPixmap& QPixmapEffect::unbalancedGradient(QPixmap &pixmap, const QColor &ca,
 
 QPixmap& QPixmapEffect::intensity(QPixmap &pixmap, float percent)
 {
-    QImage image = pixmap.convertToImage();
+    QImage image = pixmap.toImage();
     QImageEffect::intensity(image, percent);
-    pixmap.convertFromImage(image);
+    pixmap.fromImage(image);
 
     return pixmap;
 }
@@ -119,10 +119,10 @@ QPixmap& QPixmapEffect::intensity(QPixmap &pixmap, float percent)
 QPixmap& QPixmapEffect::channelIntensity(QPixmap &pixmap, float percent,
                                      RGBComponent channel)
 {
-    QImage image = pixmap.convertToImage();
+    QImage image = pixmap.toImage();
     QImageEffect::channelIntensity(image, percent,
                    (QImageEffect::RGBComponent) channel);
-    pixmap.convertFromImage(image);
+    pixmap.fromImage(image);
 
     return pixmap;
 }
@@ -140,9 +140,9 @@ QPixmap& QPixmapEffect::blend(QPixmap &pixmap, float initial_intensity,
 			  bool anti_dir, int ncols)
 {
 
-    QImage image = pixmap.convertToImage();
+    QImage image = pixmap.toImage();
     if (image.depth() <=8)
-        image = image.convertDepth(32); //Sloww..
+        image = image.convertToFormat(QImage::Format_RGB32); //Sloww..
 
     QImageEffect::blend(image, initial_intensity, bgnd,
                   (QImageEffect::GradientType) eff, anti_dir);
@@ -158,11 +158,11 @@ QPixmap& QPixmapEffect::blend(QPixmap &pixmap, float initial_intensity,
             dPal[i].setRgb ( tmp, tmp, tmp );
         }
         QImageEffect::dither(image, dPal, ncols);
-        pixmap.convertFromImage(image);
+        pixmap.fromImage(image);
         delete [] dPal;
     }
     else
-        pixmap.convertFromImage(image);
+        pixmap.fromImage(image);
 
     return pixmap;
 }
@@ -177,7 +177,7 @@ QPixmap& QPixmapEffect::blend(QPixmap &pixmap, float initial_intensity,
 QPixmap& QPixmapEffect::hash(QPixmap &pixmap, Lighting lite,
 			 unsigned int spacing, int ncols)
 {
-    QImage image = pixmap.convertToImage();
+    QImage image = pixmap.toImage();
     QImageEffect::hash(image, (QImageEffect::Lighting) lite, spacing);
 
     unsigned int tmp;
@@ -191,11 +191,11 @@ QPixmap& QPixmapEffect::hash(QPixmap &pixmap, Lighting lite,
             dPal[i].setRgb ( tmp, tmp, tmp );
         }
         QImageEffect::dither(image, dPal, ncols);
-        pixmap.convertFromImage(image);
+        pixmap.fromImage(image);
         delete [] dPal;
     }
     else
-        pixmap.convertFromImage(image);
+        pixmap.fromImage(image);
 
     return pixmap;
 }
@@ -212,7 +212,7 @@ void KPixmapEffect::pattern(KPixmap &pixmap, const QColor &ca,
 	const QColor &cb, unsigned pat[8])
 {
     QImage img = pattern(pixmap.size(), ca, cb, pat);
-    pixmap.convertFromImage(img);
+    pixmap.fromImage(img);
 }
 #endif
 
@@ -224,10 +224,10 @@ QPixmap QPixmapEffect::pattern(const QPixmap& pmtile, QSize size,
     if (pmtile.depth() > 8)
 	ncols = 0;
 
-    QImage img = pmtile.convertToImage();
+    QImage img = pmtile.toImage();
     QImageEffect::flatten(img, ca, cb, ncols);
     QPixmap pixmap;
-    pixmap.convertFromImage(img);
+    pixmap.fromImage(img);
 
     return QPixmapEffect::createTiled(pixmap, size);
 }
@@ -254,9 +254,9 @@ QPixmap QPixmapEffect::createTiled(const QPixmap& pixmap, QSize size)
 
 QPixmap& QPixmapEffect::fade(QPixmap &pixmap, double val, const QColor &color)
 {
-    QImage img = pixmap.convertToImage();
+    QImage img = pixmap.toImage();
     QImageEffect::fade(img, val, color);
-    pixmap.convertFromImage(img);
+    pixmap.fromImage(img);
 
     return pixmap;
 }
@@ -265,9 +265,9 @@ QPixmap& QPixmapEffect::fade(QPixmap &pixmap, double val, const QColor &color)
 // -----------------------------------------------------------------------------
 QPixmap& QPixmapEffect::toGray(QPixmap &pixmap, bool fast)
 {
-    QImage img = pixmap.convertToImage();
+    QImage img = pixmap.toImage();
     QImageEffect::toGray(img, fast);
-    pixmap.convertFromImage(img);
+    pixmap.fromImage(img);
 
     return pixmap;
 }
@@ -275,18 +275,18 @@ QPixmap& QPixmapEffect::toGray(QPixmap &pixmap, bool fast)
 // -----------------------------------------------------------------------------
 QPixmap& QPixmapEffect::desaturate(QPixmap &pixmap, float desat)
 {
-    QImage img = pixmap.convertToImage();
+    QImage img = pixmap.toImage();
     QImageEffect::desaturate(img, desat);
-    pixmap.convertFromImage(img);
+    pixmap.fromImage(img);
 
     return pixmap;
 }
 // -----------------------------------------------------------------------------
 QPixmap& QPixmapEffect::contrast(QPixmap &pixmap, int c)
 {
-    QImage img = pixmap.convertToImage();
+    QImage img = pixmap.toImage();
     QImageEffect::contrast(img, c);
-    pixmap.convertFromImage(img);
+    pixmap.fromImage(img);
 
     return pixmap;
 }
@@ -300,9 +300,9 @@ QPixmap& QPixmapEffect::contrast(QPixmap &pixmap, int c)
 // -----------------------------------------------------------------------------
 QPixmap& QPixmapEffect::dither(QPixmap &pixmap, const QColor *palette, int size)
 {
-    QImage img = pixmap.convertToImage();
+    QImage img = pixmap.toImage();
     QImageEffect::dither(img, palette, size);
-    pixmap.convertFromImage(img);
+    pixmap.fromImage(img);
 
     return pixmap;
 }
@@ -315,9 +315,9 @@ QPixmap& QPixmapEffect::dither(QPixmap &pixmap, const QColor *palette, int size)
 
 QPixmap QPixmapEffect::selectedPixmap( const QPixmap &pix, const QColor &col )
 {
-    QImage img = pix.convertToImage();
+    QImage img = pix.toImage();
     QImageEffect::selectedImage(img, col);
     QPixmap outPix;
-    outPix.convertFromImage(img);
+    outPix.fromImage(img);
     return outPix;
 }

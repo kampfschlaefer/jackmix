@@ -22,7 +22,7 @@
 #include "qfloatpoti.moc"
 
 #include "qpoti.h"
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <iostream>
 
 class QFloatPoti_private {
@@ -40,7 +40,7 @@ public:
 };
 
 QFloatPoti::QFloatPoti( float value, float min, float max, int precision, QColor color, QWidget* p, const char* n )
- : QFrame( p,n )
+ : QFrame( p )
  , d( new QFloatPoti_private() )
 {
 	QBoxLayout* _layout = new QVBoxLayout( this );
@@ -58,7 +58,7 @@ QFloatPoti::QFloatPoti( float value, float min, float max, int precision, QColor
 }
 
 QFloatPoti::QFloatPoti( QWidget* p, const char* n )
- : QFrame( p,n )
+ : QFrame( p )
  , d( new QFloatPoti_private() )
 {
 	QBoxLayout* _layout = new QVBoxLayout( this );

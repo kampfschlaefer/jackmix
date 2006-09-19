@@ -27,10 +27,10 @@
 using namespace OSC;
 
 ConnectionServer::ConnectionServer( QString port, QObject* p, const char* n )
-	: QObject( p,n )
+	: QObject( p )
 	, _server( new Server( port, this ) )
 {
-	qDebug( "ConnectionServer::ConnectionServer( %s, %p, %s )", port.latin1(), p, n );
+	qDebug( "ConnectionServer::ConnectionServer( %s, %p, %s )", port.toStdString().c_str(), p, n );
 	// Müsste StringList sein, aber String für URL geht auch...
 	_newClient = new ServerPath( _server, "/newclient", QVariant::String );
 	connect( _newClient, SIGNAL( data( QString ) ), this, SLOT( newClient( QString ) ) );
@@ -48,15 +48,15 @@ ServerPath* ConnectionServer::newServerPath( QString path, QVariant::Type type, 
 }
 
 void ConnectionServer::newClient( QString url ) {
-	qDebug( "ConnectionServer::newClient( %s )", url.latin1() );
+	qDebug( "ConnectionServer::newClient( %s )", url.toStdString().c_str() );
 	_clients.append( new Client( url, this ) );
 }
 void ConnectionServer::clientDisconnected( Client* client ) {
-	_clients.remove( client );
+	_clients.removeAll( client );
 }
 
 void ConnectionServer::sendData( QString path, QVariant data ) {
-	qDebug( "ConnectionServer::sendData( %s, %s )", path.latin1(), data.toString().latin1() );
+	qDebug( "ConnectionServer::sendData( %s, %s )", path.toStdString().c_str(), data.toString().toStdString().c_str() );
 	ClientList::iterator it;
 	for ( it = _clients.begin(); it != _clients.end(); ++it ) {
 		( *it )->sendData( path, data );
@@ -64,18 +64,18 @@ void ConnectionServer::sendData( QString path, QVariant data ) {
 }
 
 void ConnectionServer::forwardData( QString path, QVariant data ) {
-	qDebug( "ConnectionServer::forwardData( %s, %s )", path.latin1(), data.toString().latin1() );
+	qDebug( "ConnectionServer::forwardData( %s, %s )", path.toStdString().c_str(), data.toString().toStdString().c_str() );
 	if ( _forwardpaths.contains( path ) )
 		sendData( path, data );
 }
 
 ConnectionClient::ConnectionClient( QString host, QString port, QObject* p, const char* n )
-	: QObject( p,n )
+	: QObject( p )
 	, _server( new OSC::Server( QString::number( rand() ), this ) )
 	, _client( new OSC::Client( host, port, this ) )
 {
-	qDebug( "ConnectionClient::ConnectionClient( %s, %s, %p, %s )", host.latin1(), port.latin1(), p, n );
-	_client->sendData( "/newclient", _server->url().latin1() );
+	qDebug( "ConnectionClient::ConnectionClient( %s, %s, %p, %s )", host.toStdString().c_str(), port.toStdString().c_str(), p, n );
+	_client->sendData( "/newclient", _server->url().toStdString().c_str() );
 }
 ConnectionClient::~ConnectionClient() {
 	qDebug( "ConnectionClient::~ConnectionClient()" );

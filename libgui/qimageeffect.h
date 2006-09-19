@@ -272,7 +272,7 @@ public:
      * @param upper the "upper" image
      * @param lower the "lower" image, which becomes the output image
      */
-    static bool blendOnLower(int x, int y, const QImage & upper, const QImage & lower);
+    static bool blendOnLower(int x, int y, /*const*/ QImage & upper, /*const*/ QImage & lower);
 
     /** 
      * Blend part of an image into part of another, using the alpha channel in

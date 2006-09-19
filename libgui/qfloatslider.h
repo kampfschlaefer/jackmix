@@ -21,7 +21,7 @@
 #ifndef FLOATSLIDER_H
 #define FLOATSLIDER_H
 
-#include <qframe.h>
+#include <QtGui/QFrame>
 #include "common.h"
 #include "float_base.h"
 

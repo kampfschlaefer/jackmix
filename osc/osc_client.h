@@ -21,9 +21,9 @@
 #ifndef OSC_CLIENT_H
 #define OSC_CLIENT_H
 
-#include <qobject.h>
-#include <qvariant.h>
-#include <qmap.h>
+#include <QtCore/QObject>
+#include <QtCore/QVariant>
+#include <QtCore/QMap>
 #include <lo/lo.h>
 
 namespace OSC {

@@ -2,7 +2,7 @@
 #ifndef LINEINPUT_H
 #define LINEINPUT_H
 
-#include <qlineedit.h>
+#include <QtGui/QLineEdit>
 
 class LineInput : public QLineEdit
 {

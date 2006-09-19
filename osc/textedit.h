@@ -1,8 +1,8 @@
 #ifndef TEXTEDIT_H
 #define TEXTEDIT_H
 
-#include <qtextedit.h>
-#include <qvariant.h>
+#include <QtGui/QTextEdit>
+#include <QtCore/QVariant>
 
 class TextEdit : public QTextEdit
 {

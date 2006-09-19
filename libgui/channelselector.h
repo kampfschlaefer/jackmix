@@ -21,9 +21,9 @@
 #ifndef CHANNELSELECTOR_H
 #define CHANNELSELECTOR_H
 
-#include <qdialog.h>
+#include <QtGui/QDialog>
 
-class QListBox;
+class QListWidget;
 class QPushButton;
 
 class ChannelSelector : public QDialog
@@ -41,7 +41,7 @@ private slots:
 	void commit();
 	void commitnquit();
 private:
-	QListBox *_list;
+	QListWidget *_list;
 	QPushButton *_commit, *_commit_n_quit, *_cancel;
 };
 

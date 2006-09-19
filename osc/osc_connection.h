@@ -20,9 +20,10 @@
 #ifndef OSC_CONNECTION_H
 #define OSC_CONNECTION_H
 
-#include <qobject.h>
-#include <qvaluelist.h>
-#include <qvariant.h>
+#include <QtCore/QObject>
+#include <QtCore/QList>
+#include <QtCore/QVariant>
+#include <QtCore/QStringList>
 
 namespace OSC {
 
@@ -45,7 +46,7 @@ namespace OSC {
 		void forwardData( QString path, QVariant data=QVariant() );
 	private:
 		Server* _server;
-		typedef QValueList <Client*> ClientList;
+		typedef QList <Client*> ClientList;
 		ClientList _clients;
 		ServerPath *_newClient;
 		QStringList _forwardpaths;

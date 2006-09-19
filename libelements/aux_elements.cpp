@@ -26,8 +26,8 @@
 #include "slider.h"
 #include "jack_backend.h"
 
-#include <qlayout.h>
-#include <qpushbutton.h>
+#include <QtGui/QLayout>
+#include <QtGui/QPushButton>
 
 using namespace JackMix;
 using namespace JackMix::MixerElements;
@@ -66,11 +66,11 @@ AuxElement::AuxElement( QStringList inchannel, QStringList outchannel, MixingMat
 	, _inchannel( inchannel[ 0 ] )
 	, _outchannel( outchannel[ 0 ] )
 {
-	menu()->insertItem( "Select", this, SLOT( slot_simple_select() ) );
-	menu()->insertItem( "Replace", this, SLOT( slot_simple_replace() ) );
-	QGridLayout* _layout = new QGridLayout( this, 1,1, 3 );
+	menu()->addAction( "Select", this, SLOT( slot_simple_select() ) );
+	menu()->addAction( "Replace", this, SLOT( slot_simple_replace() ) );
+	QGridLayout* _layout = new QGridLayout( this );
 
-	QFloatPoti* poti = new QFloatPoti( amptodb( backend()->getVolume( _inchannel, _outchannel ) ), -36, 6, 10, QColor( 255,0,0 ), this, _inchannel );
+	QFloatPoti* poti = new QFloatPoti( amptodb( backend()->getVolume( _inchannel, _outchannel ) ), -36, 6, 10, QColor( 255,0,0 ), this, _inchannel.toStdString().c_str() );
 	_layout->addWidget( poti, 0,0 );
 	connect( poti, SIGNAL( valueChanged( float ) ), this, SLOT( emitvalue( float ) ) );
 }

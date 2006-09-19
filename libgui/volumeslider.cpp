@@ -22,21 +22,21 @@
 #include "volumeslider.moc"
 
 #include <iostream>
-#include <qlayout.h>
-#include <qlabel.h>
+#include <QtGui/QLayout>
+#include <QtGui/QLabel>
 #include "qfloatslider.h"
 #include "qfloatpoti.h"
 
 using namespace JackMix;
 
 VolumeSlider::VolumeSlider( QString name, float value, Direction dir, QWidget* p, bool showlabel, bool showvalue, const char* n )
- : QFrame( p,n )
+ : QFrame( p )
  , dB2VolCalc( -36, 12 )
  , _name( name )
  , _showlabel( showlabel )
  , _showvalue( showvalue )
 {
-	QBoxLayout *_layout = new QBoxLayout( this, QBoxLayout::TopToBottom );
+	QBoxLayout *_layout = new QBoxLayout( QBoxLayout::TopToBottom, this );
 	QFloatSlider *tmp = new QFloatSlider(  value, dbmin, dbmax, 0.1, 1000, dir, this );
 	connect( tmp, SIGNAL( valueChanged( float ) ), this, SLOT( iValueChanged( float ) ) );
 	if ( _showlabel )
@@ -52,9 +52,9 @@ void VolumeSlider::iValueChanged( float n ) {
 	emit valueChanged( _name, dbtoamp( n ) );
 }
 
-VolumeKnob::VolumeKnob( QString name, float value, QWidget* p, bool _showlabel, const char* n ) : QFrame( p,n ), dB2VolCalc( -36,12 ), _name( name )
+VolumeKnob::VolumeKnob( QString name, float value, QWidget* p, bool _showlabel, const char* n ) : QFrame( p ), dB2VolCalc( -36,12 ), _name( name )
 {
-	QBoxLayout *_layout = new QBoxLayout( this, QBoxLayout::TopToBottom );
+	QBoxLayout *_layout = new QBoxLayout( QBoxLayout::TopToBottom, this );
 	QFloatPoti *tmp = new QFloatPoti( amptodb( value ), dbmin, dbmax, 10, QColor( 255,0,0 ), this );
 	connect( tmp, SIGNAL( valueChanged( float ) ), this, SLOT( iValueChanged( float ) ) );
 	if ( _showlabel )

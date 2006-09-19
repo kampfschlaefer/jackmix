@@ -21,24 +21,24 @@
 #include "channelselector.h"
 #include "channelselector.moc"
 
-#include <qstring.h>
-#include <qlayout.h>
-#include <qlabel.h>
-#include <qlistbox.h>
-#include <qpushbutton.h>
+#include <QtCore/QString>
+#include <QtGui/QLayout>
+#include <QtGui/QLabel>
+#include <QtGui/QListWidget>
+#include <QtGui/QPushButton>
 
-ChannelSelector::ChannelSelector( QString title, QString label, QStringList channels, QWidget* p, const char* n ) : QDialog( p,n ) {
-	this->setCaption( title );
+ChannelSelector::ChannelSelector( QString title, QString label, QStringList channels, QWidget* p, const char* n ) : QDialog( p ) {
+	this->setWindowTitle( title );
 
-	QGridLayout *_layout = new QGridLayout( this, 4,4, 5,5 );
+	QGridLayout *_layout = new QGridLayout( this );
 	QLabel *_label = new QLabel( label, this );
-	_layout->addMultiCellWidget( _label, 0,0, 0,3 );
+	_layout->addWidget( _label, 0,0, 0,3 );
 
-	_list = new QListBox( this );
-	_list->insertStringList( channels );
-	_layout->addMultiCellWidget( _list, 1,1, 0,3 );
+	_list = new QListWidget( this );
+	_list->addItems( channels );
+	_layout->addWidget( _list, 1,1, 0,3 );
 
-	_layout->addMultiCell( new QSpacerItem( 10,10 ), 2,2, 0,3 );
+	_layout->addItem( new QSpacerItem( 10,10 ), 2,2, 0,3 );
 
 	_layout->addItem( new QSpacerItem( 40,10 ), 3,0 );
 	_commit_n_quit = new QPushButton( "Commit && Quit", this );
@@ -58,8 +58,8 @@ ChannelSelector::~ChannelSelector() {
 
 void ChannelSelector::commit() {
 qDebug( "ChannelSelector::commit()" );
-qDebug( "Returning: %s", _list->currentText().latin1() );
-	emit selectedChannel( _list->currentText() );
+qDebug( "Returning: %s", _list->currentItem()->text().toStdString().c_str() );
+	emit selectedChannel( _list->currentItem()->text() );
 }
 void ChannelSelector::commitnquit() {
 qDebug( "ChannelSelector::commitnquit()" );

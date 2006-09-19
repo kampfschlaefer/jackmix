@@ -21,7 +21,7 @@
 #ifndef JACKMIX_KLEVELMETER_TICKMARKS_H
 #define JACKMIX_KLEVELMETER_TICKMARKS_H
 
-#include <qframe.h>
+#include <QtGui/QFrame>
 #include <math.h>
 #include "common.h"
 #include "dbvolcalc.h"

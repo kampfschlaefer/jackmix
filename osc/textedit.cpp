@@ -2,8 +2,8 @@
 #include "textedit.h"
 #include "textedit.moc"
 
-TextEdit::TextEdit( QWidget* p, const char* n ) : QTextEdit( p,n ) {
-	setTextFormat( Qt::LogText );
+TextEdit::TextEdit( QWidget* p, const char* n ) : QTextEdit( p ) {
+	//setTextFormat( Qt::LogText );
 }
 TextEdit::~TextEdit() {
 }

@@ -21,10 +21,10 @@
 #ifndef MATRIXELEMENTS_H
 #define MATRIXELEMENTS_H
 
-#include <qobject.h>
-#include <qvaluelist.h>
-#include <qpushbutton.h>
-#include <qframe.h>
+#include <QtCore/QObject>
+#include <QtCore/QList>
+#include <QtGui/QPushButton>
+#include <QtGui/QFrame>
 
 #include "mixingmatrix.h"
 

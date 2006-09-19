@@ -21,17 +21,18 @@
 #ifndef JACKMIX_MAINWINDOW_H
 #define JACKMIX_MAINWINDOW_H
 
-#include <qmainwindow.h>
-#include <qdockwindow.h>
-#include <qvaluelist.h>
-#include <qlayout.h>
-#include <qgrid.h>
+#include <QtGui/QMainWindow>
+#include <QtGui/QDockWidget>
+#include <QtCore/QList>
+//#include <QtGui/QLayout>
+#include <QtGui/QGridLayout>
 
 class QHBox;
 class QSettings;
 class QDomElement;
 class QVBox;
 class QAction;
+class QMenu;
 
 namespace JackMix {
 
@@ -52,7 +53,7 @@ public:
 class MainWindow : public QMainWindow {
 Q_OBJECT
 public:
-	MainWindow( QWidget* =0, const char* =0 );
+	MainWindow( QWidget* =0 );
 	~MainWindow();
 public slots:
 	void openFile();
@@ -79,7 +80,7 @@ private slots:
 	void aboutQt();
 private:
 	int config_restore_id;
-	QPopupMenu *_filemenu, *_editmenu, *_viewmenu, *_settingsmenu, *_helpmenu;
+	QMenu *_filemenu, *_editmenu, *_viewmenu, *_settingsmenu, *_helpmenu;
 	MixingMatrix::Widget *_mixerwidget, *_inputswidget, *_outputswidget;
 	MainWindowHelperWidget* _mw;
 	QAction *_select_action, *_togglein_action, *_toggleout_action, *_add_inchannel_action, *_add_outchannel_action, *_remove_inchannel_action, *_remove_outchannel_action;

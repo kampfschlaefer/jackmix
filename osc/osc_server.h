@@ -22,9 +22,9 @@
 #define OSCSERVER_H
 
 #include <lo/lo.h>
-#include <qobject.h>
-#include <qvariant.h>
-#include <qmap.h>
+#include <QtCore/QObject>
+#include <QtCore/QVariant>
+#include <QtCore/QMap>
 
 namespace OSC {
 

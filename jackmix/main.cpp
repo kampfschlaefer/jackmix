@@ -19,7 +19,7 @@
 */
 
 #include <iostream>
-#include <qapplication.h>
+#include <QtGui/QApplication>
 
 #include "jack_backend.h"
 #include "mainwindow.h"
@@ -32,7 +32,7 @@ int main( int argc, char** argv ) {
 	JackMix::MainWindow *mw = new JackMix::MainWindow();
 	mw->show();
 
-	qapp->setMainWidget( mw );
+	//qapp->setMainWidget( mw );
 
 	return qapp->exec();
 }

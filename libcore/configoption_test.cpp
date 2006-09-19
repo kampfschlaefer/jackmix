@@ -3,8 +3,8 @@
 
 //#define private public
 #include "configoption.h"
-#include <qfile.h>
-#include <qdatastream.h>
+#include <QtCore/QFile>
+#include <QtCore/QDataStream>
 
 int main( int, void* )
 {
@@ -28,7 +28,7 @@ int main( int, void* )
 	_config->getOption( "test/double" )->debugPrint();
 
 	QFile file( ".test.out" );
-	if ( file.open( IO_WriteOnly ) ) {
+	if ( file.open( QIODevice::WriteOnly ) ) {
 		QDataStream stream( &file );
 		stream << _config;
 		file.close();
@@ -40,7 +40,7 @@ int main( int, void* )
 
 	ConfigOption* test = 0;
 	QFile file2( ".test.out" );
-	if ( file.open( IO_ReadOnly ) ) {
+	if ( file.open( QIODevice::ReadOnly ) ) {
 		QDataStream stream( &file );
 //		stream >> test;
 		test = new ConfigOption( stream );

@@ -21,8 +21,8 @@
 #ifndef JACKMIX_STEREOVOLUMESLIDER_H
 #define JACKMIX_STEREOVOLUMESLIDER_H
 
-#include <qframe.h>
-#include <qstring.h>
+#include <QtGui/QFrame>
+#include <QtCore/QString>
 #include "common.h"
 #include "dbvolcalc.h"
 

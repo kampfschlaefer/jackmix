@@ -1,10 +1,10 @@
 #ifndef CONFIGOPTION_H
 #define CONFIGOPTION_H
 
-#include <qobject.h>
-#include <qstring.h>
-#include <qvariant.h>
-#include <qptrlist.h>
+#include <QtCore/QObject>
+#include <QtCore/QString>
+#include <QtCore/QVariant>
+#include <QtCore/QList>
 
 class ConfigOption : public QObject
 {
@@ -58,7 +58,7 @@ class ConfigOption : public QObject
 		QVariant::Type _type;
 		QString _name;
 		QVariant _value;
-		typedef QPtrList <ConfigOption> ChildList;
+		typedef QList <ConfigOption*> ChildList;
 		ChildList _childs;
 };
 

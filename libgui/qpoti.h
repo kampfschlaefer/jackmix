@@ -20,15 +20,15 @@
 #ifndef _QPOTI_H
 #define _QPOTI_H
 
-#include <qframe.h>
-#include <qrangecontrol.h>
+#include <QtGui/QFrame>
+#include <Qt3Support/q3rangecontrol.h>
 
 
 class QTimer;
 struct QPotiData;
 
 
-class QPoti : public QFrame, public QRangeControl
+class QPoti : public QFrame, public Q3RangeControl
 {
     Q_OBJECT
 public:

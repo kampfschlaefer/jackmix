@@ -22,7 +22,8 @@
 //#include "jack_backend.moc"
 
 #include <iostream>
-#include <qdom.h>
+#include <QtXml/QDomDocument>
+#include <QtXml/QDomElement>
 
 using namespace JackMix;
 
@@ -47,14 +48,14 @@ JackBackend::~JackBackend() {
 
 bool JackBackend::addOutput( QString name ) {
 	if ( client ) {
-		out_ports.insert( name, jack_port_register ( client, name.latin1(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0 ) );
+		out_ports.insert( name, jack_port_register ( client, name.toStdString().c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0 ) );
 		return true;
 	}
 	return false;
 }
 bool JackBackend::addInput( QString name ) {
 	if ( client ) {
-		in_ports.insert( name, jack_port_register ( client, name.latin1(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0 ) );
+		in_ports.insert( name, jack_port_register ( client, name.toStdString().c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0 ) );
 		return true;
 	}
 	return false;
@@ -89,7 +90,7 @@ void JackBackend::setVolume( QString channel, QString output, float volume ) {
 
 float JackBackend::getVolume( QString channel, QString output ) {
 	//std::cerr << "JackBackend::getVolume( " << channel << ", " << output << " ) = " << volumes[ channel ][ output ] << std::endl;
-	volumes[ channel ].insert( output, 0, FALSE );
+	volumes[ channel ].insert( output, 0 );
 	return volumes[ channel ][ output ];
 }
 
@@ -99,7 +100,7 @@ void JackBackend::setOutVolume( QString ch, float n ) {
 }
 float JackBackend::getOutVolume( QString ch ) {
 	//std::cerr << "JackBackend::getOutVolume(QString " << ch << " )" << std::endl;
-	outvolumes.insert( ch, 1, FALSE );
+	outvolumes.insert( ch, 1 );
 	return outvolumes[ ch ];
 }
 void JackBackend::setInVolume( QString ch, float n ) {
@@ -108,7 +109,7 @@ void JackBackend::setInVolume( QString ch, float n ) {
 }
 float JackBackend::getInVolume( QString ch ) {
 	//std::cerr << "JackBackend::getInVolume(QString " << ch << " )" << std::endl;
-	involumes.insert( ch, 1, FALSE );
+	involumes.insert( ch, 1 );
 	return involumes[ ch ];
 }
 
@@ -133,10 +134,10 @@ std::cout << "JackBackend::toXML()" << std::endl;
 
 	QStringList ins = inchannels();
 	QStringList outs = outchannels();
-	for ( uint i=0; i<ins.size(); i++ ) {
+	for ( int i=0; i<ins.size(); i++ ) {
 		QDomElement in = doc.createElement( "instrip" );
 		in.setAttribute( "channel", ins[ i ] );
-		for ( uint j=0; j<outs.size(); j++ ) {
+		for ( int j=0; j<outs.size(); j++ ) {
 			QDomElement out = doc.createElement( "out" );
 			out.setAttribute( "channel", outs[ j ] );
 			out.setAttribute( "value", getVolume( ins[ i ], outs[ j ] ) );
@@ -175,10 +176,10 @@ int JackMix::process( jack_nframes_t nframes, void* arg ) {
 	QMap<QString,jack_default_audio_sample_t*> ins;
 	JackMix::ports_it it;
 	for ( it = backend->in_ports.begin(); it!=backend->in_ports.end(); ++it )
-		ins.insert( it.key(), (jack_default_audio_sample_t*) jack_port_get_buffer( it.data(), nframes ) );
+		ins.insert( it.key(), (jack_default_audio_sample_t*) jack_port_get_buffer( it.value(), nframes ) );
 	QMap<QString,jack_default_audio_sample_t*> outs;
 	for ( it = backend->out_ports.begin(); it != backend->out_ports.end(); ++it )
-		outs.insert( it.key(), (jack_default_audio_sample_t*) jack_port_get_buffer( it.data(), nframes ) );
+		outs.insert( it.key(), (jack_default_audio_sample_t*) jack_port_get_buffer( it.value(), nframes ) );
 	ports_it in_it;
 	ports_it out_it;
 	/// Blank outports...

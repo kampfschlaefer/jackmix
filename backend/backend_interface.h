@@ -21,7 +21,7 @@
 #ifndef BACKEND_INTERFACE_H
 #define BACKEND_INTERFACE_H
 
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 
 namespace JackMix {
 

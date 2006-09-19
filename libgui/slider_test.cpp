@@ -19,8 +19,8 @@
 */
 
 #include <iostream>
-#include <qapplication.h>
-#include <qcolor.h>
+#include <QtGui/QApplication>
+#include <QtGui/QColor>
 
 #include "slider.h"
 
@@ -29,8 +29,6 @@ int main( int argc, char** argv ) {
 
 	QWidget *mw = new JackMix::GUI::Slider( 0.5, 0, 1, 3, 0.1, 0 );
 	mw->show();
-
-	qapp->setMainWidget( mw );
 
 	int ret = qapp->exec();
 	return ret;

@@ -26,81 +26,84 @@
 #include "channelselector.h"
 
 #include <iostream>
-#include <qpopupmenu.h>
-#include <qmenubar.h>
-#include <qhbox.h>
-#include <qvbox.h>
-#include <qlayout.h>
-#include <qinputdialog.h>
-#include <qsettings.h>
-#include <qfiledialog.h>
-#include <qscrollview.h>
-#include <qmessagebox.h>
-#include <qaction.h>
-#include <qtimer.h>
+#include <QtCore/QDebug>
+#include <QtGui/QMenu>
+#include <QtGui/QMenuBar>
+//#include <QtGui/qhbox>
+//#include <QtGui/qvbox>
+#include <QtGui/QLayout>
+#include <QtGui/QInputDialog>
+#include <QtCore/QSettings>
+#include <QtGui/QFileDialog>
+//#include <QtGui/QScrollArea>
+#include <QtGui/QMessageBox>
+#include <QtGui/QAction>
+#include <QtCore/QTimer>
+#include <QtGui/QCloseEvent>
 
 //#include "defaults.xml"
 
 using namespace JackMix;
 using namespace JackMix::MixingMatrix;
 
-MainWindow::MainWindow( QWidget* p, const char* n ) : QMainWindow( p,n ), _backend( new JackBackend() ) {
+MainWindow::MainWindow( QWidget* p ) : QMainWindow( p ), _backend( new JackBackend() ) {
 std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
-	_filemenu = new QPopupMenu( this );
-	menuBar()->insertItem( "File", _filemenu );
+	_filemenu = new QMenu( this );
+	menuBar()->addMenu( _filemenu );
 	//_filemenu->insertItem( "Open File...", this, SLOT( openFile() ), CTRL+Key_O );
 	//_filemenu->insertItem( "Save File...", this, SLOT( saveFile() ), CTRL+Key_S );
 	//_filemenu->insertSeparator();
-	_filemenu->insertItem( "Quit", this, SLOT( close() ), CTRL+Key_Q );
+	_filemenu->addAction( "Quit", this, SLOT( close() ), Qt::CTRL+Qt::Key_Q );
 
-	_editmenu = new QPopupMenu( this );
-	menuBar()->insertItem( "Edit", _editmenu );
-	_select_action = new QAction( "Select Mode", 0, this );
-	_select_action->setToggleAction( true );
-	connect( _select_action, SIGNAL( activated() ), this, SLOT( toggleselectmode() ) );
-	_select_action->addTo( _editmenu );
+	_editmenu = new QMenu( this );
+	menuBar()->addMenu( _editmenu );
+	_select_action = new QAction( "Select Mode", this );
+	_select_action->setCheckable( true );
+	connect( _select_action, SIGNAL( triggered() ), this, SLOT( toggleselectmode() ) );
+	_editmenu->addAction( _select_action );
 	//_select_action->addTo( new QToolBar( this ) );
-	_editmenu->setCheckable( true );
-	_editmenu->insertItem( "Fill empty spaces", this, SLOT( autofill() ) );
-	_editmenu->insertSeparator();
-	_add_inchannel_action = new QAction( "Add Input...", 0, this );
-	connect( _add_inchannel_action, SIGNAL( activated() ), this, SLOT( addInput() ) );
-	_add_inchannel_action->addTo( _editmenu );
-	_add_outchannel_action = new QAction( "Add Output...", 0, this );
-	connect( _add_outchannel_action, SIGNAL( activated() ), this, SLOT( addOutput() ) );
-	_add_outchannel_action->addTo( _editmenu );
-	_remove_inchannel_action = new QAction( "Remove Input...", 0, this );
-	connect( _remove_inchannel_action, SIGNAL( activated() ), this, SLOT( removeInput() ) );
-	_remove_inchannel_action->addTo( _editmenu );
-	_remove_outchannel_action = new QAction( "Remove Output...", 0, this );
-	connect( _remove_outchannel_action, SIGNAL( activated() ), this, SLOT( removeOutput() ) );
-	_remove_outchannel_action->addTo( _editmenu );
+	//_editmenu->setCheckable( true );
+	_editmenu->addAction( "Fill empty spaces", this, SLOT( autofill() ) );
+	_editmenu->addSeparator();
+	_add_inchannel_action = new QAction( "Add Input...", this );
+	connect( _add_inchannel_action, SIGNAL( triggered() ), this, SLOT( addInput() ) );
+	_editmenu->addAction( _add_inchannel_action );
+	_add_outchannel_action = new QAction( "Add Output...", this );
+	connect( _add_outchannel_action, SIGNAL( triggered() ), this, SLOT( addOutput() ) );
+	_editmenu->addAction( _add_outchannel_action );
+	_remove_inchannel_action = new QAction( "Remove Input...", this );
+	connect( _remove_inchannel_action, SIGNAL( triggered() ), this, SLOT( removeInput() ) );
+	_editmenu->addAction( _remove_inchannel_action );
+	_remove_outchannel_action = new QAction( "Remove Output...", this );
+	connect( _remove_outchannel_action, SIGNAL( triggered() ), this, SLOT( removeOutput() ) );
+	_editmenu->addAction( _remove_outchannel_action );
 
-	_viewmenu = new QPopupMenu( this );
-	menuBar()->insertItem( "View", _viewmenu );
-	_togglein_action = new QAction( "Hide inputcontrols", 0, this );
-	connect( _togglein_action, SIGNAL( activated() ), this, SLOT( togglein() ) );
-	_togglein_action->addTo( _viewmenu );
-	_toggleout_action = new QAction( "Hide outputcontrols", 0, this );
-	connect( _toggleout_action, SIGNAL( activated() ), this, SLOT( toggleout() ) );
-	_toggleout_action->addTo( _viewmenu );
-	_showLister = new QAction( "Toggle ConnectionLister", CTRL+Key_L, this );
-	_showLister->addTo( _viewmenu );
+	_viewmenu = new QMenu( this );
+	menuBar()->addMenu( _viewmenu );
+	_togglein_action = new QAction( "Hide inputcontrols", this );
+	connect( _togglein_action, SIGNAL( triggered() ), this, SLOT( togglein() ) );
+	_viewmenu->addAction( _togglein_action );
+	_toggleout_action = new QAction( "Hide outputcontrols", this );
+	connect( _toggleout_action, SIGNAL( triggered() ), this, SLOT( toggleout() ) );
+	_viewmenu->addAction( _toggleout_action );
+	_showLister = new QAction( "Toggle ConnectionLister", this );
+	_showLister->setShortcut( Qt::CTRL + Qt::Key_L );
+	_viewmenu->addAction( _showLister );
 
-	_helpmenu = new QPopupMenu( this );
-	menuBar()->insertItem( "Help", _helpmenu );
-	_helpmenu->insertItem( "About JackMix", this, SLOT( about() ) );
-	_helpmenu->insertItem( "About Qt", this, SLOT( aboutQt() ) );
+	_helpmenu = new QMenu( this );
+	menuBar()->addMenu( _helpmenu );
+	_helpmenu->addAction( "About JackMix", this, SLOT( about() ) );
+	_helpmenu->addAction( "About Qt", this, SLOT( aboutQt() ) );
 
 	_mw = new MainWindowHelperWidget( this );	
 	setCentralWidget( _mw );
-	_mw->layout->setRowStretch( 0, 0 );
-	_mw->layout->setRowStretch( 1, 1000 );
-	_mw->layout->setColStretch( 1, 0 );
-	_mw->layout->setColStretch( 0, 1000 );
+	//_mw->layout->setRowStretch( 0, 0 );
+	//_mw->layout->setRowStretch( 1, 1000 );
+	//_mw->layout->setColStretch( 1, 0 );
+	//_mw->layout->setColStretch( 0, 1000 );
 
-	QStringList ins = QStringList()<<"in_1"<<"in_2"<<"in_3"<<"in_4"<<"in_5"<<"in_6"<<"in_7"<<"in_8";
-	QStringList outs = QStringList()<<"out_1"<<"out_2"<<"out_3";
+	QStringList ins = QStringList();//<<"in_1"<<"in_2"<<"in_3"<<"in_4"<<"in_5"<<"in_6"<<"in_7"<<"in_8";
+	QStringList outs = QStringList();//<<"out_1"<<"out_2"<<"out_3";
 	_mixerwidget = new MixingMatrix::Widget( ins, outs, _backend, _mw );
 	_mw->layout->addWidget( _mixerwidget, 1,0 );
 	_inputswidget = new MixingMatrix::Widget( ins, QStringList(), _backend, _mw );
@@ -108,10 +111,10 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	_outputswidget = new MixingMatrix::Widget( QStringList(), outs, _backend, _mw );
 	_mw->layout->addWidget( _outputswidget, 1,1 );
 
-	_mixerwidget->createControl( QStringList()<<"in_1"<<"in_2", QStringList()<<"out_1"<<"out_2" );
+	/*_mixerwidget->createControl( QStringList()<<"in_1"<<"in_2", QStringList()<<"out_1"<<"out_2" );
 	_mixerwidget->createControl( QStringList()<<"in_3"<<"in_4", QStringList()<<"out_1"<<"out_2" );
 	_mixerwidget->createControl( QStringList()<<"in_5", QStringList()<<"out_1"<<"out_2" );
-	_mixerwidget->createControl( QStringList()<<"in_6", QStringList()<<"out_1"<<"out_2" );
+	_mixerwidget->createControl( QStringList()<<"in_6", QStringList()<<"out_1"<<"out_2" );*/
 	//_mixerwidget->autoFill();
 	QTimer::singleShot( 1, this, SLOT( autofill() ) );
 
@@ -141,6 +144,8 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	connect( _showLister, SIGNAL( activated() ), _mixerwidget, SLOT( toggleConnectionLister() ) );
 	_select_action->toggle();
 	toggleselectmode();
+
+	qDebug() << "MainWindow::MainWindow() finished...";
 }
 
 MainWindow::~MainWindow() {
@@ -175,31 +180,31 @@ void MainWindow::toggleselectmode() {
 		_mixerwidget->mode( Widget::Normal );
 	else
 		_mixerwidget->mode( Widget::Select );
-	_select_action->setOn( !select );
+	_select_action->setChecked( !select );
 }
 void MainWindow::togglein() {
-	bool shown = _inputswidget->isShown();
+	bool shown = _inputswidget->isVisible();
 	if ( shown ) {
 		_inputswidget->hide();
-		_togglein_action->setMenuText( "Show inputcontrols" );
+		_togglein_action->setText( "Show inputcontrols" );
 	} else {
 		_inputswidget->show();
-		_togglein_action->setMenuText( "Hide inputcontrols" );
+		_togglein_action->setText( "Hide inputcontrols" );
 	}
 }
 void MainWindow::toggleout() {
-	bool shown = _outputswidget->isShown();
+	bool shown = _outputswidget->isVisible();
 	if ( shown ) {
 		_outputswidget->hide();
-		_toggleout_action->setMenuText( "Show outputcontrols" );
+		_toggleout_action->setText( "Show outputcontrols" );
 	} else {
 		_outputswidget->show();
-		_toggleout_action->setMenuText( "Hide outputcontrols" );
+		_toggleout_action->setText( "Hide outputcontrols" );
 	}
 }
 
 void MainWindow::addInput() {
-	QString tmp = QInputDialog::getText( "Inchannel name", "Channel name", QLineEdit::Normal, "(empty)", 0, this );
+	QString tmp = QInputDialog::getText( this, "Inchannel name", "Channel name", QLineEdit::Normal, "(empty)" );
 	if ( tmp != "(empty)" )
 		addInput( tmp );
 }
@@ -212,7 +217,7 @@ void MainWindow::addInput( QString name ) {
 	}
 }
 void MainWindow::addOutput() {
-	QString tmp = QInputDialog::getText( "Outchannel name", "Channel name", QLineEdit::Normal, "(empty)", 0, this );
+	QString tmp = QInputDialog::getText( this, "Outchannel name", "Channel name", QLineEdit::Normal, "(empty)" );
 	if ( tmp != "(empty)" )
 		addOutput( tmp );
 }
@@ -232,7 +237,7 @@ qDebug( "MainWindow::removeInput()" );
 	tmp->show();
 }
 void MainWindow::removeInput( QString n ) {
-	qDebug( "MainWindow::removeInput( QString %s )", n.latin1() );
+	qDebug( "MainWindow::removeInput( QString %s )", n.toStdString().c_str() );
 	if ( _backend->removeInput( n ) ) {
 		_inputswidget->removeinchannel( n );
 		_mixerwidget->removeinchannel( n );
@@ -245,7 +250,7 @@ qDebug( "MainWindow::removeOutput()" );
 	tmp->show();
 }
 void MainWindow::removeOutput( QString n ) {
-qDebug( "MainWindow::removeOutput( QString %s )", n.latin1() );
+qDebug( "MainWindow::removeOutput( QString %s )", n.toStdString().c_str() );
 	if ( _backend->removeOutput( n ) ) {
 		_outputswidget->removeoutchannel( n );
 		_mixerwidget->removeoutchannel( n );
@@ -258,6 +263,6 @@ void MainWindow::autofill() {
 
 
 MainWindowHelperWidget::MainWindowHelperWidget( QWidget* p ) : QWidget( p ) {
-	layout = new QGridLayout( this, 3,2, 5 );
+	layout = new QGridLayout( this );
 }
 

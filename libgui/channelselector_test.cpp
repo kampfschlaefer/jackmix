@@ -18,7 +18,7 @@
 
 */
 
-#include <qapplication.h>
+#include <QtGui/QApplication>
 
 #include "channelselector.h"
 
@@ -27,8 +27,6 @@ int main( int argc, char** argv ) {
 
 	QWidget *mw = new ChannelSelector( "Test", "Testchannels", QStringList()<<"Test1"<<"Test2", 0 );
 	mw->show();
-
-	qapp->setMainWidget( mw );
 
 	int ret = qapp->exec();
 	return ret;

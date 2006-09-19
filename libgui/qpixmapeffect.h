@@ -11,7 +11,7 @@
 #define __QPIXMAP_EFFECT_H
 
 
-#include <qsize.h>
+#include <QtCore/QSize>
 class QPixmap;
 class QColor;
 

@@ -21,8 +21,8 @@
 #ifndef MIXINGMATRIX_PRIVAT_H
 #define MIXINGMATRIX_PRIVAT_H
 
-#include <qwidget.h>
-#include <qvaluelist.h>
+#include <QtGui/QWidget>
+#include <QtCore/QList>
 
 class QGridLayout;
 class QPushButton;
@@ -60,7 +60,7 @@ public:
 
 	void debug();
 private:
-	QValueList <ElementFactory*> _factories;
+	QList <ElementFactory*> _factories;
 };
 
 }; // MixingMatrix

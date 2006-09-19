@@ -21,7 +21,7 @@
 #ifndef SLIDER_H
 #define SLIDER_H
 
-#include <qwidget.h>
+#include <QtGui/QWidget>
 #include "float_base.h"
 #include "dbvolcalc.h"
 

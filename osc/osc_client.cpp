@@ -23,17 +23,17 @@
 
 using namespace OSC;
 
-Client::Client( QObject* p, const char* n ) : QObject( p,n ), _connection( 0 ) {
+Client::Client( QObject* p, const char* n ) : QObject( p ), _connection( 0 ) {
 	qDebug( "Client::Client( QObject %p, const char* %s )", p, n );
 	qDebug( "Client::Client() _connection = %p", _connection );
 }
-Client::Client( QString url, QObject* p, const char* n ) : QObject( p,n ), _connection( 0 ) {
-	qDebug( "Client::Client( url %s, QObject %p, const char* %s )", url.latin1(), p, n );
-	connect( lo_address_new_from_url( url.latin1() ) );
+Client::Client( QString url, QObject* p, const char* n ) : QObject( p ), _connection( 0 ) {
+	qDebug( "Client::Client( url %s, QObject %p, const char* %s )", url.toStdString().c_str(), p, n );
+	connect( lo_address_new_from_url( url.toStdString().c_str() ) );
 	qDebug( "Client::Client() _connection = %p", _connection );
 }
-Client::Client( QString host, QString port, QObject* p, const char* n ) : QObject( p,n ), _connection( 0 ) {
-	qDebug( "Client::Client( host %s, port %s, QObject %p, const char* %s )", host.latin1(), port.latin1(), p, n );
+Client::Client( QString host, QString port, QObject* p, const char* n ) : QObject( p ), _connection( 0 ) {
+	qDebug( "Client::Client( host %s, port %s, QObject %p, const char* %s )", host.toStdString().c_str(), port.toStdString().c_str(), p, n );
 	connect( host, port );
 	qDebug( "Client::Client() _connection = %p", _connection );
 }
@@ -41,8 +41,8 @@ Client::~Client() {
 }
 
 void Client::connect( QString host, QString port ) {
-	qDebug( "Client::connect( %s, %s )", host.latin1(), port.latin1() );
-	connect( lo_address_new( host.latin1(), port.latin1() ) );
+	qDebug( "Client::connect( %s, %s )", host.toStdString().c_str(), port.toStdString().c_str() );
+	connect( lo_address_new( host.toStdString().c_str(), port.toStdString().c_str() ) );
 }
 void Client::connect( lo_address address ) {
 	_connection = address;
@@ -52,19 +52,19 @@ void Client::connect( lo_address address ) {
 }
 
 void Client::sendData( QString path, QVariant data ) {
-	qDebug( "Client::sendData( %s, %s(%s) )", path.latin1(), data.toString().latin1(), data.typeName() );
+	qDebug( "Client::sendData( %s, %s(%s) )", path.toStdString().c_str(), data.toString().toStdString().c_str(), data.typeName() );
 	if ( _connection ) {
 		if ( !data.isNull() ) {
-			if ( data.type() == QVariant::String || data.type() == QVariant::CString )
-				/*qDebug( "Return %i",*/ lo_send( _connection, path.latin1(), "s", data.toString().latin1() )/* )*/;
+			if ( data.type() == QVariant::String )
+				/*qDebug( "Return %i",*/ lo_send( _connection, path.toStdString().c_str(), "s", data.toString().toStdString().c_str() )/* )*/;
 			else
 				if ( data.type()==QVariant::Double )
-				/*qDebug( "Return %i",*/ lo_send( _connection, path.latin1(), "d", data.toDouble() )/* )*/;
+				/*qDebug( "Return %i",*/ lo_send( _connection, path.toStdString().c_str(), "d", data.toDouble() )/* )*/;
 			else
 				if ( data.type()==QVariant::Int || data.type()==QVariant::UInt )
-				/*qDebug( "Return %i",*/ lo_send( _connection, path.latin1(), "i", data.toInt() )/* )*/;
+				/*qDebug( "Return %i",*/ lo_send( _connection, path.toStdString().c_str(), "i", data.toInt() )/* )*/;
 		} else {
-			/*qDebug( "Return %i",*/ lo_send( _connection, path.latin1(), NULL )/* )*/;
+			/*qDebug( "Return %i",*/ lo_send( _connection, path.toStdString().c_str(), NULL )/* )*/;
 		}
 		qDebug( "Error of the last command: %i:%s", lo_address_errno( _connection ), lo_address_errstr( _connection ) );
 		if ( lo_address_errno( _connection ) == 111 ) {
@@ -83,7 +83,7 @@ ClientPath::ClientPath( Client* client, QString path, QVariant::Type type )
 	, _type( type )
 {
 	qDebug( "ClientPath: Size of _paths: %i", _client->_paths.size() );
-	_client->_paths.insert( _path, this, false );
+	_client->_paths.insert( _path, this );
 	qDebug( "ClientPath: Size of _paths: %i", _client->_paths.size() );
 }
 ClientPath::~ClientPath() {

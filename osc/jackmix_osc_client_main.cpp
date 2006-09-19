@@ -19,10 +19,10 @@
 */
 
 #include <iostream>
-#include <qapplication.h>
-#include <qvbox.h>
-#include <qslider.h>
-#include <qdatetime.h>
+#include <QtGui/QApplication>
+#include <Qt3Support/Q3VBox>
+#include <QtGui/QSlider>
+#include <QtCore/QDateTime>
 
 #include "lineinput.h"
 #include "osc_client.h"
@@ -45,12 +45,16 @@ int main( int argc, char** argv ) {
 
 	OSC::ConnectionClient* _connectionclient = new OSC::ConnectionClient( host, port, qapp );
 
-	QVBox *mw = new QVBox();
+	Q3VBox *mw = new Q3VBox();
 	LineInput *_lineinput = new LineInput( mw );
 
 	_lineinput->connect( _lineinput, SIGNAL( textChanged( QString ) ), _connectionclient->client(), SLOT( sendData( QString ) ) );
 
-	QSlider* slider = new QSlider( 0, 100, 10, 50, Qt::Horizontal, mw );
+	QSlider* slider = new QSlider( Qt::Horizontal, mw );
+	slider->setMinimum( 0 );
+	slider->setMaximum( 100 );
+	slider->setPageStep( 10 );
+	slider->setValue( 50 );
 	UpdateFilter* sliderfilter = new UpdateFilter( slider );
 	QObject::connect( slider, SIGNAL( valueChanged( int ) ), sliderfilter, SLOT( dataInInternal( int ) ) );
 	QObject::connect( sliderfilter, SIGNAL( dataOutInternal( int ) ), slider, SLOT( setValue( int ) ) );
@@ -59,8 +63,6 @@ int main( int argc, char** argv ) {
 	OSC::ServerPath* sliderupdate = _connectionclient->newServerPath( "/slider", QVariant::Int );
 	QObject::connect( sliderupdate, SIGNAL( data( int ) ), sliderfilter, SLOT( dataIn( int ) ) );
 	mw->show();
-
-	qapp->setMainWidget( mw );
 
 	int ret = qapp->exec();
 	delete _connectionclient;

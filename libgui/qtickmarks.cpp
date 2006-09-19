@@ -22,14 +22,14 @@
 #include "qtickmarks.moc"
 
 #include <iostream>
-#include <qpainter.h>
-#include <qfont.h>
-#include <qfontmetrics.h>
+#include <QtGui/QPainter>
+#include <QtGui/QFont>
+#include <QtGui/QFontMetrics>
 
 using namespace JackMix;
 
 QTickmarks::QTickmarks( float _dbmin, float _dbmax, Direction dir, long pos, QWidget* p, int _offset, const char* n )
- : QFrame( p,n )
+ : QFrame( p )
  , dB2VolCalc( _dbmin, _dbmax )
  , _pos( pos )
  , _dir( dir )
@@ -62,8 +62,8 @@ void QTickmarks::drawContents( QPainter* p ) {
 	int _minsize;
 	// Shortcuts
 	int w,h;
-	QColor colornormal = colorGroup().foreground();
-	QColor colordiff = colorGroup().buttonText();
+	QColor colornormal = QColor( 0,0,0 ); //colorGroup().foreground();
+	QColor colordiff = QColor( 100,100,100 ); //colorGroup().buttonText();
 
 	if ( _dir == BottomToTop || _dir == TopToBottom ) {
 		p->translate( contentsRect().left(), contentsRect().bottom() );

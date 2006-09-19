@@ -18,7 +18,7 @@
 
 */
 
-#include <qapplication.h>
+#include <QtGui/QApplication>
 #include "qfloatcontrol.h"
 
 using namespace JackMix::GUI;
@@ -28,8 +28,6 @@ int main( int argc, char** argv ) {
 
 	QFloatControl* tmp = new QFloatControl( 0 );;
 	tmp->show();
-
-	app->setMainWidget( tmp );
 
 	return app->exec();
 }

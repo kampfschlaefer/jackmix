@@ -21,9 +21,9 @@
 #ifndef CONNECTIONLISTER_H
 #define CONNECTIONLISTER_H
 
-#include <qwidget.h>
-#include <qvaluelist.h>
-#include <qlistview.h>
+#include <QtGui/QWidget>
+#include <QtCore/QList>
+#include <QtGui/QListWidget>
 
 #include "mixingmatrix.h"
 
@@ -32,54 +32,54 @@ class QPushButton;
 class QListBox;
 
 namespace JackMix {
-namespace MixingMatrix {
+	namespace MixingMatrix {
 
-class ConnectionLister : public QWidget
-{
-Q_OBJECT
-public:
-	ConnectionLister( Widget*, QWidget* =0, const char* =0 );
-	~ConnectionLister();
+		class ConnectionLister : public QWidget
+		{
+		Q_OBJECT
+		public:
+			ConnectionLister( Widget*, QWidget* =0, const char* =0 );
+			~ConnectionLister();
 
-public slots:
-	void addElement( Element* );
-	void removeElement( Element* );
-private slots:
-	void connectControls();
-	void disconnectMaster();
-	void disconnectSlave();
-	void selectionChanged();
-private:
-	Widget *_widget;
-	QGridLayout *_layout;
-	QPushButton *_btn_connect, *_btn_close, *_btn_disconnectMaster, *_btn_disconnectSlave;
-	QListView *_box_signals, *_box_slots;
-};
+		public slots:
+			void addElement( Element* );
+			void removeElement( Element* );
+		private slots:
+			void connectControls();
+			void disconnectMaster();
+			void disconnectSlave();
+			void selectionChanged();
+		private:
+			Widget *_widget;
+			QGridLayout *_layout;
+			QPushButton *_btn_connect, *_btn_close, *_btn_disconnectMaster, *_btn_disconnectSlave;
+			QListWidget *_box_signals, *_box_slots;
+		};
 
-class ElementConnectView : public QListViewItem
-{
-public:
-	ElementConnectView( QListView*, Element* );
-	~ElementConnectView();
-	Element* element() const { return _element; }
-	int rtti() const { return 5281; }
-private:
-	Element* _element;
-};
-class ElementPropertyView : public QListViewItem
-{
-public:
-	ElementPropertyView( ElementConnectView*, QString );
-	~ElementPropertyView();
-	ElementSlotSignalPair property() const;
-	int rtti() const { return 5282; }
-private:
-	QString _property;
-	Element* _element;
-};
+		class ElementConnectView : public QListWidgetItem
+		{
+		public:
+			ElementConnectView( QListWidget*, Element* );
+			~ElementConnectView();
+			Element* element() const { return _element; }
+			int rtti() const { return 5281; }
+		private:
+			Element* _element;
+		};
+		/*class ElementPropertyView : public QListWidgetItem
+		{
+		public:
+			ElementPropertyView( ElementConnectView*, QString );
+			~ElementPropertyView();
+			ElementSlotSignalPair property() const;
+			int rtti() const { return 5282; }
+		private:
+			QString _property;
+			Element* _element;
+		};*/
 
 
-}; // MixingMatrix
+	}; // MixingMatrix
 }; // JackMix
 
 #endif // MIXINGMATRIX_PRIVAT_H

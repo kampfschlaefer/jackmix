@@ -20,7 +20,7 @@
 #ifndef UPDATEFILTER_H
 #define UPDATEFILTER_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 /// Stops an internal signal being sent outside if there is already a signal relayed from the outside to the inside.
 /**
@@ -54,8 +54,8 @@ class UpdateFilter : public QObject
 	Q_OBJECT
 	public:
 		/// Simple Qt constructor
-		UpdateFilter( QObject* p, const char* n=0 ) 
-			: QObject( p,n )
+		UpdateFilter( QObject* p ) 
+			: QObject( p )
 			, _inupdate( false )
 		{ }
 		/// Simple destructor

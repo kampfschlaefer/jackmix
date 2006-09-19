@@ -21,11 +21,11 @@
 #ifndef MIXINGMATRIX_H
 #define MIXINGMATRIX_H
 
-#include <qframe.h>
-#include <qvaluelist.h>
-#include <qmap.h>
-#include <qpopupmenu.h>
-#include <qaction.h>
+#include <QtGui/QFrame>
+#include <QtCore/QList>
+#include <QtCore/QMap>
+#include <QtGui/QMenu>
+#include <QtGui/QAction>
 
 #include "backend_interface.h"
 
@@ -54,7 +54,7 @@ public:
 		return ( ( element == n.element ) && ( slot == n.slot ) );
 	}
 	QString debug() {
-		return QString( "(%1,%2)" ).arg( int( element ) ).arg( slot );
+		return QString( "(%1,%2)" ).arg( qint64( element ) ).arg( slot );
 	}
 	bool exists() const;
 };
@@ -148,7 +148,7 @@ private slots:
 private:
 	enum Mode _mode;
 	Direction _direction;
-	QValueList <Element*> _elements;
+	QList <Element*> _elements;
 	QStringList _inchannels, _outchannels;
 	ConnectionLister* _connectionlister;
 	QMap <ElementSlotSignalPair,ElementSlotSignalPair> _connections;
@@ -187,8 +187,8 @@ public:
 
 	bool isSelected() const { return _selected; }
 
-	QString name() const { return QString( QObject::name() ); }
-	void name( QString n ) { setName( n.latin1() ); }
+	QString name() const { return QObject::objectName(); }
+	void name( QString n ) { setObjectName( n ); }
 
 	// Properties
 	QStringList getPropertyList();
@@ -225,7 +225,7 @@ protected:
 	// Internal pointer
 	const Widget* parent() { return _parent; }
 	// The contextmenu of the Element. Should be filled by the client...
-	QPopupMenu* menu() { return _menu; }
+	QMenu* menu() { return _menu; }
 
 protected slots:
 	// Use this slot if you don't want to do something before replacement.
@@ -240,7 +240,7 @@ private:
 	QStringList _in, _out;
 	bool _selected;
 	Widget* _parent;
-	QPopupMenu *_menu;
+	QMenu *_menu;
 };
 
 

@@ -19,9 +19,9 @@
 */
 
 #include <iostream>
-#include <qapplication.h>
-#include <qslider.h>
-#include <qlabel.h>
+#include <QtGui/QApplication>
+#include <QtGui/QSlider>
+#include <QtGui/QLabel>
 
 #include "osc_server.h"
 #include "osc_connection.h"
@@ -45,7 +45,6 @@ int main( int argc, char** argv ) {
 
 	QWidget* w = new QLabel( "No slider needed anymore...", 0 );
 	w->show();
-	qapp->setMainWidget( w );
 
 	int ret = qapp->exec();
 	delete _oscconnectionserver;

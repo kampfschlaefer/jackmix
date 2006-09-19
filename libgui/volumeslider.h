@@ -21,8 +21,8 @@
 #ifndef JACK_VOLUMESLIDER_H
 #define JACK_VOLUMESLIDER_H
 
-#include <qframe.h>
-#include <qstring.h>
+#include <QtGui/QFrame>
+#include <QtCore/QString>
 #include "common.h"
 #include "dbvolcalc.h"
 

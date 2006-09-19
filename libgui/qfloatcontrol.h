@@ -21,7 +21,7 @@
 #ifndef QFLOATCONTROL_H
 #define QFLOATCONTROL_H
 
-#include <qframe.h>
+#include <QtGui/QFrame>
 
 namespace JackMix {
 namespace GUI {
