@@ -143,7 +143,7 @@ void ConnectionLister::selectionChanged() {
 
 ElementConnectView::ElementConnectView( QListWidget* p, Element* e ) : QListWidgetItem( p, 5282 ), _element( e ) {
 	//qDebug( "ElementConnectView::ElementConnectView( %p, %p )", p, _element );
-	setText( QString( "%1" ).arg( qint64( e ) ) );
+	setText( QString( "%1" ).arg( (int)(void*) e ) );
 	//setSelectable( false );
 	// TODO
 /*	QStringList tmp = e->getPropertyList();

@@ -54,7 +54,7 @@ public:
 		return ( ( element == n.element ) && ( slot == n.slot ) );
 	}
 	QString debug() {
-		return QString( "(%1,%2)" ).arg( qint64( element ) ).arg( slot );
+		return QString( "(%1,%2)" ).arg( (int)(void*) element ).arg( slot );
 	}
 	bool exists() const;
 };
