@@ -40,19 +40,19 @@ int main() {
 	QDomElement docElem = doc.documentElement();
 	std::cout << "1: " << docElem.tagName() <<std::endl;
 
-	QDomElement title = doc.createElement( "title" );
-	title.appendChild( doc.createTextNode( "Testseite" ) );
-	std::cout << "2:" << std::endl;
-	doc.documentElement().appendChild( title );
+	//QDomElement title = doc.createElement( "title" );
+	//title.appendChild( doc.createTextNode( "Testseite" ) );
+	//std::cout << "2:" << std::endl;
+	//doc.documentElement().appendChild( title );
 
-	std::cout << "3:" << std::endl;
+	//std::cout << "3:" << std::endl;
 
 	QDomNode n = docElem.firstChild();
 	while (  !n.isNull() ) {
 		QDomElement e = n.toElement(); // try to convert the node to an element.
 		if (  !e.isNull() ) {
 			std::cout << e.tagName() << std::endl; // the node really is an element.
-			std::cout << e.text() << " childs:" << e.hasChildNodes() << std::endl;
+			std::cout << e.text() << " childs:" << e.childNodes().count() << std::endl;
 		}
 		n = n.nextSibling();
 	}
