@@ -28,6 +28,7 @@
 
 #include <QtGui/QLayout>
 #include <QtGui/QPushButton>
+#include <QtCore/QDebug>
 
 using namespace JackMix;
 using namespace JackMix::MixerElements;
@@ -37,7 +38,10 @@ using namespace JackMix::MixingMatrix;
 class AuxFactory : public JackMix::MixingMatrix::ElementFactory
 {
 public:
-	AuxFactory() : ElementFactory() { globaldebug(); }
+	AuxFactory() : ElementFactory() {
+	qDebug() << "AuxFactory::AuxFactory()";
+		globaldebug();
+	}
 	~AuxFactory() {}
 
 	QStringList canCreate() const {
@@ -58,7 +62,11 @@ public:
 			return 0;
 	}
 };
-AuxFactory* _auxfactory = new AuxFactory();
+
+void MixerElements::init_aux_elements() {
+	qDebug() << "init_aux_elements()";
+	/*AuxFactory* _auxfactory = */new AuxFactory();
+}
 
 AuxElement::AuxElement( QStringList inchannel, QStringList outchannel, MixingMatrix::Widget* p, const char* n )
 	: Element( inchannel, outchannel, p, n )

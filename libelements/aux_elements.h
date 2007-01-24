@@ -51,6 +51,8 @@ private:
 	QString _inchannel, _outchannel;
 };
 
+void init_aux_elements();
+
 }; // MixerElements
 }; // JackMix
 
