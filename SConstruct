@@ -24,9 +24,10 @@ env = Environment( tools=['default', 'generic', 'qt4' ], toolpath=['./', './admi
 #env.QT4use("environ rpath lang_qt thread nohelp")
 
 env['CXXFLAGS']+="-Wall -Werror -g -fpic" #-mcmodel=medium"
+env['BKS_DEBUG'] = "full"
 
-env['DEBUG']="_debug"
-#env['DEBUG']=""
+#env['DEBUG']="_debug"
+env['DEBUG']=""
 
 def CheckPKGConfig( context, pkgname ):
 	import SCons.Util, os
