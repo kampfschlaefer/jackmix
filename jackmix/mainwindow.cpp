@@ -25,12 +25,12 @@
 #include "mixingmatrix.h"
 #include "channelselector.h"
 
+#include "aux_elements.h"
+
 #include <iostream>
 #include <QtCore/QDebug>
 #include <QtGui/QMenu>
 #include <QtGui/QMenuBar>
-//#include <QtGui/qhbox>
-//#include <QtGui/qvbox>
 #include <QtGui/QLayout>
 #include <QtGui/QInputDialog>
 #include <QtCore/QSettings>
@@ -48,15 +48,16 @@ using namespace JackMix::MixingMatrix;
 
 MainWindow::MainWindow( QWidget* p ) : QMainWindow( p ), _backend( new JackBackend() ) {
 std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
-	_filemenu = new QMenu( this );
-	menuBar()->addMenu( _filemenu );
+
+	JackMix::MixerElements::init_aux_elements();
+
+	_filemenu = menuBar()->addMenu( "File" );
 	//_filemenu->insertItem( "Open File...", this, SLOT( openFile() ), CTRL+Key_O );
 	//_filemenu->insertItem( "Save File...", this, SLOT( saveFile() ), CTRL+Key_S );
 	//_filemenu->insertSeparator();
 	_filemenu->addAction( "Quit", this, SLOT( close() ), Qt::CTRL+Qt::Key_Q );
 
-	_editmenu = new QMenu( this );
-	menuBar()->addMenu( _editmenu );
+	_editmenu = menuBar()->addMenu( "Edit" );
 	_select_action = new QAction( "Select Mode", this );
 	_select_action->setCheckable( true );
 	connect( _select_action, SIGNAL( triggered() ), this, SLOT( toggleselectmode() ) );
@@ -78,8 +79,7 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	connect( _remove_outchannel_action, SIGNAL( triggered() ), this, SLOT( removeOutput() ) );
 	_editmenu->addAction( _remove_outchannel_action );
 
-	_viewmenu = new QMenu( this );
-	menuBar()->addMenu( _viewmenu );
+	_viewmenu = menuBar()->addMenu( "View" );
 	_togglein_action = new QAction( "Hide inputcontrols", this );
 	connect( _togglein_action, SIGNAL( triggered() ), this, SLOT( togglein() ) );
 	_viewmenu->addAction( _togglein_action );
@@ -90,20 +90,19 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	_showLister->setShortcut( Qt::CTRL + Qt::Key_L );
 	_viewmenu->addAction( _showLister );
 
-	_helpmenu = new QMenu( this );
-	menuBar()->addMenu( _helpmenu );
+	_helpmenu = menuBar()->addMenu( "Help" );
 	_helpmenu->addAction( "About JackMix", this, SLOT( about() ) );
 	_helpmenu->addAction( "About Qt", this, SLOT( aboutQt() ) );
 
-	_mw = new MainWindowHelperWidget( this );	
+	_mw = new MainWindowHelperWidget( this );
 	setCentralWidget( _mw );
 	//_mw->layout->setRowStretch( 0, 0 );
 	//_mw->layout->setRowStretch( 1, 1000 );
 	//_mw->layout->setColStretch( 1, 0 );
 	//_mw->layout->setColStretch( 0, 1000 );
 
-	QStringList ins = QStringList();//<<"in_1"<<"in_2"<<"in_3"<<"in_4"<<"in_5"<<"in_6"<<"in_7"<<"in_8";
-	QStringList outs = QStringList();//<<"out_1"<<"out_2"<<"out_3";
+	QStringList ins = QStringList() << "in_1" << "in_2" << "in_3" << "in_4" << "in_5" << "in_6" << "in_7" << "in_8";
+	QStringList outs = QStringList() << "out_1" << "out_2" << "out_3";
 	_mixerwidget = new MixingMatrix::Widget( ins, outs, _backend, _mw );
 	_mw->layout->addWidget( _mixerwidget, 1,0 );
 	_inputswidget = new MixingMatrix::Widget( ins, QStringList(), _backend, _mw );

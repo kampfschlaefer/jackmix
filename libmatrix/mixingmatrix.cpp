@@ -33,6 +33,7 @@
 #include <QtCore/QTimer>
 #include <QtGui/QContextMenuEvent>
 #include <QtCore/QMetaProperty>
+#include <QtCore/QDebug>
 
 namespace JackMix {
 namespace MixingMatrix {
@@ -108,43 +109,57 @@ qDebug( " and %i selected followers.", n->followers( n->neighbors() ) );
 }
 
 Element* Widget::getResponsible( QString in, QString out ) const {
-	for ( int i=0; i<_elements.size(); i++ )
-		if ( _elements[ i ]->isResponsible( in, out ) )
+	qDebug() << "Widget::getResponsible(" << in << "," << out << ") size =" << _elements.size();
+	for ( int i=0; i<_elements.size(); i++ ){
+		qDebug() << "i =" << i;
+		if ( _elements[ i ] && _elements[ i ]->isResponsible( in, out ) )
 			return _elements[ i ];
+	}
 	return 0;
 }
 
 bool Widget::createControl( QStringList inchannels, QStringList outchannels ) {
-	//qDebug( "Widget::createControl( QStringList '%s', QStringList '%s')", inchannels.join( "," ).toStdString().c_str(), outchannels.join( "," ).toStdString().c_str() );
+	qDebug( "Widget::createControl( QStringList '%s', QStringList '%s')", inchannels.join( "," ).toStdString().c_str(), outchannels.join( "," ).toStdString().c_str() );
 
-	QString control = Global::the()->canCreate( inchannels.size(), outchannels.size() )[ 0 ];
-	//qDebug( "Found %s to control [%i,%i] channels", control.toStdString().c_str(), inchannels.size(), outchannels.size() );
-	return Global::the()->create( control, inchannels, outchannels, this );
+	QStringList controls = Global::the()->canCreate( inchannels.size(), outchannels.size() );
+	if ( ! controls.isEmpty() ) {
+		QString control = controls.front();
+		qDebug( "Found %s to control [%i,%i] channels", control.toStdString().c_str(), inchannels.size(), outchannels.size() );
+		return Global::the()->create( control, inchannels, outchannels, this );
+	}
 
 	return false;
 }
 
 void Widget::autoFill() {
 qDebug( "\nWidget::autoFill()" );
-//	qDebug( "_direction = %i", _direction );
+	qDebug( "_direction = %i", _direction );
 	if ( _direction == None ) {
-//		qDebug( "Doing the Autofill-boogie..." );
+		qDebug( "Doing the Autofill-boogie..." );
 		for ( QStringList::Iterator init=_inchannels.begin(); init!=_inchannels.end(); ++init )
 			for ( QStringList::Iterator outit=_outchannels.begin(); outit!=_outchannels.end(); ++outit ) {
 				if ( !getResponsible( *init, *outit ) ) {
-//					qDebug( "...together with (%s|%s)", ( *init ).toStdString().c_str(), ( *outit ).toStdString().c_str() );
+					qDebug( "...together with (%s|%s)", ( *init ).toStdString().c_str(), ( *outit ).toStdString().c_str() );
 					createControl( QStringList()<<*init, QStringList()<<*outit );
 				}
-//				else qDebug( "   (%s|%s) is allready occupied. :(", ( *init ).toStdString().c_str(), ( *outit ).toStdString().c_str() );
+				else qDebug( "   (%s|%s) is allready occupied. :(", ( *init ).toStdString().c_str(), ( *outit ).toStdString().c_str() );
 			}
 	} else if ( _direction == Vertical ) {
-		for ( QStringList::Iterator outit=_outchannels.begin(); outit!=_outchannels.end(); ++outit )
+		qDebug() << "Available outputs are" << _outchannels.join( "," );
+		for ( QStringList::Iterator outit=_outchannels.begin(); outit!=_outchannels.end(); ++outit ) {
+			qDebug() << "Setting element for" << *outit;
 			if ( !getResponsible( *outit, *outit ) )
 				createControl( QStringList()<<*outit, QStringList()<<*outit );
+		}
 	} else if ( _direction == Horizontal ) {
-		for ( QStringList::Iterator init=_inchannels.begin(); init!=_inchannels.end(); ++init )
-			if ( !getResponsible( *init, *init ) )
+		qDebug() << "Available inputs are" << _inchannels.join( "," );
+		for ( QStringList::Iterator init=_inchannels.begin(); init!=_inchannels.end(); ++init ) {
+			qDebug() << "Setting element for" << *init;
+			if ( !getResponsible( *init, *init ) ) {
+				qDebug() << " No responsible element found, creating a new one";
 				createControl( QStringList()<<*init, QStringList()<<*init );
+			}
+		}
 	}
 	resizeEvent( 0 );
 	qDebug( "\n" );
@@ -476,10 +491,12 @@ void Global::unregisterFactory( ElementFactory* n ) {
 }
 
 QStringList Global::canCreate( int in, int out ) {
+	qDebug() << "Global::canCreate(" << in << "," << out << ")";
 	QStringList tmp;
 	for ( int i=0; i<_factories.size(); i++ ) {
 		tmp += _factories[ i ]->canCreate( in, out );
 	}
+	qDebug() << " returning" << tmp;
 	return tmp;
 }
 
