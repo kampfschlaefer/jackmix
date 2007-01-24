@@ -12,7 +12,7 @@ myenv.target="jackmix"
 myenv.instdir=env.join(env['PREFIX'],"bin")
 myenv.libpaths="../libgui ../libelements ../libcore ../libmatrix ../backend"
 myenv.includes="../libgui ../libelements ../libcore ../libmatrix ../backend"
-myenv.libs='jackmix_mixingmatrix jackmix_mixingelements jackmix_gui jackmix_backend QtCore' + env['DEBUG'] + ' QtGui' + env['DEBUG'] + ' QtXml' + env['DEBUG'] + " " + env['jack_LIBS']
+myenv.libs='jackmix_mixingmatrix jackmix_mixingelements jackmix_gui jackmix_backend QtCore' + env['DEBUG'] + ' QtGui' + env['DEBUG'] + ' QtXml' + env['DEBUG'] + ' Qt3Support ' + env['jack_LIBS']
 myenv.source='main.cpp mainwindow.cpp'
 myenv.execute()
 
