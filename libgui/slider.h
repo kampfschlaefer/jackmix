@@ -47,6 +47,7 @@ public:
 signals:
 	void valueChanged( float );
 private:
+	void mouseEvent( QMouseEvent* );
 	float _value, _pagestep;
 	bool _value_inupdate;
 	int _precision;

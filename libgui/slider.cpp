@@ -24,6 +24,7 @@
 #include <QtGui/QPainter>
 #include <QtGui/QStyle>
 #include <QtGui/QMouseEvent>
+#include <QtCore/QDebug>
 
 using namespace JackMix;
 using namespace JackMix::GUI;
@@ -36,7 +37,8 @@ Slider::Slider( float value, float min, float max, int precision, float pagestep
 	, _precision( precision )
 	, _valuestring( valuestring )
 {
-	setMinimumSize( 20,20 );
+	int m = QFontMetrics( font() ).height();
+	setMinimumSize( int( m*2.2 ), int( m*2.2 ) );
 	setFocusPolicy( Qt::TabFocus );
 }
 Slider::~Slider() {
@@ -55,6 +57,8 @@ void Slider::value( float n ) {
 	}
 }
 
+#define SLIDER_BORDER 10
+
 void Slider::paintEvent( QPaintEvent* ) {
 	bool rotated = false;
 	QPainter p( this );
@@ -66,54 +70,70 @@ void Slider::paintEvent( QPaintEvent* ) {
 	QFontMetrics metrics( font() );
 	int fontwidth = metrics.width( tmp );
 
-	// Center the coordinates..
+	// Center the coordinates
 	p.translate( width()/2, height()/2 );
 
-	int w = width();//-4;
-	int h = height();//-4;
+	int w = width()-SLIDER_BORDER;
+	int h = height()-SLIDER_BORDER;
 	if ( width() < height() ) {
-		w = height();//-4;
-		h = width();//-4;
+		w = height()-SLIDER_BORDER;
+		h = width()-SLIDER_BORDER;
 		p.rotate( -90 );
 		rotated = true;
 	}
 
 	if ( hasFocus() ) {
-		//p.setPen( QPen( QPen::DotLine ) );
-		//p.drawRect( -w/2-2, -h/2, w+4, h );
-		style()->drawPrimitive( QStyle::PE_FrameFocusRect, 0, &p, this /*QRect( -w/2-2, -h/2, w+4, h )*//*, colorGroup()*/ );
+		style()->drawPrimitive( QStyle::PE_FrameFocusRect, 0, &p, this );
 	}
 
 	float pos = dbtondb( _value )*w-w/2;
+
 	// Rect for the bar
-	p.fillRect( -w/2,-h/3, int( pos+w/2 ), h/3*2, QBrush( QColor( 0,150,0 ) ) /*, colorGroup().highlight()*/ );
-	// Text showing the value
-//	p.setPen( colorGroup().highlightedText() );
-	p.drawText( -fontwidth/2, metrics.height()/2, tmp );
+	QRect bar( -w/2, -h/3, int( ceil( pos+w/2 ) ), h/3*2 );
+	p.fillRect( bar, palette().color( QPalette::Highlight ) );
+
+	p.setPen( palette().color( QPalette::WindowText ) );
+
 	// Top of the bar
-//	p.setPen( colorGroup().highlightedText() );
-	p.drawLine( int( pos ), -( h/3-1 ), int( pos ), h/3-2 );
+	QPen pen = p.pen();
+	pen.setWidth( 2 );
+	p.setPen( pen );
+	p.drawLine( int( pos ), -( h/3 -1), int( pos ), h/3-1 );
+	pen.setWidth( 1 );
+	p.setPen( pen );
+
 	// Surrounding rect
-//	p.setPen( colorGroup().foreground() );
 	QRect tmp2 = QRect( -w/2, -h/3, w, h/3*2 );
 	p.drawRect( tmp2 );
+
+	// Text showing the value
+	p.drawText( -fontwidth/2, metrics.ascent()/2, tmp );
+	p.setClipRect( bar );
+	p.setPen( palette().color( QPalette::HighlightedText ) );
+	p.drawText( -fontwidth/2, metrics.ascent()/2, tmp );
+
+	// Set _faderarea correctly
 	_faderarea = p.matrix().mapRect( tmp2 );
 }
 
 void Slider::mousePressEvent( QMouseEvent* ev ) {
-	if ( ev->button() == Qt::LeftButton && _faderarea.contains( ev->pos() ) )
-		if ( width()>=height() )
-			value( ndbtodb( ( ev->x() ) / float( _faderarea.width() ) ) );
-		else
-			value( ndbtodb( ( _faderarea.height() - ev->y() ) / float( _faderarea.height() ) ) );
+	if ( ev->button() == Qt::LeftButton )
+		mouseEvent( ev );
 }
 
 void Slider::mouseMoveEvent( QMouseEvent* ev ) {
-	if ( _faderarea.contains( ev->pos() ) )
-		if ( width()>=height() )
-			value( ndbtodb( ( ev->pos().x() ) / float( _faderarea.width() ) ) );
-		else
-			value( ndbtodb( ( _faderarea.height() - ev->pos().y() ) / float( _faderarea.height() ) ) );
+	mouseEvent( ev );
+}
+
+void Slider::mouseEvent( QMouseEvent* ev ) {
+	if ( width()>=height() )
+		value( ndbtodb(
+			( ev->pos().x() - _faderarea.x() ) / float( _faderarea.width()-1 )
+			) );
+	else
+		value( ndbtodb(
+			( _faderarea.height() - ev->pos().y() + _faderarea.y() ) / float( _faderarea.height()-1 )
+			) );
 }
 
 void Slider::wheelEvent( QWheelEvent* ev ) {
