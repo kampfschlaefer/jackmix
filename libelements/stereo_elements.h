@@ -103,6 +103,8 @@ private:
 	JackMix::GUI::Slider *_volume_widget, *_balance_widget;
 };
 
+void init_stereo_elements();
+
 }; // MixerElements
 }; // JackMix
 

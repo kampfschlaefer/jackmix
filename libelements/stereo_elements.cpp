@@ -61,7 +61,10 @@ public:
 		return 0;
 	}
 };
-StereoFactory* _stereofactory = new StereoFactory();
+
+void MixerElements::init_stereo_elements() {
+	new StereoFactory();
+}
 
 
 Mono2StereoElement::Mono2StereoElement( QStringList inchannel, QStringList outchannels, MixingMatrix::Widget* p, const char* n )

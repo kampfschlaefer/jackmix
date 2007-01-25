@@ -53,19 +53,15 @@ public:
 	}
 
 	Element* create( QString type , QStringList ins, QStringList outs, Widget* p, const char* n=0 ) {
-		if ( type=="AuxElement" ) {
+		if ( type=="AuxElement" )
 			return new AuxElement( ins, outs, p, n );
-		/*	AuxElement* tmp = new AuxElement( ins, outs, p, n );
-			qDebug( "Created %s with address %p", type.latin1(), tmp );
-			return tmp;*/
-		} else
+		else
 			return 0;
 	}
 };
 
 void MixerElements::init_aux_elements() {
-	qDebug() << "init_aux_elements()";
-	/*AuxFactory* _auxfactory = */new AuxFactory();
+	new AuxFactory();
 }
 
 AuxElement::AuxElement( QStringList inchannel, QStringList outchannel, MixingMatrix::Widget* p, const char* n )
@@ -78,7 +74,7 @@ AuxElement::AuxElement( QStringList inchannel, QStringList outchannel, MixingMat
 	menu()->addAction( "Replace", this, SLOT( slot_simple_replace() ) );
 	QGridLayout* _layout = new QGridLayout( this );
 
-	QFloatPoti* poti = new QFloatPoti( amptodb( backend()->getVolume( _inchannel, _outchannel ) ), -36, 6, 10, QColor( 255,0,0 ), this, _inchannel.toStdString().c_str() );
+	QFloatPoti* poti = new QFloatPoti( amptodb( backend()->getVolume( _inchannel, _outchannel ) ), -36, 6, 10, QColor( 255,120,120 ), this, _inchannel.toStdString().c_str() );
 	_layout->addWidget( poti, 0,0 );
 	connect( poti, SIGNAL( valueChanged( float ) ), this, SLOT( emitvalue( float ) ) );
 }

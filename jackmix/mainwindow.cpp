@@ -26,6 +26,7 @@
 #include "channelselector.h"
 
 #include "aux_elements.h"
+#include "stereo_elements.h"
 
 #include <iostream>
 #include <QtCore/QDebug>
@@ -50,6 +51,7 @@ MainWindow::MainWindow( QWidget* p ) : QMainWindow( p ), _backend( new JackBacke
 std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 
 	JackMix::MixerElements::init_aux_elements();
+	JackMix::MixerElements::init_stereo_elements();
 
 	_filemenu = menuBar()->addMenu( "File" );
 	//_filemenu->insertItem( "Open File...", this, SLOT( openFile() ), CTRL+Key_O );
