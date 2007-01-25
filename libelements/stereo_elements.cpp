@@ -153,8 +153,8 @@ Stereo2StereoElement::Stereo2StereoElement( QStringList inchannels, QStringList 
 	, _balance_value( 0 )
 	, _volume_value( 0 )
 {
-	backend()->setVolume( _inchannel1, _outchannel2, 0 );
-	backend()->setVolume( _inchannel2, _outchannel1, 0 );
+	//backend()->setVolume( _inchannel1, _outchannel2, 0 );
+	//backend()->setVolume( _inchannel2, _outchannel1, 0 );
 	float left = backend()->getVolume( _inchannel1, _outchannel1 );
 	float right = backend()->getVolume( _inchannel2, _outchannel2 );
 	if ( left>right ) {
@@ -166,11 +166,11 @@ Stereo2StereoElement::Stereo2StereoElement( QStringList inchannels, QStringList 
 	}
 	QGridLayout* _layout = new QGridLayout( this );
 	_balance_widget = new JackMix::GUI::Slider( _balance_value, -1, 1, 2, 0.1, this, "%1" );
-	_layout->addWidget( _balance_widget, 0,0, 1,1 );
+	_layout->addWidget( _balance_widget, 0,0 );
 	_layout->setRowStretch( 0, 0 );
 	connect( _balance_widget, SIGNAL( valueChanged( float ) ), this, SLOT( balance( float ) ) );
 	_volume_widget = new JackMix::GUI::Slider( amptodb( _volume_value ), dbmin, dbmax, 1, 3, this );
-	_layout->addWidget( _volume_widget, 1,1, 1,1 );
+	_layout->addWidget( _volume_widget, 1,0 );
 	_layout->setRowStretch( 1, 1000 );
 	connect( _volume_widget, SIGNAL( valueChanged( float ) ), this, SLOT( volume( float ) ) );
 
