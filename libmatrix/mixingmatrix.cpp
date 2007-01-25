@@ -22,7 +22,6 @@
 #include "mixingmatrix_privat.h"
 #include "mixingmatrix.moc"
 //#include "mixingmatrix_privat.moc"
-#include "connectionlister.h"
 
 #include <QtGui/QLayout>
 #include <QtGui/QListWidget>
@@ -48,7 +47,6 @@ Widget::Widget( QStringList ins, QStringList outs, JackMix::BackendInterface* ba
 	, _direction( None )
 	, _inchannels( ins )
 	, _outchannels( outs )
-	, _connectionlister( 0 )
 	, _backend( backend )
 {
 	if ( _inchannels.size()==0 ) {
@@ -62,8 +60,6 @@ Widget::Widget( QStringList ins, QStringList outs, JackMix::BackendInterface* ba
 	setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum );
 }
 Widget::~Widget() {
-	if ( _connectionlister )
-		delete _connectionlister;
 }
 
 
@@ -71,18 +67,9 @@ void Widget::addElement( Element* n ) {
 	_elements.push_back( n );
 	connect( n, SIGNAL( replace( Element* ) ), this, SLOT( replace( Element* ) ) );
 	connect( n, SIGNAL( valueChanged( Element*, QString ) ), this, SLOT( valueChanged( Element*, QString ) ) );
-	connect( n, SIGNAL( connectSlave( Element*, QString ) ), this, SLOT( connectSlave( Element*, QString ) ) );
-	connect( n, SIGNAL( disconnectSlave( Element*, QString ) ), this, SLOT( disconnectSlave( Element*, QString ) ) );
-	connect( n, SIGNAL( disconnectMaster( Element*, QString ) ), this, SLOT( disconnectMaster( Element*, QString ) ) );
-	if ( _connectionlister )
-		_connectionlister->addElement( n );
 	resizeEvent( 0 );
 }
 void Widget::removeElement( Element* n ) {
-	disconnectMaster( n, 0 );
-	disconnectSlave( n, 0 );
-	if ( _connectionlister )
-		_connectionlister->removeElement( n );
 	_elements.removeAll( n );
 }
 
@@ -266,84 +253,9 @@ void Widget::removeoutchannel( QString name ) {
 //	qDebug( "_outchannels.count = %i", _outchannels.size() );
 }
 
-void Widget::connectSlave( Element* slave, QString slot ) {
-	qDebug( "Widget::connectSlave( %p, %s ) [ ! simple ! ]", slave, slot.toStdString().c_str() );
-	if ( !_elements[ 0 ]->metaObject()->indexOfProperty( slot.toStdString().c_str() ) )
-		connectMasterSlave( _elements[ 0 ], slot, slave, slot );
-}
-void Widget::connectMaster( Element* master, QString signal ) {
-	qDebug( "Widget::connectMaster( %p, %s ) [ ! defunct ! ]", master, signal.toStdString().c_str() );
-}
-void Widget::connectMasterSlave( Element* master, QString signal, Element* slave, QString slot ) {
-	//qDebug( "Widget::connectMasterSlave( %p, %s, %p, %s )", master, signal.toStdString().c_str(), slave, slot.toStdString().c_str() );
-	ElementSlotSignalPair sender( master, signal );
-	ElementSlotSignalPair receiver( slave, slot );
-	connectMasterSlave( sender, receiver );
-}
-void Widget::connectMasterSlave( ElementSlotSignalPair sender, ElementSlotSignalPair receiver ) {
-	qDebug( "Widget::connectMasterSlave( %s, %s )", sender.debug().toStdString().c_str(), receiver.debug().toStdString().c_str() );
-	if ( sender.exists() && receiver.exists() ) {
-		if ( receiver == sender )
-			qWarning( " * Tried to connect a property with itself! Cancelling this..." );
-		else if ( _connections[ sender ] == receiver || _connections[ receiver ] == sender )
-			qWarning( " * Feedback-loop detected! Aborting..." );
-		else
-			_connections.insert( receiver,sender );
-	} else {
-		if ( !sender.exists() )
-			qWarning( " * * Sender %s doesn't exist! * *", sender.debug().toStdString().c_str() );
-		if ( !receiver.exists() )
-			qWarning( " * * Receiver %s doesn't exist! * *", receiver.debug().toStdString().c_str() );
-	}
-}
 
-void Widget::disconnectSlave( Element* slave, QString slot ) {
-	//qDebug( "Widget::disconnectSlave( %p, %s )", slave, slot.toStdString().c_str() );
-	disconnectSlave( ElementSlotSignalPair( slave, slot ) );
-}
-void Widget::disconnectSlave( ElementSlotSignalPair slave ) {
-	qDebug( "Widget::disconnectSlave( %s )", slave.debug().toStdString().c_str() );
-	QMap<ElementSlotSignalPair,ElementSlotSignalPair>::Iterator it;
-	for ( it = _connections.begin(); it != _connections.end(); ++it ) {
-		if ( it.key() == slave ) {
-			_connections.erase( it );
-		}
-	}
-}
-void Widget::disconnectMaster( Element* master, QString signal ) {
-	//qDebug( "Widget::disconnectMaster( %p, %s )", master, signal.toStdString().c_str() );
-	disconnectMaster( ElementSlotSignalPair( master, signal ) );
-}
-void Widget::disconnectMaster( ElementSlotSignalPair master ) {
-	qDebug( "Widget::disconnectMaster( %s )", master.debug().toStdString().c_str() );
-	QMap<ElementSlotSignalPair,ElementSlotSignalPair>::Iterator it;
-	for ( it = _connections.begin(); it != _connections.end(); ++it )
-		if ( it.value() == master )
-			_connections.erase( it );
-}
-
-void Widget::toggleConnectionLister( bool n ) {
-	if ( !_connectionlister )
-		_connectionlister = new ConnectionLister( this, 0 );
-	_connectionlister->setShown( n );
-}
-void Widget::toggleConnectionLister() {
-	if ( !_connectionlister )
-		_connectionlister = new ConnectionLister( this, 0 );
-	_connectionlister->setVisible( !_connectionlister->isVisible() );
-}
 
 void Widget::valueChanged( Element* master, QString signal ) {
-	valueChanged( ElementSlotSignalPair( master, signal ) );
-}
-void Widget::valueChanged( ElementSlotSignalPair value ) {
-	QMap<ElementSlotSignalPair,ElementSlotSignalPair>::Iterator it;
-	for ( it = _connections.begin(); it != _connections.end(); ++it )
-		if ( it.value() == value ) {
-			//qDebug( "Widget::valueChanged( %s ) connections=%i", value.debug().toStdString().c_str(), _connections.size() );
-			//qDebug( " * Connection found!\n   Element: %p %s", ( *it ).element, ( *it ).slot.toStdString().c_str() );
-			it.key().element->setProperty( it.key().slot.toStdString().c_str(), value.element->property( value.slot.toStdString().c_str() ) );
-		}
 }
 
 void Widget::debugPrint() {

@@ -36,7 +36,6 @@ namespace JackMix {
 namespace MixingMatrix {
 
 class Element;
-class ConnectionLister;
 
 class ElementSlotSignalPair {
 public:
@@ -121,49 +120,28 @@ public slots:
 	// Fills the empty nodes with 1to1-controls
 	void autoFill();
 
-	// Connect a given slave to a master
-	void connectSlave( Element*, QString );
-	// Connect a given master to a slave
-	void connectMaster( Element*, QString );
-	// Connect a given master to a given slave
-	void connectMasterSlave( ElementSlotSignalPair, ElementSlotSignalPair );
-	void connectMasterSlave( Element*, QString, Element*, QString );
-
-	// Disconnect a given slave from its master
-	void disconnectSlave( ElementSlotSignalPair );
-	void disconnectSlave( Element*, QString );
-	// Disconnect a given master from all its slaves
-	void disconnectMaster( ElementSlotSignalPair );
-	void disconnectMaster( Element*, QString );
-
-	// Toggle the ConnectionLister
-	void toggleConnectionLister();
-
 	// For testing of the properties
 	void debugPrint();
 
 private slots:
-	void valueChanged( ElementSlotSignalPair );
 	void valueChanged( Element*, QString );
 private:
 	enum Mode _mode;
 	Direction _direction;
 	QList <Element*> _elements;
 	QStringList _inchannels, _outchannels;
-	ConnectionLister* _connectionlister;
-	QMap <ElementSlotSignalPair,ElementSlotSignalPair> _connections;
 	JackMix::BackendInterface* _backend;
 };
 
 class Element : public QFrame
 {
 Q_OBJECT
-/*Q_PROPERTY( bool selected READ isSelected WRITE select )
+Q_PROPERTY( bool selected READ isSelected WRITE select )
 Q_PROPERTY( QStringList in READ in )
 Q_PROPERTY( QStringList out READ out )
 Q_PROPERTY( int ins READ inchannels )
 Q_PROPERTY( int outs READ outchannels )
-Q_PROPERTY( QString name READ name WRITE name )*/
+Q_PROPERTY( QString name READ name WRITE name )
 public:
 	/**
 	 * Gets the upper left corner in channelnames.
@@ -215,8 +193,6 @@ public slots:
 signals:
 	void replace( Element* );
 	void connectSlave( Element*, QString );
-	void disconnectSlave( Element*, QString );
-	void disconnectMaster( Element*, QString );
 
 	// Informs, that Element* n, Property s has changed.
 	void valueChanged( Element* n, QString s );

@@ -134,12 +134,6 @@ void Mono2StereoElement::calculateVolumes() {
 	backend()->setVolume( _inchannel, _outchannel2, right );
 }
 
-void Mono2StereoElement::slave() {
-	emit connectSlave( this, QString( "volume" ) );
-}
-void Mono2StereoElement::deslave() {
-	emit disconnectSlave( this, QString( "volume" ) );
-}
 
 
 
@@ -153,8 +147,8 @@ Stereo2StereoElement::Stereo2StereoElement( QStringList inchannels, QStringList 
 	, _balance_value( 0 )
 	, _volume_value( 0 )
 {
-	//backend()->setVolume( _inchannel1, _outchannel2, 0 );
-	//backend()->setVolume( _inchannel2, _outchannel1, 0 );
+	backend()->setVolume( _inchannel1, _outchannel2, 0 );
+	backend()->setVolume( _inchannel2, _outchannel1, 0 );
 	float left = backend()->getVolume( _inchannel1, _outchannel1 );
 	float right = backend()->getVolume( _inchannel2, _outchannel2 );
 	if ( left>right ) {
@@ -180,15 +174,9 @@ Stereo2StereoElement::Stereo2StereoElement( QStringList inchannels, QStringList 
 	QAction *replace = new QAction( "Replace", this );
 	connect( replace, SIGNAL( activated() ), this, SLOT( slot_simple_replace() ) );
 	menu()->addAction( replace );
-	menu()->addSeparator();
-	QAction *disconnectM = new QAction( "Disconnect Master: volume", this );
-	connect( disconnectM, SIGNAL( activated() ), this, SLOT( disconnectM() ) );
-	menu()->addAction( disconnectM );
 }
 Stereo2StereoElement::~Stereo2StereoElement() {
 }
-
-void Stereo2StereoElement::disconnectM() { emit disconnectMaster( this, "volume" ); }
 
 void Stereo2StereoElement::balance( float n ) {
 	//qDebug( "Mono2StereoElement::balance( float %f )", n );

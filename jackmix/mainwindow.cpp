@@ -88,9 +88,6 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	_toggleout_action = new QAction( "Hide outputcontrols", this );
 	connect( _toggleout_action, SIGNAL( triggered() ), this, SLOT( toggleout() ) );
 	_viewmenu->addAction( _toggleout_action );
-	_showLister = new QAction( "Toggle ConnectionLister", this );
-	_showLister->setShortcut( Qt::CTRL + Qt::Key_L );
-	_viewmenu->addAction( _showLister );
 
 	_helpmenu = menuBar()->addMenu( "Help" );
 	_helpmenu->addAction( "About JackMix", this, SLOT( about() ) );
@@ -142,7 +139,6 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 //	connect( _debugPrint, SIGNAL( activated() ), _mixerwidget, SLOT( debugPrint() ) );
 //	_debugPrint->addTo( _filemenu );
 
-	connect( _showLister, SIGNAL( activated() ), _mixerwidget, SLOT( toggleConnectionLister() ) );
 	_select_action->toggle();
 	toggleselectmode();
 

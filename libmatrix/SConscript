@@ -10,7 +10,6 @@ Import( 'env' )
 obj=env.qt4obj('staticlib', env)
 obj.target='libjackmix_mixingmatrix'
 obj.source='\
-	connectionlister.cpp \
 	mixingmatrix.cpp \
 '
 obj.libpaths="../backend ../libgui"
