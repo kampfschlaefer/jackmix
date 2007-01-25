@@ -135,11 +135,11 @@ void Widget::autoFill() {
 		//qDebug( "Doing the Autofill-boogie..." );
 		for ( QStringList::Iterator init=_inchannels.begin(); init!=_inchannels.end(); ++init )
 			for ( QStringList::Iterator outit=_outchannels.begin(); outit!=_outchannels.end(); ++outit ) {
-				if ( !getResponsible( *init, *outit ) ) {
+				if ( !getResponsible( *init, *outit ) )// {
 					//qDebug( "...together with (%s|%s)", ( *init ).toStdString().c_str(), ( *outit ).toStdString().c_str() );
 					createControl( QStringList()<<*init, QStringList()<<*outit );
-				}
-				else qDebug( "   (%s|%s) is allready occupied. :(", ( *init ).toStdString().c_str(), ( *outit ).toStdString().c_str() );
+				//}
+				//else qDebug( "   (%s|%s) is allready occupied. :(", ( *init ).toStdString().c_str(), ( *outit ).toStdString().c_str() );
 			}
 	} else if ( _direction == Vertical ) {
 		//qDebug() << "Available outputs are" << _outchannels.join( "," );
@@ -152,10 +152,10 @@ void Widget::autoFill() {
 		//qDebug() << "Available inputs are" << _inchannels.join( "," );
 		for ( QStringList::Iterator init=_inchannels.begin(); init!=_inchannels.end(); ++init ) {
 			//qDebug() << "Setting element for" << *init;
-			if ( !getResponsible( *init, *init ) ) {
+			if ( !getResponsible( *init, *init ) )// {
 				//qDebug() << " No responsible element found, creating a new one";
 				createControl( QStringList()<<*init, QStringList()<<*init );
-			}
+			//}
 		}
 	}
 	resizeEvent( 0 );
