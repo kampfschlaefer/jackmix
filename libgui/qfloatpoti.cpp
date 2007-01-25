@@ -21,7 +21,8 @@
 #include "qfloatpoti.h"
 #include "qfloatpoti.moc"
 
-#include "qpoti.h"
+//#include "qpoti.h"
+#include <qsynthKnob.h>
 #include <QtGui/QLayout>
 #include <iostream>
 
@@ -29,7 +30,8 @@ class QFloatPoti_private {
 public:
 	QFloatPoti_private() : poti( 0 ), min( 0 ), max( 1 ), value( 0.5 ), precision( 100 ), inupdate( false ) {
 	}
-	QPoti* poti;
+	//QPoti* poti;
+	qsynthKnob* poti;
 	float min, max, value;
 	int precision;
 	bool inupdate;
@@ -44,7 +46,10 @@ QFloatPoti::QFloatPoti( float value, float min, float max, int precision, QColor
  , d( new QFloatPoti_private() )
 {
 	QBoxLayout* _layout = new QVBoxLayout( this );
-	d->poti = new QPoti( 0,100,1,0, this );
+	//d->poti = new QPoti( 0,100,1,0, this );
+	d->poti = new qsynthKnob( this );
+	d->poti->setRange( 0, 100 );
+	d->poti->setSingleStep( 4 );
 	connect( d->poti, SIGNAL( valueChanged( int ) ), this, SLOT( iValueChanged( int ) ) );
 	_layout->addWidget( d->poti );
 	setPrecision( precision );
@@ -52,9 +57,9 @@ QFloatPoti::QFloatPoti( float value, float min, float max, int precision, QColor
 	setMaximum( max );
 	setValue( value );
 	setColor( color );
-	d->poti->setText( n );
+	//d->poti->setText( n );
 	//qDebug( "QFloatPoti::QFloatPoti : text=%s", d->poti->text().ascii() );
-	d->poti->setLabel( false );
+	//d->poti->setLabel( false );
 }
 
 QFloatPoti::QFloatPoti( QWidget* p, const char* n )
@@ -62,7 +67,10 @@ QFloatPoti::QFloatPoti( QWidget* p, const char* n )
  , d( new QFloatPoti_private() )
 {
 	QBoxLayout* _layout = new QVBoxLayout( this );
-	d->poti = new QPoti( 0,100,1,0, this );
+	//d->poti = new QPoti( 0,100,1,0, this );
+	d->poti = new qsynthKnob( this );
+	d->poti->setRange( 0, 100 );
+	d->poti->setSingleStep( 4 );
 	connect( d->poti, SIGNAL( valueChanged( int ) ), this, SLOT( iValueChanged( int ) ) );
 	_layout->addWidget( d->poti );
 }
@@ -99,7 +107,7 @@ void QFloatPoti::setValue( float n ) {
 }
 
 void QFloatPoti::setColor( QColor n ) {
-	d->poti->setColor( n );
+	d->poti->setKnobColor( n );
 }
 
 void QFloatPoti::iValueChanged( int n ) {

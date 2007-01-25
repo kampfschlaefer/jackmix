@@ -13,15 +13,15 @@ obj.source='\
 	channelselector.cpp \
 	slider.cpp \
 	qfloatcontrol.cpp \
-	qpixmapeffect.cpp \
-	qimageeffect.cpp \
 	qfloatslider.cpp \
 	qfloatpoti.cpp \
 	qtickmarks.cpp \
 	volumeslider.cpp \
 	stereovolumeslider.cpp \
-	qpoti.cpp \
+	qsynthKnob.cpp \
 '
+#	qpoti.cpp \
+#	qpixmapeffect.cpp \
 #	qimageeffect.cpp \
 obj.libs="QtCore"
 obj.includes='#/ ./'
