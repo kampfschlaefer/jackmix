@@ -366,7 +366,6 @@ Element::Element( QStringList in, QStringList out, Widget* p, const char* n )
 	, _menu( new QMenu( this ) )
 {
 	//qDebug( "MixingMatrix::Element::Element( QStringList '%s', QStringList '%s' )", in.join(",").toStdString().c_str(), out.join(",").toStdString().c_str() );
-	//setMargin( 2 );
 	setFrameStyle( QFrame::Raised|QFrame::StyledPanel );
 	setLineWidth( 2 );
 	QTimer::singleShot( 0, this, SLOT( lazyInit() ) );
@@ -390,13 +389,15 @@ qDebug( "MixingMatrix::Element::select( bool %i )", n );
 	if ( n != _selected ) {
 		if ( _parent->mode() == Widget::Select ) {
 			_selected = n;
-/*			if ( _selected ) {
+			QPalette pal;
+			if ( _selected ) {
 				setFrameShadow( QFrame::Sunken );
-				setBackgroundColor( colorGroup().background().dark() );
+				pal.setColor( backgroundRole(), palette().color( QPalette::Window ).dark() );
 			} else {
 				setFrameShadow( QFrame::Raised );
-				setBackgroundColor( colorGroup().background() );
-			}*/
+				pal.setColor( backgroundRole(), palette().color( QPalette::Window ) );
+			}
+			setPalette( pal );
 			isSelected( n );
 		}
 	}
