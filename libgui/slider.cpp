@@ -37,8 +37,10 @@ Slider::Slider( float value, float min, float max, int precision, float pagestep
 	, _precision( precision )
 	, _valuestring( valuestring )
 {
+	setAutoFillBackground( false );
 	int m = QFontMetrics( font() ).height();
 	setMinimumSize( int( m*2.2 ), int( m*2.2 ) );
+	setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
 	setFocusPolicy( Qt::TabFocus );
 }
 Slider::~Slider() {

@@ -56,6 +56,8 @@ public:
 
 	int getDefaultValue() const { return m_iDefaultValue; }
 
+	QSize minimumSizeHint() const;
+
 public slots:
 
 	// Set the colour of the knob
@@ -84,6 +86,8 @@ protected:
 	virtual void mouseReleaseEvent(QMouseEvent *pMouseEvent);
 	virtual void wheelEvent(QWheelEvent *pWheelEvent);
 	void valueChange();
+
+	void resizeEvent( QResizeEvent* );
 
 private:
 

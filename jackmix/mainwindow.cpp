@@ -109,6 +109,11 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	_outputswidget = new MixingMatrix::Widget( QStringList(), outs, _backend, _mw );
 	_mw->layout->addWidget( _outputswidget, 1,1 );
 
+	_mw->layout->setRowStretch( 0, 1 );
+	_mw->layout->setRowStretch( 1, int( 1E2 ) );
+	_mw->layout->setColumnStretch( 1, 1 );
+	_mw->layout->setColumnStretch( 0, int( 1E2 ) );
+
 	/*_mixerwidget->createControl( QStringList()<<"in_1"<<"in_2", QStringList()<<"out_1"<<"out_2" );
 	_mixerwidget->createControl( QStringList()<<"in_3"<<"in_4", QStringList()<<"out_1"<<"out_2" );
 	_mixerwidget->createControl( QStringList()<<"in_5", QStringList()<<"out_1"<<"out_2" );

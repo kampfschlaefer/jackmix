@@ -90,6 +90,9 @@ qsynthKnob::qsynthKnob ( QWidget *pParent, const char *pszName )
 	m_iDefaultValue(-1)
 {
 	setObjectName(pszName);
+	setMinimumSize( 40,40 );
+	setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
+	setAutoFillBackground( false );
 }
 
 
@@ -140,7 +143,7 @@ void qsynthKnob::paintEvent ( QPaintEvent* )
 	int scale = 4;
 	int width = m_size * scale;
 	QPixmap map(width, width);
-	map.fill(palette().color( QPalette::Background ));
+	map.fill(palette().color( QPalette::Window ));
 	paint.begin(&map);
 
 	QPen pen;
@@ -402,7 +405,6 @@ void qsynthKnob::wheelEvent ( QWheelEvent *pWheelEvent )
 	}
 }
 
-
 void qsynthKnob::valueChange (void)
 {
 	update();
@@ -412,5 +414,18 @@ void qsynthKnob::valueChange (void)
 #endif
 }
 
+QSize qsynthKnob::minimumSizeHint() const {
+	int s = size().width();
+	if ( s > size().height() )
+		s = size().height();
+	return QSize( s, s );
+}
+
+void qsynthKnob::resizeEvent( QResizeEvent* ) {
+/*	if ( size().height() > size().width() )
+		resize( size().width(), size().width() );
+	else if ( size().width() > size().height() )
+		resize( size().height(), size().height() );*/
+}
 
 // end of qsynthKnob.cpp

@@ -57,7 +57,7 @@ Widget::Widget( QStringList ins, QStringList outs, JackMix::BackendInterface* ba
 		_direction = Horizontal;
 		_outchannels = _inchannels;
 	}
-	setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum );
+	setSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding );
 }
 Widget::~Widget() {
 }
@@ -278,9 +278,10 @@ Element::Element( QStringList in, QStringList out, Widget* p, const char* n )
 	, _menu( new QMenu( this ) )
 {
 	//qDebug( "MixingMatrix::Element::Element( QStringList '%s', QStringList '%s' )", in.join(",").toStdString().c_str(), out.join(",").toStdString().c_str() );
-	setFrameStyle( QFrame::Raised|QFrame::StyledPanel );
-	setLineWidth( 2 );
-	QTimer::singleShot( 0, this, SLOT( lazyInit() ) );
+	setFrameStyle( QFrame::Raised|QFrame::Panel );
+	setLineWidth( 1 );
+	QTimer::singleShot( 10, this, SLOT( lazyInit() ) );
+	setAutoFillBackground( true );
 }
 Element::~Element() {
 	//qDebug( "MixingMatrix::Element::~Element()" );
@@ -304,10 +305,10 @@ qDebug( "MixingMatrix::Element::select( bool %i )", n );
 			QPalette pal;
 			if ( _selected ) {
 				setFrameShadow( QFrame::Sunken );
-				pal.setColor( backgroundRole(), palette().color( QPalette::Window ).dark() );
+				pal.setColor( QPalette::Window, pal.color( QPalette::Window ).dark() );
 			} else {
 				setFrameShadow( QFrame::Raised );
-				pal.setColor( backgroundRole(), palette().color( QPalette::Window ) );
+				pal.setColor( QPalette::Window, pal.color( QPalette::Window ).light() );
 			}
 			setPalette( pal );
 			isSelected( n );

@@ -28,7 +28,7 @@
 
 class QFloatPoti_private {
 public:
-	QFloatPoti_private() : poti( 0 ), min( 0 ), max( 1 ), value( 0.5 ), precision( 100 ), inupdate( false ) {
+	QFloatPoti_private() : poti( 0 ), min( 0 ), max( 1 ), value( 0.5 ), precision( 100 ), inupdate( false ), layout( 0 ) {
 	}
 	//QPoti* poti;
 	qsynthKnob* poti;
@@ -39,19 +39,22 @@ public:
 	void setMinMax() {
 		poti->setRange( int( min*precision ), int( max*precision ) );
 	}
+
+	QBoxLayout* layout;
 };
 
 QFloatPoti::QFloatPoti( float value, float min, float max, int precision, QColor color, QWidget* p, const char* n )
  : QFrame( p )
  , d( new QFloatPoti_private() )
 {
-	QBoxLayout* _layout = new QVBoxLayout( this );
-	//d->poti = new QPoti( 0,100,1,0, this );
+	d->layout = new QVBoxLayout( this );
+	d->layout->setMargin( 0 );
+	d->layout->setSpacing( 0 );
 	d->poti = new qsynthKnob( this );
 	d->poti->setRange( 0, 100 );
 	d->poti->setSingleStep( 4 );
 	connect( d->poti, SIGNAL( valueChanged( int ) ), this, SLOT( iValueChanged( int ) ) );
-	_layout->addWidget( d->poti );
+	d->layout->addWidget( d->poti, 0, Qt::AlignCenter );
 	setPrecision( precision );
 	setMinimum( min );
 	setMaximum( max );
@@ -66,13 +69,14 @@ QFloatPoti::QFloatPoti( QWidget* p, const char* n )
  : QFrame( p )
  , d( new QFloatPoti_private() )
 {
-	QBoxLayout* _layout = new QVBoxLayout( this );
-	//d->poti = new QPoti( 0,100,1,0, this );
+	d->layout = new QVBoxLayout( this );
+	d->layout->setMargin( 0 );
+	d->layout->setSpacing( 0 );
 	d->poti = new qsynthKnob( this );
 	d->poti->setRange( 0, 100 );
 	d->poti->setSingleStep( 4 );
 	connect( d->poti, SIGNAL( valueChanged( int ) ), this, SLOT( iValueChanged( int ) ) );
-	_layout->addWidget( d->poti );
+	d->layout->addWidget( d->poti );
 }
 QFloatPoti::~QFloatPoti() {
 }

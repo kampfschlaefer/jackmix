@@ -89,12 +89,14 @@ Mono2StereoElement::Mono2StereoElement( QStringList inchannel, QStringList outch
 	}
 	qDebug( " values: %f, %f", _volume_value, _balance_value );
 	QGridLayout* _layout = new QGridLayout( this );
+	_layout->setMargin( 0 );
+	_layout->setSpacing( 0 );
 
 	menu()->addAction( "Select", this, SLOT( slot_simple_select() ) );
 	menu()->addAction( "Replace", this, SLOT( slot_simple_replace() ) );
 
 	_balance = new QFloatPoti( _balance_value, -1, 1, 100, QColor( 0,0,255 ), this );
-	_layout->addWidget( _balance, 0,0 );
+	_layout->addWidget( _balance, 0,0, Qt::AlignCenter );
 	connect( _balance, SIGNAL( valueChanged( float ) ), this, SLOT( balance( float ) ) );
 	_volume = new JackMix::GUI::Slider( amptodb( _volume_value ), dbmin, dbmax, 1, 3, this );
 	_layout->addWidget( _volume, 1,0 );
@@ -165,7 +167,7 @@ Stereo2StereoElement::Stereo2StereoElement( QStringList inchannels, QStringList 
 	connect( _balance_widget, SIGNAL( valueChanged( float ) ), this, SLOT( balance( float ) ) );
 	_volume_widget = new JackMix::GUI::Slider( amptodb( _volume_value ), dbmin, dbmax, 1, 3, this );
 	_layout->addWidget( _volume_widget, 1,0 );
-	_layout->setRowStretch( 1, 1000 );
+	_layout->setRowStretch( 1, 255 );
 	connect( _volume_widget, SIGNAL( valueChanged( float ) ), this, SLOT( volume( float ) ) );
 
 	QAction *toggle = new QAction( "Toggle Selection", this );
