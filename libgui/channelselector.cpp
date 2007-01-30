@@ -32,13 +32,13 @@ ChannelSelector::ChannelSelector( QString title, QString label, QStringList chan
 
 	QGridLayout *_layout = new QGridLayout( this );
 	QLabel *_label = new QLabel( label, this );
-	_layout->addWidget( _label, 0,0, 0,3 );
+	_layout->addWidget( _label, 0,0, 1,4 );
 
 	_list = new QListWidget( this );
 	_list->addItems( channels );
-	_layout->addWidget( _list, 1,1, 0,3 );
+	_layout->addWidget( _list, 1,0, 1,4 );
 
-	_layout->addItem( new QSpacerItem( 10,10 ), 2,2, 0,3 );
+	_layout->addItem( new QSpacerItem( 10,10 ), 2,0, 1,4 );
 
 	_layout->addItem( new QSpacerItem( 40,10 ), 3,0 );
 	_commit_n_quit = new QPushButton( "Commit && Quit", this );
