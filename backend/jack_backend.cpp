@@ -21,27 +21,27 @@
 #include "jack_backend.h"
 //#include "jack_backend.moc"
 
-#include <iostream>
 #include <QtXml/QDomDocument>
 #include <QtXml/QDomElement>
+#include <QtCore/QDebug>
 
 using namespace JackMix;
 
 JackBackend::JackBackend() {
-	std::cout << "JackBackend::JackBackend()" << std::endl;
+	qDebug() << "JackBackend::JackBackend()";
 	client = ::jack_client_new( "JackMix" );
 	//client = 0;
 	if ( client ) {
 		::jack_set_process_callback( client, JackMix::process, this );
-		std::cout << "JackBackend::JackBackend() activate" << std::endl;
+		qDebug() << "JackBackend::JackBackend() activate";
 		::jack_activate( client );
 	}
 	else
-	std::cout << "\n No jack-connection! :(\n\n";
-	std::cout << "JackBackend::JackBackend() finished" << std::endl;
+	qWarning() << "\n No jack-connection! :(\n\n";
+	qDebug() << "JackBackend::JackBackend() finished";
 }
 JackBackend::~JackBackend() {
-	std::cout << "JackBackend::~JackBackend()" << std::endl;
+	qDebug() << "JackBackend::~JackBackend()";
 	if ( client )
 		::jack_client_close( client );
 }
@@ -78,7 +78,7 @@ bool JackBackend::removeInput( QString name ) {
 }
 
 void JackBackend::setVolume( QString channel, QString output, float volume ) {
-	//std::cerr << "JackBackend::setVolume( " << channel << ", " << output << ", " << volume << " )" << std::endl;
+	//qDebug() << "JackBackend::setVolume( " << channel << ", " << output << ", " << volume << " )";
 	if ( channel == output ) {
 		if ( involumes.contains( channel ) )
 			setInVolume( channel, volume );
@@ -89,26 +89,26 @@ void JackBackend::setVolume( QString channel, QString output, float volume ) {
 }
 
 float JackBackend::getVolume( QString channel, QString output ) {
-	//std::cerr << "JackBackend::getVolume( " << channel << ", " << output << " ) = " << volumes[ channel ][ output ] << std::endl;
+	//qDebug() << "JackBackend::getVolume( " << channel << ", " << output << " ) = " << volumes[ channel ][ output ];
 	volumes[ channel ].insert( output, 0 );
 	return volumes[ channel ][ output ];
 }
 
 void JackBackend::setOutVolume( QString ch, float n ) {
-	//std::cerr << "JackBackend::setOutVolume(QString " << ch << ", float " << n << " )" << std::endl;
+	//qDebug() << "JackBackend::setOutVolume(QString " << ch << ", float " << n << " )";
 	outvolumes[ ch ] = n;
 }
 float JackBackend::getOutVolume( QString ch ) {
-	//std::cerr << "JackBackend::getOutVolume(QString " << ch << " )" << std::endl;
+	//qDebug() << "JackBackend::getOutVolume(QString " << ch << " )";
 	outvolumes.insert( ch, 1 );
 	return outvolumes[ ch ];
 }
 void JackBackend::setInVolume( QString ch, float n ) {
-	//std::cerr << "JackBackend::setInVolume(QString " << ch << ", float " << n << " )" << std::endl;
+	//qDebug() << "JackBackend::setInVolume(QString " << ch << ", float " << n << " )";
 	involumes[ ch ] = n;
 }
 float JackBackend::getInVolume( QString ch ) {
-	//std::cerr << "JackBackend::getInVolume(QString " << ch << " )" << std::endl;
+	//qDebug() << "JackBackend::getInVolume(QString " << ch << " )";
 	involumes.insert( ch, 1 );
 	return involumes[ ch ];
 }
@@ -118,6 +118,7 @@ QStringList JackBackend::outchannels() {
 	JackMix::ports_it it;
 	for ( it = out_ports.begin(); it != out_ports.end(); ++it )
 		tmp << it.key();
+	qDebug() << tmp.join( "," );
 	return tmp;
 }
 QStringList JackBackend::inchannels() {
@@ -129,7 +130,7 @@ QStringList JackBackend::inchannels() {
 }
 
 void JackBackend::toXML( QDomDocument doc, QDomElement elem ) {
-std::cout << "JackBackend::toXML()" << std::endl;
+qDebug() << "JackBackend::toXML()";
 	QDomElement matrix = doc.createElement( "matrix" );
 
 	QStringList ins = inchannels();
@@ -171,7 +172,7 @@ void JackBackend::fromXML( QDomElement elem ) {
 
 
 int JackMix::process( jack_nframes_t nframes, void* arg ) {
-	//std::cout << "JackMix::process( jack_nframes_t " << nframes << ", void* )" << std::endl;
+	//qDebug() << "JackMix::process( jack_nframes_t " << nframes << ", void* )";
 	JackMix::JackBackend* backend = static_cast<JackMix::JackBackend*>( arg );
 	QMap<QString,jack_default_audio_sample_t*> ins;
 	JackMix::ports_it it;
