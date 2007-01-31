@@ -1,16 +1,15 @@
 Begin4
 Title:          JackMix -- Some description
-Version:        0.0.3
-Entered-date:   2004-06-27
+Version:        0.2
+Entered-date:   2007-01-31
 Description:    Mixer for jack
 Keywords:       Qt,Jack,Audio,Mixer
 Author:         Arnold Krille <arnold@arnoldarts.de>
 Maintained-by:  Arnold Krille <arnold@arnoldarts.de>
-Home-page:      http://roederberg.dyndns.org/~arnold/jackmix/
+Home-page:      http://www.arnoldarts.de/drupal/?q=JackMix
 Alternate-site: 
-Primary-site:   http://roederberg.dyndns.org/~arnold/file_share/jackmix/
-                xxxxxx  jackmix-0.0.3.tar.gz
-                xxx     jackmix-0.0.3.lsm
-Platform:       Linux. Needs Qt 3.x
+Primary-site:   http://www.arnoldarts.de/drupal/files/downloads/jackmix/
+                xxxxxx  jackmix-0.2.tar.gz
+Platform:       Linux. Needs Qt 4.x
 Copying-policy: GPL
 End

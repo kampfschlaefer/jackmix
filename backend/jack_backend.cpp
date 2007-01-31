@@ -19,10 +19,7 @@
 */
 
 #include "jack_backend.h"
-//#include "jack_backend.moc"
 
-#include <QtXml/QDomDocument>
-#include <QtXml/QDomElement>
 #include <QtCore/QDebug>
 
 using namespace JackMix;
@@ -30,7 +27,6 @@ using namespace JackMix;
 JackBackend::JackBackend() {
 	qDebug() << "JackBackend::JackBackend()";
 	client = ::jack_client_new( "JackMix" );
-	//client = 0;
 	if ( client ) {
 		::jack_set_process_callback( client, JackMix::process, this );
 		qDebug() << "JackBackend::JackBackend() activate";
@@ -129,48 +125,6 @@ QStringList JackBackend::inchannels() {
 		tmp << it.key();
 	return tmp;
 }
-
-void JackBackend::toXML( QDomDocument doc, QDomElement elem ) {
-qDebug() << "JackBackend::toXML()";
-	QDomElement matrix = doc.createElement( "matrix" );
-
-	QStringList ins = inchannels();
-	QStringList outs = outchannels();
-	for ( int i=0; i<ins.size(); i++ ) {
-		QDomElement in = doc.createElement( "instrip" );
-		in.setAttribute( "channel", ins[ i ] );
-		for ( int j=0; j<outs.size(); j++ ) {
-			QDomElement out = doc.createElement( "out" );
-			out.setAttribute( "channel", outs[ j ] );
-			out.setAttribute( "value", getVolume( ins[ i ], outs[ j ] ) );
-			in.appendChild( out );
-		}
-		matrix.appendChild( in );
-	}
-
-	elem.appendChild( matrix );
-}
-void JackBackend::fromXML( QDomElement elem ) {
-	QString inch;
-	if ( elem.tagName() == "matrix" )
-		for ( QDomNode n = elem.firstChild(); !n.isNull(); n=n.nextSibling() ) {
-			QDomElement tmp = n.toElement();
-			if ( !tmp.isNull() ) {
-				if ( tmp.tagName() == "instrip" ) {
-					inch = tmp.attribute( "channel" );
-					for ( QDomNode m = tmp.firstChild(); !m.isNull(); m=m.nextSibling() ) {
-						QDomElement tmp2 = m.toElement();
-						if ( !tmp2.isNull() ) {
-							QString outch( tmp2.attribute( "channel" ) );
-							float value = tmp2.attribute( "value", "0" ).toFloat();
-							setVolume( inch, outch, value );
-						}
-					}
-				}
-			}
-		}
-}
-
 
 int JackMix::process( jack_nframes_t nframes, void* arg ) {
 	//qDebug() << "JackMix::process( jack_nframes_t " << nframes << ", void* )";
