@@ -42,7 +42,7 @@ def CheckPKGConfig( context, pkgname ):
 	context.Result( ret[0] )
 	return ret[0]
 
-conf = Configure( env, custom_tests={'CheckPKGConfig' : CheckPKGConfig } )
+conf = Configure( env, custom_tests={'CheckPKGConfig' : CheckPKGConfig }, conf_dir='cache', log_file='cache/config.log' )
 conf.CheckPKGConfig( 'jack' )
 conf.CheckPKGConfig( 'liblo' )
 
