@@ -75,17 +75,17 @@ void Widget::removeElement( Element* n ) {
 
 void Widget::replace( Element* n ) {
 qDebug( "Widget::replace( Element* %p )", n );
-qDebug( "This Element has %i selected neighbors.", n->neighbors() );
-qDebug( " and %i selected followers.", n->followers( n->neighbors() ) );
+//qDebug( "This Element has %i selected neighbors.", n->neighbors() );
+//qDebug( " and %i selected followers.", n->followers( n->neighbors() ) );
 	QStringList in, out;
 	in = n->neighborsList();
-	qDebug( "Selected ins = %s", in.join( "," ).toStdString().c_str() );
+	//qDebug( "Selected ins = %s", in.join( "," ).toStdString().c_str() );
 	out = n->followersList();
-	qDebug( "Selected outs = %s", out.join( "," ).toStdString().c_str() );
+	//qDebug( "Selected outs = %s", out.join( "," ).toStdString().c_str() );
 	for ( QStringList::ConstIterator it=out.begin(); it!=out.end(); ++it ) {
 		for ( QStringList::ConstIterator jt=in.begin(); jt!=in.end(); ++jt ) {
 			Element* tmp = getResponsible( ( *jt ),( *it ) );
-			qDebug( "About to delete %p", tmp );
+			//qDebug( "About to delete %p", tmp );
 			if ( tmp ) {
 				delete tmp;
 			}
@@ -93,6 +93,7 @@ qDebug( " and %i selected followers.", n->followers( n->neighbors() ) );
 	}
 	createControl( in, out );
 	//autoFill();
+	QTimer::singleShot( 100, this, SLOT( autoFill() ) );
 }
 
 Element* Widget::getResponsible( QString in, QString out ) const {
@@ -208,19 +209,25 @@ QSize Widget::smallestElement() const {
 }
 
 QString Widget::nextIn( QString n ) const {
+	if ( n.isNull() )
+		return 0;
 	for ( QStringList::ConstIterator it = _inchannels.begin(); it != _inchannels.end(); ++it )
 		if ( ( *it ) == n ) { ++it; return ( *it ); }
 	return 0;
 }
 QString Widget::nextOut( QString n ) const {
-	for ( QStringList::ConstIterator it = _outchannels.begin(); it != _outchannels.end(); ++it )
-		if ( ( *it ) == n ) { ++it; return ( *it ); }
+	if ( n.isNull() )
+		return 0;
+	int i = _outchannels.indexOf( n ) + 1;
+	if ( i<_outchannels.size() )
+		return _outchannels.at( i );
 	return 0;
 }
 
 void Widget::addinchannel( QString name ) {
 	_inchannels.push_back( name );
 	this->updateGeometry();
+	//update();
 }
 void Widget::addoutchannel( QString name ) {
 	_outchannels.push_back( name );
@@ -280,7 +287,7 @@ Element::Element( QStringList in, QStringList out, Widget* p, const char* n )
 	//qDebug( "MixingMatrix::Element::Element( QStringList '%s', QStringList '%s' )", in.join(",").toStdString().c_str(), out.join(",").toStdString().c_str() );
 	setFrameStyle( QFrame::Raised|QFrame::Panel );
 	setLineWidth( 1 );
-	QTimer::singleShot( 10, this, SLOT( lazyInit() ) );
+	QTimer::singleShot( 1, this, SLOT( lazyInit() ) );
 	setAutoFillBackground( true );
 }
 Element::~Element() {
@@ -335,6 +342,8 @@ QStringList Element::neighborsList() const {
 	return tmp;
 }
 int Element::followers( int n ) const {
+	if ( n==0 )
+		return 0;
 //qDebug( "Element::followers( int %i )", n );
 	Element* follower = _parent->getResponsible( _in[ 0 ], _parent->nextOut( _out[ _out.size()-1 ] ) );
 /*	if ( follower )
