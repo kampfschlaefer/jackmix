@@ -53,55 +53,77 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	JackMix::MixerElements::init_aux_elements();
 	JackMix::MixerElements::init_stereo_elements();
 
-	_filemenu = menuBar()->addMenu( "File" );
+	_filemenu = menuBar()->addMenu( "&File" );
 	//_filemenu->insertItem( "Open File...", this, SLOT( openFile() ), CTRL+Key_O );
 	//_filemenu->insertItem( "Save File...", this, SLOT( saveFile() ), CTRL+Key_S );
 	//_filemenu->insertSeparator();
-	_filemenu->addAction( "Quit", this, SLOT( close() ), Qt::CTRL+Qt::Key_Q );
+	_filemenu->addAction( "&Quit", this, SLOT( close() ), Qt::CTRL+Qt::Key_Q );
 
-	_editmenu = menuBar()->addMenu( "Edit" );
+	_editmenu = menuBar()->addMenu( "&Edit" );
 	_select_action = new QAction( "Select Mode", this );
 	_select_action->setCheckable( true );
 	connect( _select_action, SIGNAL( triggered() ), this, SLOT( toggleselectmode() ) );
-	_editmenu->addAction( _select_action );
+	//_editmenu->addAction( _select_action );
 	//_select_action->addTo( new QToolBar( this ) );
-	//_editmenu->setCheckable( true );
-	_editmenu->addAction( "Fill empty spaces", this, SLOT( autofill() ) );
+	_editmenu->addAction( "&Fill empty spaces", this, SLOT( autofill() ) );
 	_editmenu->addSeparator();
-	_add_inchannel_action = new QAction( "Add Input...", this );
+	_add_inchannel_action = new QAction( "Add &Input...", this );
 	connect( _add_inchannel_action, SIGNAL( triggered() ), this, SLOT( addInput() ) );
 	_editmenu->addAction( _add_inchannel_action );
-	_add_outchannel_action = new QAction( "Add Output...", this );
+	_add_outchannel_action = new QAction( "Add &Output...", this );
 	connect( _add_outchannel_action, SIGNAL( triggered() ), this, SLOT( addOutput() ) );
 	_editmenu->addAction( _add_outchannel_action );
-	_remove_inchannel_action = new QAction( "Remove Input...", this );
+	_remove_inchannel_action = new QAction( "&Remove Input...", this );
 	connect( _remove_inchannel_action, SIGNAL( triggered() ), this, SLOT( removeInput() ) );
 	_editmenu->addAction( _remove_inchannel_action );
-	_remove_outchannel_action = new QAction( "Remove Output...", this );
+	_remove_outchannel_action = new QAction( "R&emove Output...", this );
 	connect( _remove_outchannel_action, SIGNAL( triggered() ), this, SLOT( removeOutput() ) );
 	_editmenu->addAction( _remove_outchannel_action );
 
-	_viewmenu = menuBar()->addMenu( "View" );
-	_togglein_action = new QAction( "Hide inputcontrols", this );
+	_viewmenu = menuBar()->addMenu( "&View" );
+	_togglein_action = new QAction( "Hide &inputcontrols", this );
 	connect( _togglein_action, SIGNAL( triggered() ), this, SLOT( togglein() ) );
 	_viewmenu->addAction( _togglein_action );
-	_toggleout_action = new QAction( "Hide outputcontrols", this );
+	_toggleout_action = new QAction( "Hide &outputcontrols", this );
 	connect( _toggleout_action, SIGNAL( triggered() ), this, SLOT( toggleout() ) );
 	_viewmenu->addAction( _toggleout_action );
 
-	_helpmenu = menuBar()->addMenu( "Help" );
-	_helpmenu->addAction( "About JackMix", this, SLOT( about() ) );
-	_helpmenu->addAction( "About Qt", this, SLOT( aboutQt() ) );
+	_helpmenu = menuBar()->addMenu( "&Help" );
+	_helpmenu->addAction( "About &JackMix", this, SLOT( about() ) );
+	_helpmenu->addAction( "About &Qt", this, SLOT( aboutQt() ) );
 
 	_mw = new MainWindowHelperWidget( this );
 	setCentralWidget( _mw );
-	//_mw->layout->setRowStretch( 0, 0 );
-	//_mw->layout->setRowStretch( 1, 1000 );
-	//_mw->layout->setColStretch( 1, 0 );
-	//_mw->layout->setColStretch( 0, 1000 );
+
+	/*_backend->addInput( "in_1" );
+	_backend->addInput( "in_2" );
+	_backend->addInput( "in_3" );
+	_backend->addInput( "in_4" );
+	_backend->addInput( "in_5" );
+	_backend->addInput( "in_6" );
+	_backend->addInput( "in_7" );
+	_backend->addInput( "in_8" );
+	_backend->addOutput( "out_1" );
+	_backend->addOutput( "out_2" );
+	_backend->addOutput( "out_3" );*/
 
 	QStringList ins = QStringList() << "in_1" << "in_2" << "in_3" << "in_4" << "in_5" << "in_6" << "in_7" << "in_8";
-	QStringList outs = QStringList() << "out_1" << "out_2" << "out_3";
+	QStringList outs = QStringList() << "out_1" << "out_2";
+
+	foreach( QString in, ins ) {
+		//qDebug() << "Trying to add input" << in << "to the backend";
+		_backend->addInput( in );
+	}
+	foreach( QString out, outs ) {
+		//qDebug() << "Trying to add output" << out << "to the backend";
+		_backend->addOutput( out );
+	}
+
+	ins = _backend->inchannels();
+	outs = _backend->outchannels();
+	if ( ins.empty() || outs.empty() )
+		QMessageBox::warning( this, "No Channels available", "<qt>Altough I tried to create 8 inputs and 2 outputs, there are no input/output channels available. This probably means that the engine couldn't connect to the jack-server.<p>Please make sure that jackd is started and try again.</qt>" );
+
 	_mixerwidget = new MixingMatrix::Widget( ins, outs, _backend, _mw );
 	_mw->layout->addWidget( _mixerwidget, 1,0 );
 	_inputswidget = new MixingMatrix::Widget( ins, QStringList(), _backend, _mw );
@@ -127,18 +149,6 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 
 	//_outputswidget->createControl( QStringList()<<"out_1"<<"out_2", QStringList()<<"out_1"<<"out_2" );
 	_outputswidget->autoFill();
-
-	_backend->addInput( "in_1" );
-	_backend->addInput( "in_2" );
-	_backend->addInput( "in_3" );
-	_backend->addInput( "in_4" );
-	_backend->addInput( "in_5" );
-	_backend->addInput( "in_6" );
-	_backend->addInput( "in_7" );
-	_backend->addInput( "in_8" );
-	_backend->addOutput( "out_1" );
-	_backend->addOutput( "out_2" );
-	_backend->addOutput( "out_3" );
 
 //	_debugPrint = new QAction( "DebugPrint", CTRL+Key_P, this );
 //	connect( _debugPrint, SIGNAL( activated() ), _mixerwidget, SLOT( debugPrint() ) );
@@ -167,8 +177,8 @@ void MainWindow::saveFile() {
 
 void MainWindow::about() {
 	QMessageBox::about( this, "JackMix: About JackMix", "<qt> \
-		<p><b>&copy;2004 by Arnold Krille</b> &lt;arnold@arnoldarts.de&gt;</p> \
-		<p>JackMix is the ultimative mixer application for Jack (<a href=\"http://jackit.sf.net/\">jackit.sf.net</a>). Check out <a href=\"http://roederberg.dyndns.org/~arnold/jackmix/\">roederberg.dyndns.org/~arnold/jackmix/</a> for more information and new versions of JackMix.</p> \
+		<p><b>&copy;2004-2007 by Arnold Krille</b> &lt;arnold@arnoldarts.de&gt;</p> \
+		<p>JackMix is the ultimative mixer application for Jack (<a href=\"http://www.jackaudio.org/\">www.jackaudio.org</a>). Check out <a href=\"http://www.arnoldarts.de/drupal/?q=JackMix\">http://www.arnoldarts.de/drupal/?q=JackMix</a> for more information and new versions of JackMix.</p> \
 		<p>This application and all its components are licensed under the GPL.</p> \
 		</qt>" );
 }
