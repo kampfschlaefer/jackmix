@@ -42,8 +42,10 @@ JackBackend::JackBackend() {
 }
 JackBackend::~JackBackend() {
 	qDebug() << "JackBackend::~JackBackend()";
-	if ( client )
-		::jack_client_close( client );
+	if ( client ) {
+		qDebug() << " return code" << ::jack_deactivate( client );
+		qDebug() << " return code" << ::jack_client_close( client );
+	}
 }
 
 bool JackBackend::addOutput( QString name ) {

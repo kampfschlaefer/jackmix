@@ -34,5 +34,9 @@ int main( int argc, char** argv ) {
 
 	//qapp->setMainWidget( mw );
 
-	return qapp->exec();
+	int ret = qapp->exec();
+
+	delete mw;
+
+	return ret;
 }
