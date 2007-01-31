@@ -305,7 +305,7 @@ bool Element::isResponsible( QString in, QString out ) {
 }
 
 void Element::select( bool n ) {
-qDebug( "MixingMatrix::Element::select( bool %i )", n );
+//	qDebug( "MixingMatrix::Element::select( bool %i )", n );
 	if ( n != _selected ) {
 		if ( _parent->mode() == Widget::Select ) {
 			_selected = n;
