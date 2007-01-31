@@ -90,7 +90,7 @@ void JackBackend::setVolume( QString channel, QString output, float volume ) {
 
 float JackBackend::getVolume( QString channel, QString output ) {
 	//qDebug() << "JackBackend::getVolume( " << channel << ", " << output << " ) = " << volumes[ channel ][ output ];
-	volumes[ channel ].insert( output, 0 );
+	//volumes[ channel ].insert( output, 1 );
 	return volumes[ channel ][ output ];
 }
 
@@ -100,7 +100,7 @@ void JackBackend::setOutVolume( QString ch, float n ) {
 }
 float JackBackend::getOutVolume( QString ch ) {
 	//qDebug() << "JackBackend::getOutVolume(QString " << ch << " )";
-	outvolumes.insert( ch, 1 );
+	//outvolumes.insert( ch, 1 );
 	return outvolumes[ ch ];
 }
 void JackBackend::setInVolume( QString ch, float n ) {
@@ -109,7 +109,7 @@ void JackBackend::setInVolume( QString ch, float n ) {
 }
 float JackBackend::getInVolume( QString ch ) {
 	//qDebug() << "JackBackend::getInVolume(QString " << ch << " )";
-	involumes.insert( ch, 1 );
+	//involumes.insert( ch, 1 );
 	return involumes[ ch ];
 }
 
@@ -118,7 +118,6 @@ QStringList JackBackend::outchannels() {
 	JackMix::ports_it it;
 	for ( it = out_ports.begin(); it != out_ports.end(); ++it )
 		tmp << it.key();
-	qDebug() << tmp.join( "," );
 	return tmp;
 }
 QStringList JackBackend::inchannels() {
