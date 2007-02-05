@@ -33,15 +33,14 @@ def CheckPKGConfig( context, pkgname ):
 	ret = context.TryAction( 'pkg-config --exists ' + pkgname )
 	if ret[0] == 1:
 		tmp = os.popen( 'pkg-config --libs ' + pkgname ).read().strip()
-		env[pkgname + '_LIBS'] = SCons.Util.CLVar( tmp )
+		env[pkgname + '_LIBS'] = tmp
 		tmp = ' ' + os.popen( 'pkg-config --cflags ' + pkgname ).read().strip()
-		env[pkgname + '_CFLAGS'] = SCons.Util.CLVar( tmp )
+		env[pkgname + '_CFLAGS'] = tmp
 	context.Result( ret[0] )
 	return ret[0]
 
 conf = Configure( env, custom_tests={'CheckPKGConfig' : CheckPKGConfig }, conf_dir='cache', log_file='cache/config.log' )
 conf.CheckPKGConfig( 'jack' )
-conf.CheckPKGConfig( 'liblo' )
 
 env = conf.Finish()
 
