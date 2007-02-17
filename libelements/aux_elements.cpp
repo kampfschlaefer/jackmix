@@ -28,6 +28,7 @@
 
 #include <QtGui/QLayout>
 #include <QtGui/QPushButton>
+#include <QtGui/QLabel>
 #include <QtCore/QDebug>
 
 using namespace JackMix;
@@ -74,15 +75,18 @@ AuxElement::AuxElement( QStringList inchannel, QStringList outchannel, MixingMat
 	menu()->addAction( "Replace", this, SLOT( slot_simple_replace() ) );
 	QGridLayout* _layout = new QGridLayout( this );
 
+	if ( _inchannel == _outchannel )
+		_layout->addWidget(
+			new QLabel( QString( "<qt><center>%1</center></qt>" ).arg( _inchannel ), this ),
+			0,0 );
 	QFloatPoti* poti = new QFloatPoti( amptodb( backend()->getVolume( _inchannel, _outchannel ) ), -36, 6, 10, QColor( 255,120,120 ), this, _inchannel.toStdString().c_str() );
-	_layout->addWidget( poti, 0,0 );
+	_layout->addWidget( poti, 1,0, Qt::AlignCenter );
 	connect( poti, SIGNAL( valueChanged( float ) ), this, SLOT( emitvalue( float ) ) );
 }
 AuxElement::~AuxElement() {
 }
 
 void AuxElement::emitvalue( float n ) {
-	//qDebug( "AuxElement::emitvalue( float %f dB ) that means ampfactor %f", n, dbtoamp( n ) );
 	backend()->setVolume( _inchannel, _outchannel, dbtoamp( n ) );
 }
 
