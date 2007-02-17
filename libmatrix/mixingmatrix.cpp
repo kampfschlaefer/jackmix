@@ -1,5 +1,5 @@
 /*
-    Copyright ( C ) 2004 Arnold Krille <arnold@arnoldarts.de>
+    Copyright 2004-2007 Arnold Krille <arnold@arnoldarts.de>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -226,11 +226,14 @@ QString Widget::nextOut( QString n ) const {
 
 void Widget::addinchannel( QString name ) {
 	_inchannels.push_back( name );
+	if ( _direction == Horizontal )
+		_outchannels.push_back( name );
 	this->updateGeometry();
-	//update();
 }
 void Widget::addoutchannel( QString name ) {
 	_outchannels.push_back( name );
+	if ( _direction == Vertical )
+		_inchannels.push_back( name );
 	this->updateGeometry();
 }
 void Widget::removeinchannel( QString name ) {

@@ -1,5 +1,5 @@
 /*
-    Copyright ( C ) 2004 Arnold Krille <arnold@arnoldarts.de>
+    Copyright 2004-2007 Arnold Krille <arnold@arnoldarts.de>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -29,6 +29,12 @@
 
 #include "backend_interface.h"
 
+#if ( QT_POINTER_SIZE == 8 )
+#define pint qint64
+#else
+#define pint qint32
+#endif
+
 namespace JackMix {
 
 //class JackBackend;
@@ -53,7 +59,7 @@ public:
 		return ( ( element == n.element ) && ( slot == n.slot ) );
 	}
 	QString debug() {
-		return QString( "(%1,%2)" ).arg( (int)(void*) element ).arg( slot );
+		return QString( "(%1,%2)" ).arg( (pint) element ).arg( slot );
 	}
 	bool exists() const;
 };
