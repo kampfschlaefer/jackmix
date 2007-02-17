@@ -29,6 +29,12 @@
 
 #include "backend_interface.h"
 
+#if (  QT_POINTER_SIZE == 8 )
+#define pint qint64
+#else
+#define pint qint32
+#endif
+
 namespace JackMix {
 
 //class JackBackend;
@@ -53,7 +59,7 @@ public:
 		return ( ( element == n.element ) && ( slot == n.slot ) );
 	}
 	QString debug() {
-		return QString( "(%1,%2)" ).arg( (int)(void*) element ).arg( slot );
+		return QString( "(%1,%2)" ).arg( (pint) element ).arg( slot );
 	}
 	bool exists() const;
 };
