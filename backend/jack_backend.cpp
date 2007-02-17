@@ -1,5 +1,5 @@
 /*
-    Copyright ( C ) 2004 Arnold Krille <arnold@arnoldarts.de>
+    Copyright 2004-2007 Arnold Krille <arnold@arnoldarts.de>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -60,15 +60,16 @@ bool JackBackend::addInput( QString name ) {
 }
 
 bool JackBackend::removeOutput( QString name ) {
-	if ( client )
+	if ( out_ports.contains( name ) && client ) {
 		jack_port_unregister( client, out_ports[ name ] );
-	out_ports.remove( name );
-	return true;
+		out_ports.remove( name );
+		return true;
+	}
+	return false;
 }
 bool JackBackend::removeInput( QString name ) {
-	if ( in_ports.find( name ) != in_ports.end() ) {
-		if ( client )
-			jack_port_unregister( client, in_ports[ name ] );
+	if ( in_ports.contains( name ) && client ) {
+		jack_port_unregister( client, in_ports[ name ] );
 		in_ports.remove( name );
 		return true;
 	}
