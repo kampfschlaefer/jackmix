@@ -1,5 +1,5 @@
 /*
-    Copyright ( C ) 2004 Arnold Krille <arnold@arnoldarts.de>
+    Copyright 2004-2007 Arnold Krille <arnold@arnoldarts.de>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -36,10 +36,6 @@
 
 namespace JackMix {
 namespace MixingMatrix {
-
-bool ElementSlotSignalPair::exists() const {
-	return ( element->metaObject()->indexOfProperty( slot.toStdString().c_str() ) > -1 )?true:false;
-}
 
 Widget::Widget( QStringList ins, QStringList outs, JackMix::BackendInterface* backend, QWidget* p, const char* n )
 	: QFrame( p )
@@ -117,8 +113,8 @@ bool Widget::createControl( QStringList inchannels, QStringList outchannels ) {
 }
 
 void Widget::autoFill() {
-	qDebug() << "\nWidget::autoFill()";
-	qDebug() << " _direction = " << _direction;
+	//qDebug() << "\nWidget::autoFill()";
+	//qDebug() << " _direction = " << _direction;
 	if ( _direction == None ) {
 		//qDebug( "Doing the Autofill-boogie..." );
 		for ( QStringList::Iterator init=_inchannels.begin(); init!=_inchannels.end(); ++init )
@@ -147,7 +143,7 @@ void Widget::autoFill() {
 		}
 	}
 	resizeEvent( 0 );
-	qDebug() << "";
+	//qDebug() << "";
 }
 
 void Widget::resizeEvent( QResizeEvent* ) {
@@ -226,38 +222,42 @@ QString Widget::nextOut( QString n ) const {
 
 void Widget::addinchannel( QString name ) {
 	_inchannels.push_back( name );
+	if ( _direction == Horizontal )
+		_outchannels.push_back( name );
 	this->updateGeometry();
-	//update();
 }
 void Widget::addoutchannel( QString name ) {
 	_outchannels.push_back( name );
+	if ( _direction == Vertical )
+		_inchannels.push_back( name );
 	this->updateGeometry();
 }
 void Widget::removeinchannel( QString name ) {
-//	qDebug( "Widget::removeinchannel( %s )", name.toStdString().c_str() );
+	//qDebug() << "Widget::removeinchannel(" << name << ")";
 	for ( QStringList::Iterator it = _outchannels.begin(); it != _outchannels.end(); it++ ) {
 		Element* tmp = getResponsible( name, *it );
 		if ( tmp ) {
-//			qDebug( "removing element %p", tmp );
+			//qDebug( "removing element %p", tmp );
 			delete tmp;
 			_inchannels.removeAll( name );
 		}
 	}
 	autoFill();
-//	qDebug( "_inchannels.count = %i", _inchannels.size() );
+	//qDebug( "_inchannels.count = %i", _inchannels.size() );
 }
 void Widget::removeoutchannel( QString name ) {
-//	qDebug( "Widget::removeoutchannel( %s )", name.toStdString().c_str() );
+	//qDebug() << "Widget::removeoutchannel(" << name << ")";
 	for ( QStringList::Iterator it = _inchannels.begin(); it != _inchannels.end(); it++ ) {
+		//qDebug() << "Trying to get responsible element for" << *it << "," << name;
 		Element* tmp = getResponsible( *it, name );
 		if ( tmp ) {
-//			qDebug( "removing element %p", tmp );
+			//qDebug( "removing element %p", tmp );
 			delete tmp;
 			_outchannels.removeAll( name );
 		}
 	}
 	autoFill();
-//	qDebug( "_outchannels.count = %i", _outchannels.size() );
+	//qDebug( "_outchannels.count = %i", _outchannels.size() );
 }
 
 

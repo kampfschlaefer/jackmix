@@ -1,5 +1,5 @@
 /*
-    Copyright ( C ) 2004 Arnold Krille <arnold@arnoldarts.de>
+    Copyright 2004-2007 Arnold Krille <arnold@arnoldarts.de>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -37,33 +37,9 @@
 
 namespace JackMix {
 
-//class JackBackend;
-
 namespace MixingMatrix {
 
 class Element;
-
-class ElementSlotSignalPair {
-public:
-	ElementSlotSignalPair( Element* n=0, QString s=0 ) : element( n ), slot( s ) {}
-	Element* element;
-	QString slot;
-	bool operator< ( const ElementSlotSignalPair n ) const {
-		return ( ( element < n.element ) || ( slot < n.slot ) );
-	}
-	bool operator== ( const ElementSlotSignalPair n ) const {
-		if ( ( element == n.element ) && ( n.slot == 0 ) )
-			return true;
-		if ( ( n.element == 0 ) && ( slot == n.slot ) )
-			return true;
-		return ( ( element == n.element ) && ( slot == n.slot ) );
-	}
-	QString debug() {
-		return QString( "(%1,%2)" ).arg( (pint) element ).arg( slot );
-	}
-	bool exists() const;
-};
-
 
 class Widget : public QFrame
 {
@@ -116,9 +92,6 @@ public:
 	void removeElement( Element* );
 	Element* getResponsible( QString in, QString out ) const;
 	int elements() const { return _elements.size(); }
-
-	// Show/Hide the ConnectionLister
-	void toggleConnectionLister( bool );
 
 public slots:
 	void replace( Element* );
