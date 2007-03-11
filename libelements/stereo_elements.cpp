@@ -76,10 +76,10 @@ Mono2StereoElement::Mono2StereoElement( QStringList inchannel, QStringList outch
 	, _balance_value( 0 )
 	, _volume_value( 0 )
 {
-	qDebug( "Mono2StereoElement::Mono2StereoElement()" );
+	//qDebug( "Mono2StereoElement::Mono2StereoElement()" );
 	float left = backend()->getVolume( _inchannel, _outchannel1 );
 	float right = backend()->getVolume( _inchannel, _outchannel2 );
-	qDebug( " volumes: %f, %f", left, right );
+	//qDebug( " volumes: %f, %f", left, right );
 	if ( left>right ) {
 		_volume_value = left;
 		_balance_value = right-left;
@@ -87,7 +87,7 @@ Mono2StereoElement::Mono2StereoElement( QStringList inchannel, QStringList outch
 		_volume_value = right;
 		_balance_value = right-left;
 	}
-	qDebug( " values: %f, %f", _volume_value, _balance_value );
+	//qDebug( " values: %f, %f", _volume_value, _balance_value );
 	QGridLayout* _layout = new QGridLayout( this );
 	_layout->setMargin( 0 );
 	_layout->setSpacing( 0 );
@@ -103,9 +103,9 @@ Mono2StereoElement::Mono2StereoElement( QStringList inchannel, QStringList outch
 	connect( _volume, SIGNAL( valueChanged( float ) ), this, SLOT( volume( float ) ) );
 }
 Mono2StereoElement::~Mono2StereoElement() {
-	qDebug( "Mono2StereoElement::~Mono2StereoElement()" );
-	qDebug( " volumes: %f, %f", backend()->getVolume( _inchannel, _outchannel1 ), backend()->getVolume( _inchannel, _outchannel2 ) );
-	qDebug( " values: %f, %f", _volume_value, _balance_value );
+	//qDebug( "Mono2StereoElement::~Mono2StereoElement()" );
+	//qDebug( " volumes: %f, %f", backend()->getVolume( _inchannel, _outchannel1 ), backend()->getVolume( _inchannel, _outchannel2 ) );
+	//qDebug( " values: %f, %f", _volume_value, _balance_value );
 }
 
 
@@ -151,15 +151,13 @@ Stereo2StereoElement::Stereo2StereoElement( QStringList inchannels, QStringList 
 {
 	backend()->setVolume( _inchannel1, _outchannel2, 0 );
 	backend()->setVolume( _inchannel2, _outchannel1, 0 );
-	float left = backend()->getVolume( _inchannel1, _outchannel1 );
-	float right = backend()->getVolume( _inchannel2, _outchannel2 );
-	if ( left>right ) {
+	double left = backend()->getVolume( _inchannel1, _outchannel1 );
+	double right = backend()->getVolume( _inchannel2, _outchannel2 );
+	if ( left>right )
 		_volume_value = left;
-		_balance_value = left-right;
-	} else {
+	else
 		_volume_value = right;
-		_balance_value = left-right;
-	}
+	_balance_value = qMin( qMax( right-left, -1.0 ), 1.0 );
 	QGridLayout* _layout = new QGridLayout( this );
 	_balance_widget = new JackMix::GUI::Slider( _balance_value, -1, 1, 2, 0.1, this, "%1" );
 	_layout->addWidget( _balance_widget, 0,0 );
@@ -171,10 +169,10 @@ Stereo2StereoElement::Stereo2StereoElement( QStringList inchannels, QStringList 
 	connect( _volume_widget, SIGNAL( valueChanged( float ) ), this, SLOT( volume( float ) ) );
 
 	QAction *toggle = new QAction( "Toggle Selection", this );
-	connect( toggle, SIGNAL( activated() ), this, SLOT( slot_simple_select() ) );
+	connect( toggle, SIGNAL( triggered() ), this, SLOT( slot_simple_select() ) );
 	menu()->addAction( toggle );
 	QAction *replace = new QAction( "Replace", this );
-	connect( replace, SIGNAL( activated() ), this, SLOT( slot_simple_replace() ) );
+	connect( replace, SIGNAL( triggered() ), this, SLOT( slot_simple_replace() ) );
 	menu()->addAction( replace );
 }
 Stereo2StereoElement::~Stereo2StereoElement() {
