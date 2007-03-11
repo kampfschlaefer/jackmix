@@ -23,30 +23,83 @@
 
 #include <QtCore/QStringList>
 
+class QDomElement;
+class QDomDocument;
+
 namespace JackMix {
 
+	/**
+	 * @brief Abstract interface for backends
+	 *
+	 * A backend has to implement this functions...
+	 */
 	class BackendInterface
 	{
 	public:
-		BackendInterface() {}
-		virtual ~BackendInterface() {}
+		BackendInterface();
+		virtual ~BackendInterface();
 
-		// Return the current list of output channels.
+		/**
+		 * @brief Return the current list of output channels.
+		 */
 		virtual QStringList outchannels() =0;
-		// Return the current list of input channels.
+		/**
+		 * @brief Return the current list of input channels.
+		 */
 		virtual QStringList inchannels() =0;
 
-		// Set the volume of the named node.
+		/**
+		 * @brief Set the volume of the named node.
+		 */
 		virtual void setVolume( QString, QString, float ) =0;
-		// Get the volume of the named node.
+		/**
+		 * @brief Get the volume of the named node.
+		 */
 		virtual float getVolume( QString, QString ) =0;
 
-		// Add a channel and return true on success.
+		/**
+		 * @brief Add a channel and return true on success.
+		 *
+		 * If the actual backend doesn't support adding and removing, thats
+		 * okay. Just return false..
+		 */
 		virtual bool addOutput( QString ) =0;
+		/**
+		 * @brief Add a channel and return true on success.
+		 *
+		 * If the actual backend doesn't support adding and removing, thats
+		 * okay. Just return false..
+		 */
 		virtual bool addInput( QString ) =0;
-		// Remove a channel and return true on success.
+		/**
+		 * @brief Remove a channel and return true on success.
+		 *
+		 * If the actual backend doesn't support adding and removing, thats
+		 * okay. Just return false..
+		 */
 		virtual bool removeOutput( QString ) =0;
+		/**
+		 * @brief Remove a channel and return true on success.
+		 *
+		 * If the actual backend doesn't support adding and removing, thats
+		 * okay. Just return false..
+		 */
 		virtual bool removeInput( QString ) =0;
+
+		/**
+		 * @brief save settings
+		 *
+		 * Save the state into the given QDomElement.
+		 *
+		 * You need the QDomDocument to create new elements...
+		 */
+		virtual void toXML( QDomDocument, QDomElement ) =0;
+		/**
+		 * @brief restore settings
+		 *
+		 * Restore the state from the given QDomElement.
+		 */
+		virtual void fromXML( QDomElement ) =0;
 	};
 };
 

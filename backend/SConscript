@@ -10,6 +10,7 @@ Import( 'env' )
 obj=env.qt4obj('staticlib', env)
 obj.target='libjackmix_backend'
 obj.source='\
+	backend_interface.cpp \
 	jack_backend.cpp \
 '
 obj.libs="QtCore"

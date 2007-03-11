@@ -23,7 +23,6 @@
 
 #include "knob.h"
 #include "slider.h"
-#include "jack_backend.h"
 
 #include <QtGui/QLayout>
 #include <QtGui/QPushButton>

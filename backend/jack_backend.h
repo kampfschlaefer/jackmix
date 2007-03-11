@@ -39,7 +39,7 @@ int process( ::jack_nframes_t, void* );
 typedef QMap<QString,jack_port_t*> portsmap;
 typedef portsmap::Iterator ports_it;
 
-class JackBackend : public BackendInterface {
+class JackBackend : public JackMix::BackendInterface {
 	friend int process( ::jack_nframes_t, void* );
 public:
 	/// Initializes the connection
