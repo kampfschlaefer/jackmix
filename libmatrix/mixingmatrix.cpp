@@ -37,10 +37,6 @@
 namespace JackMix {
 namespace MixingMatrix {
 
-bool ElementSlotSignalPair::exists() const {
-	return ( element->metaObject()->indexOfProperty( slot.toStdString().c_str() ) > -1 )?true:false;
-}
-
 Widget::Widget( QStringList ins, QStringList outs, JackMix::BackendInterface* backend, QWidget* p, const char* n )
 	: QFrame( p )
 	, _mode( Normal )
@@ -74,21 +70,20 @@ void Widget::removeElement( Element* n ) {
 }
 
 void Widget::replace( Element* n ) {
-qDebug( "Widget::replace( Element* %p )", n );
-//qDebug( "This Element has %i selected neighbors.", n->neighbors() );
-//qDebug( " and %i selected followers.", n->followers( n->neighbors() ) );
+	//qDebug( "Widget::replace( Element* %p )", n );
+	//qDebug( "This Element has %i selected neighbors.", n->neighbors() );
+	//qDebug( " and %i selected followers.", n->followers( n->neighbors() ) );
 	QStringList in, out;
 	in = n->neighborsList();
-	//qDebug( "Selected ins = %s", in.join( "," ).toStdString().c_str() );
+	//qDebug( "Selected ins = %s", qPrintable( in.join( "," ) ) );
 	out = n->followersList();
-	//qDebug( "Selected outs = %s", out.join( "," ).toStdString().c_str() );
+	//qDebug( "Selected outs = %s", qPrintable( out.join( "," ) ) );
 	for ( QStringList::ConstIterator it=out.begin(); it!=out.end(); ++it ) {
 		for ( QStringList::ConstIterator jt=in.begin(); jt!=in.end(); ++jt ) {
 			Element* tmp = getResponsible( ( *jt ),( *it ) );
 			//qDebug( "About to delete %p", tmp );
-			if ( tmp ) {
+			if ( tmp )
 				delete tmp;
-			}
 		}
 	}
 	createControl( in, out );
@@ -105,7 +100,7 @@ Element* Widget::getResponsible( QString in, QString out ) const {
 }
 
 bool Widget::createControl( QStringList inchannels, QStringList outchannels ) {
-	//qDebug( "Widget::createControl( QStringList '%s', QStringList '%s')", inchannels.join( "," ).toStdString().c_str(), outchannels.join( "," ).toStdString().c_str() );
+	//qDebug( "Widget::createControl( QStringList '%s', QStringList '%s')", qPrintable( inchannels.join( "," ) ), qPrintable( outchannels.join( "," ) ) );
 
 	QStringList controls = Global::the()->canCreate( inchannels.size(), outchannels.size() );
 	if ( ! controls.isEmpty() ) {
@@ -117,17 +112,17 @@ bool Widget::createControl( QStringList inchannels, QStringList outchannels ) {
 }
 
 void Widget::autoFill() {
-	qDebug() << "\nWidget::autoFill()";
-	qDebug() << " _direction = " << _direction;
+	//qDebug() << "\nWidget::autoFill()";
+	//qDebug() << " _direction = " << _direction;
 	if ( _direction == None ) {
 		//qDebug( "Doing the Autofill-boogie..." );
 		for ( QStringList::Iterator init=_inchannels.begin(); init!=_inchannels.end(); ++init )
 			for ( QStringList::Iterator outit=_outchannels.begin(); outit!=_outchannels.end(); ++outit ) {
 				if ( !getResponsible( *init, *outit ) )// {
-					//qDebug( "...together with (%s|%s)", ( *init ).toStdString().c_str(), ( *outit ).toStdString().c_str() );
+					//qDebug( "...together with (%s|%s)", qPrintable( *init ), qPrintable( *outit ) );
 					createControl( QStringList()<<*init, QStringList()<<*outit );
 				//}
-				//else qDebug( "   (%s|%s) is allready occupied. :(", ( *init ).toStdString().c_str(), ( *outit ).toStdString().c_str() );
+				//else qDebug( "   (%s|%s) is allready occupied. :(", qPrintable( *init ), qPrintable( *outit ) );
 			}
 	} else if ( _direction == Vertical ) {
 		//qDebug() << "Available outputs are" << _outchannels.join( "," );
@@ -147,7 +142,7 @@ void Widget::autoFill() {
 		}
 	}
 	resizeEvent( 0 );
-	qDebug() << "";
+	//qDebug() << "";
 }
 
 void Widget::resizeEvent( QResizeEvent* ) {
@@ -155,6 +150,7 @@ void Widget::resizeEvent( QResizeEvent* ) {
 	//qDebug( "MinimumSize = (%i,%i)", sizeHint().width(), sizeHint().height() );
 	int ins = _inchannels.size(), outs = _outchannels.size();
 	//qDebug( "%i InChannels and %i OutChannels", ins, outs );
+	//qDebug( " in: %s\n out: %s", qPrintable( _inchannels.join( "," ) ), qPrintable( _outchannels.join( "," ) ) );
 
 	int w=1, h=1;
 	if ( ins && outs ) {
@@ -168,13 +164,13 @@ void Widget::resizeEvent( QResizeEvent* ) {
 		h = smallestElement().height();
 
 	if ( _direction == Horizontal )
-//		h=0;
+		//h=0;
 		for ( int i=0; i<_elements.size(); i++ ) {
 			_elements[ i ]->setGeometry( _inchannels.indexOf( _elements[ i ]->in()[ 0 ] )*w, 0, w*_elements[ i ]->inchannels(), h );
 			_elements[ i ]->show();
 		}
 	else if ( _direction == Vertical )
-//		w=0;
+		//w=0;
 		for ( int i=0; i<_elements.size(); i++ ) {
 			_elements[ i ]->setGeometry( 0, _outchannels.indexOf( _elements[ i ]->out()[ 0 ] )*h, w, h*_elements[ i ]->outchannels() );
 			_elements[ i ]->show();
@@ -209,10 +205,13 @@ QSize Widget::smallestElement() const {
 }
 
 QString Widget::nextIn( QString n ) const {
+	//qDebug() << "Widget::nextIn(" << n << ")";
 	if ( n.isNull() )
 		return 0;
-	for ( QStringList::ConstIterator it = _inchannels.begin(); it != _inchannels.end(); ++it )
-		if ( ( *it ) == n ) { ++it; return ( *it ); }
+	int i = _inchannels.indexOf( n ) + 1;
+	//qDebug() << " i=" << i;
+	if ( i < _inchannels.size() )
+		return _inchannels.at( i );
 	return 0;
 }
 QString Widget::nextOut( QString n ) const {
@@ -237,30 +236,30 @@ void Widget::addoutchannel( QString name ) {
 	this->updateGeometry();
 }
 void Widget::removeinchannel( QString name ) {
-//	qDebug( "Widget::removeinchannel( %s )", name.toStdString().c_str() );
+	//qDebug( "Widget::removeinchannel( %s )", qPrintable( name ) );
 	for ( QStringList::Iterator it = _outchannels.begin(); it != _outchannels.end(); it++ ) {
 		Element* tmp = getResponsible( name, *it );
 		if ( tmp ) {
-//			qDebug( "removing element %p", tmp );
+			//qDebug( "removing element %p", tmp );
 			delete tmp;
 			_inchannels.removeAll( name );
 		}
 	}
 	autoFill();
-//	qDebug( "_inchannels.count = %i", _inchannels.size() );
+	//qDebug( "_inchannels.count = %i", _inchannels.size() );
 }
 void Widget::removeoutchannel( QString name ) {
-//	qDebug( "Widget::removeoutchannel( %s )", name.toStdString().c_str() );
+	//qDebug( "Widget::removeoutchannel( %s )", qPrintable( name ) );
 	for ( QStringList::Iterator it = _inchannels.begin(); it != _inchannels.end(); it++ ) {
 		Element* tmp = getResponsible( *it, name );
 		if ( tmp ) {
-//			qDebug( "removing element %p", tmp );
+			//qDebug( "removing element %p", tmp );
 			delete tmp;
 			_outchannels.removeAll( name );
 		}
 	}
 	autoFill();
-//	qDebug( "_outchannels.count = %i", _outchannels.size() );
+	//qDebug( "_outchannels.count = %i", _outchannels.size() );
 }
 
 
@@ -270,12 +269,6 @@ void Widget::valueChanged( Element* master, QString signal ) {
 
 void Widget::debugPrint() {
 	qDebug( "\nWidget::debugPrint()" );
-	qDebug( "  Elements:" );
-	QList<Element*>::Iterator it;
-	for ( it=_elements.begin(); it!=_elements.end(); ++it ) {
-		qDebug( "    %p [%s]:\n      %s", ( *it ), ( *it )->metaObject()->className(), ( *it )->getPropertyList().join( "," ).toStdString().c_str() );
-	}
-	qDebug( "\n" );
 }
 
 
@@ -287,7 +280,7 @@ Element::Element( QStringList in, QStringList out, Widget* p, const char* n )
 	, _parent( p )
 	, _menu( new QMenu( this ) )
 {
-	//qDebug( "MixingMatrix::Element::Element( QStringList '%s', QStringList '%s' )", in.join(",").toStdString().c_str(), out.join(",").toStdString().c_str() );
+	//qDebug( "MixingMatrix::Element::Element( QStringList '%s', QStringList '%s' )", qPrintable( in.join(",") ), qPrintable( out.join(",") ) );
 	setFrameStyle( QFrame::Raised|QFrame::Panel );
 	setLineWidth( 1 );
 	QTimer::singleShot( 1, this, SLOT( lazyInit() ) );
@@ -308,7 +301,7 @@ bool Element::isResponsible( QString in, QString out ) {
 }
 
 void Element::select( bool n ) {
-//	qDebug( "MixingMatrix::Element::select( bool %i )", n );
+	//qDebug( "MixingMatrix::Element::select( bool %i )", n );
 	if ( n != _selected ) {
 		if ( _parent->mode() == Widget::Select ) {
 			_selected = n;
@@ -327,53 +320,37 @@ void Element::select( bool n ) {
 }
 
 int Element::neighbors() const {
-//	qDebug( "neighbor: %s", _parent->nextIn( _in[ 0 ] ).toStdString().c_str() );
 	Element* neighbor = _parent->getResponsible( _parent->nextIn( _in[ _in.size()-1 ] ), _out[ 0 ] );
 	if ( neighbor && neighbor->isSelected() )
 		return neighbor->neighbors()+1;
 	return 0;
 }
 QStringList Element::neighborsList() const {
-//	qDebug( "self = [%s]", _in.join( "|" ).toStdString().c_str() );
-//	qDebug( "neighbor = %s", _parent->nextIn( _in[ _in.size()-1 ] ).toStdString().c_str() );
+	//qDebug( "self = [%s]", qPrintable( _in.join( "|" ) ) );
+	//qDebug( "neighbor = %s", qPrintable( _parent->nextIn( _in[ _in.size()-1 ] ) ) );
 	Element* neighbor = _parent->getResponsible( _parent->nextIn( _in[ _in.size()-1 ] ), _out[ 0 ] );
 	QStringList tmp;
 	if ( neighbor && neighbor->isSelected() )
 		tmp = neighbor->neighborsList();
-	tmp += _in;
-	tmp.sort();
+	tmp = _in + tmp;
 	return tmp;
 }
 int Element::followers( int n ) const {
 	if ( n==0 )
 		return 0;
-//qDebug( "Element::followers( int %i )", n );
 	Element* follower = _parent->getResponsible( _in[ 0 ], _parent->nextOut( _out[ _out.size()-1 ] ) );
-/*	if ( follower )
-		qDebug( "follower of %p is %p which has selected=%i", this, follower, follower->isSelected() );
-	else
-		qDebug( "follower of %p is %p", this, follower );*/
 	if ( follower && follower->isSelected() && follower->neighbors() >= n )
 		return follower->followers( n )+1;
 	return 0;
 }
 QStringList Element::followersList() const {
-//	qDebug( "self = [%s]", _out.join( "|" ).toStdString().c_str() );
-//	qDebug( "follower = %s", _parent->nextOut( _out[ _out.size()-1 ] ).toStdString().c_str() );
+	//qDebug( "self = [%s]", qPrintable( _out.join( "|" ) ) );
+	//qDebug( "follower = %s", qPrintable( _parent->nextOut( _out[ _out.size()-1 ] ) ) );
 	Element* follower = _parent->getResponsible( _in[ 0 ], _parent->nextOut(  _out[  _out.size()-1 ] ) );
 	QStringList tmp;
 	if ( follower && follower->isSelected() )
 		tmp = follower->followersList();
-	tmp += _out;
-	tmp.sort();
-	return tmp;
-}
-
-QStringList Element::getPropertyList() {
-	QStringList tmp; // = QStringList::fromStrList( metaObject()->propertyNames() );
-	for ( int i=0; i<metaObject()->propertyCount(); ++i ) {
-		tmp += metaObject()->property( i ).name();
-	}
+	tmp = _out + tmp;
 	return tmp;
 }
 
@@ -416,29 +393,26 @@ void Global::unregisterFactory( ElementFactory* n ) {
 QStringList Global::canCreate( int in, int out ) {
 	//qDebug() << "Global::canCreate(" << in << "," << out << ")";
 	QStringList tmp;
-	for ( int i=0; i<_factories.size(); i++ ) {
+	for ( int i=0; i<_factories.size(); i++ )
 		tmp += _factories[ i ]->canCreate( in, out );
-	}
 	//qDebug() << " returning" << tmp;
 	return tmp;
 }
 
 bool Global::create( QString type, QStringList ins, QStringList outs, Widget* parent, const char* name ) {
-	//qDebug( "Global::create( QString %s, QStringList '%s', QStringList '%s', Widget* %p, const char* %s )", type.toStdString().c_str(), ins.join( "," ).toStdString().c_str(), outs.join( "," ).toStdString().c_str(), parent, name );
+	//qDebug( "Global::create( QString %s, QStringList '%s', QStringList '%s', Widget* %p, const char* %s )", qPrintable( type ), qPrintable( ins.join( "," ) ), qPrintable( outs.join( "," ) ), parent, name );
 	Element* elem=0;
-	for ( int i=0; i<_factories.size() && elem==0; i++ ) {
+	for ( int i=0; i<_factories.size() && elem==0; i++ )
 		elem = _factories[ i ]->create( type, ins, outs, parent, name );
-	}
-//	qDebug( "Will show and return %p", elem );
-	if ( elem ) {
+	//qDebug( "Will show and return %p", elem );
+	if ( elem )
 		elem->show();
-	}
 	return elem;
 }
 
 void Global::debug() {
 	for ( int i=0; i<_factories.size(); i++ )
-		qDebug( "The factory %p can create '%s'", _factories[ i ], _factories[ i ]->canCreate().join( " " ).toStdString().c_str() );
+		qDebug("The factory %p can create '%s'",_factories[ i ],qPrintable(_factories[ i ]->canCreate().join(" ")));
 }
 
 

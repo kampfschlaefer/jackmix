@@ -43,28 +43,6 @@ namespace MixingMatrix {
 
 class Element;
 
-class ElementSlotSignalPair {
-public:
-	ElementSlotSignalPair( Element* n=0, QString s=0 ) : element( n ), slot( s ) {}
-	Element* element;
-	QString slot;
-	bool operator< ( const ElementSlotSignalPair n ) const {
-		return ( ( element < n.element ) || ( slot < n.slot ) );
-	}
-	bool operator== ( const ElementSlotSignalPair n ) const {
-		if ( ( element == n.element ) && ( n.slot == 0 ) )
-			return true;
-		if ( ( n.element == 0 ) && ( slot == n.slot ) )
-			return true;
-		return ( ( element == n.element ) && ( slot == n.slot ) );
-	}
-	QString debug() {
-		return QString( "(%1,%2)" ).arg( (pint) element ).arg( slot );
-	}
-	bool exists() const;
-};
-
-
 class Widget : public QFrame
 {
 	friend class ConnectionLister;
@@ -173,9 +151,6 @@ public:
 
 	QString name() const { return QObject::objectName(); }
 	void name( QString n ) { setObjectName( n ); }
-
-	// Properties
-	QStringList getPropertyList();
 
 	/**
 	 * Do the things you need to do in the subclasses when the
