@@ -37,7 +37,7 @@ testapp.execute()
 testapp2=env.qt4obj('program', env)
 testapp2.target="poti_test"
 testapp2.source="poti_test.cpp"
-testapp2.libs="jackmix_gui QtCore QtGui Qt3Support"
+testapp2.libs="jackmix_gui QtCore QtGui"
 testapp2.libpaths="#/ ./"
 testapp2.execute()
 

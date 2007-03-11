@@ -21,7 +21,7 @@ obj.execute()
 testapp=env.qt4obj('program', env)
 testapp.target="jackmix_osc_client"
 testapp.source="lineinput.cpp jackmix_osc_client_main.cpp"
-testapp.libs="libqosc libjackmix_core QtCore QtGui Qt3Support" + env['liblo_LIBS']
+testapp.libs="libqosc libjackmix_core QtCore QtGui" + env['liblo_LIBS']
 testapp.libpaths="#/ ./ ../libcore"
 testapp.includes="../libcore"
 testapp.execute()
