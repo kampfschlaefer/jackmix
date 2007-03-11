@@ -21,8 +21,9 @@
 #include "aux_elements.h"
 #include "aux_elements.moc"
 
-#include "qfloatpoti.h"
 #include "jack_backend.h"
+#include "knob.h"
+
 
 #include <QtGui/QLayout>
 #include <QtGui/QPushButton>
@@ -71,14 +72,18 @@ AuxElement::AuxElement( QStringList inchannel, QStringList outchannel, MixingMat
 {
 	menu()->addAction( "Select", this, SLOT( slot_simple_select() ) );
 	menu()->addAction( "Replace", this, SLOT( slot_simple_replace() ) );
-	QGridLayout* _layout = new QGridLayout( this );
+	QVBoxLayout* _layout = new QVBoxLayout( this );
 
 	if ( _inchannel == _outchannel )
 		_layout->addWidget(
 			new QLabel( QString( "<qt><center>%1</center></qt>" ).arg( _inchannel ), this ),
-			0,0 );
-	QFloatPoti* poti = new QFloatPoti( amptodb( backend()->getVolume( _inchannel, _outchannel ) ), -36, 6, 10, QColor( 255,120,120 ), this, _inchannel.toStdString().c_str() );
-	_layout->addWidget( poti, 1,0, Qt::AlignCenter );
+			0 );
+
+	JackMix::GUI::Knob* poti = new JackMix::GUI::Knob(
+		amptodb( backend()->getVolume( _inchannel, _outchannel ) ),
+		dbmin, dbmax, 3, 0.1, this );
+	_layout->addWidget( poti, 100 );
+
 	connect( poti, SIGNAL( valueChanged( float ) ), this, SLOT( emitvalue( float ) ) );
 }
 AuxElement::~AuxElement() {

@@ -24,12 +24,11 @@
 #include <mixingmatrix.h>
 #include <dbvolcalc.h>
 
-class QFloatPoti;
-
 namespace JackMix {
 
 	namespace GUI {
 		class Slider;
+		class Knob;
 	}
 
 namespace MixerElements {
@@ -66,7 +65,7 @@ private slots:
 	void calculateVolumes();
 private:
 	QString _inchannel, _outchannel1, _outchannel2;
-	::QFloatPoti *_balance;
+	JackMix::GUI::Knob *_balance;
 	JackMix::GUI::Slider *_volume;
 	float _balance_value, _volume_value;
 };
