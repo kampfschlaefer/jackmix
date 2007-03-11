@@ -13,31 +13,10 @@ obj.source='\
 	channelselector.cpp \
 	slider.cpp \
 	knob.cpp \
-	qfloatcontrol.cpp \
-	qfloatslider.cpp \
-	qfloatpoti.cpp \
-	qsynthKnob.cpp \
 '
-#	qpoti.cpp \
-#	qpixmapeffect.cpp \
-#	qimageeffect.cpp \
 obj.libs="QtCore"
 obj.includes='#/ ./'
 obj.execute()
-
-testapp=env.qt4obj('program', env)
-testapp.target="qfloatcontrol_test"
-testapp.source="qfloatcontrol_test.cpp"
-testapp.libs="jackmix_gui QtGui QtCore"
-testapp.libpaths="#/ ./"
-testapp.execute()
-
-testapp2=env.qt4obj('program', env)
-testapp2.target="poti_test"
-testapp2.source="poti_test.cpp"
-testapp2.libs="jackmix_gui QtCore QtGui"
-testapp2.libpaths="#/ ./"
-testapp2.execute()
 
 estapp3=env.qt4obj('program', env)
 estapp3.target="slider_test"
