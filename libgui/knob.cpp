@@ -143,7 +143,7 @@ void Knob::paintEvent( QPaintEvent* ) {
 		p.setPen( Qt::NoPen );
 		p.setBrush( palette().color( QPalette::Window ) );
 		p.setOpacity( 0.5 );
-		p.drawRect( rect.translated( -x, radius*0.9 ).adjusted( -2,-2, 2,0 ) );
+		p.drawRoundRect( rect.translated( -x, radius*0.9 ).adjusted( -2,-2, 2,0 ), 50, 50 );
 		p.restore();
 	}
 	p.drawText( QPointF( -x, radius*0.9 ), tmp );
