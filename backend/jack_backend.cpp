@@ -93,6 +93,10 @@ void JackBackend::setVolume( QString channel, QString output, float volume ) {
 float JackBackend::getVolume( QString channel, QString output ) {
 	//qDebug() << "JackBackend::getVolume( " << channel << ", " << output << " ) = " << volumes[ channel ][ output ];
 	//volumes[ channel ].insert( output, 1 );
+	//if ( !volumes.contains( channel ) )
+	//	volumes.insert( channel, QMap<QString,float> );
+	if ( !volumes[ channel ].contains( output ) )
+		volumes[ channel ].insert( output, 0 );
 	return volumes[ channel ][ output ];
 }
 
@@ -103,6 +107,8 @@ void JackBackend::setOutVolume( QString ch, float n ) {
 float JackBackend::getOutVolume( QString ch ) {
 	//qDebug() << "JackBackend::getOutVolume(QString " << ch << " )";
 	//outvolumes.insert( ch, 1 );
+	if ( !outvolumes.contains( ch ) )
+		outvolumes.insert( ch, 1 );
 	return outvolumes[ ch ];
 }
 void JackBackend::setInVolume( QString ch, float n ) {
@@ -112,6 +118,8 @@ void JackBackend::setInVolume( QString ch, float n ) {
 float JackBackend::getInVolume( QString ch ) {
 	//qDebug() << "JackBackend::getInVolume(QString " << ch << " )";
 	//involumes.insert( ch, 1 );
+	if ( !involumes.contains( ch ) )
+		involumes.insert( ch, 1 );
 	return involumes[ ch ];
 }
 
