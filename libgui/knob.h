@@ -33,8 +33,6 @@ public:
 	Knob( float value, float min, float max, int precision, float pagestep, QWidget*, QString = "%1 dB" );
 	~Knob();
 
-	QSizePolicy sizePolizy() const { return QSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding ); }
-
 	void value( float );
 	float value() const { return _value; }
 

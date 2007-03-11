@@ -43,14 +43,19 @@ double degree( const double n ) {
 	return n;
 }
 
-Knob::Knob( float value, float min, float max, int precision, float pagestep, QWidget*p, QString valuestring )
+Knob::Knob( float v, float min, float max, int precision, float pagestep, QWidget*p, QString valuestring )
 	: QWidget( p )
 	, dB2VolCalc( min, max )
-	, _value( value ), _pagestep( pagestep )
+	, _value( v )
+	, _pagestep( pagestep )
 	, _value_inupdate( false )
 	, _precision( precision )
 	, _valuestring( valuestring )
 {
+	//qDebug() << "Knob::Knob(" << v << "," << min << "," << max << "," << precision << "," << pagestep << "," << p << "," << valuestring << ")";
+	int m = QFontMetrics( font() ).width( _valuestring ) + ( _precision+1 )* QFontMetrics( font() ).width( " " );
+	setMinimumSize( int( m*1.1 ), int( m*1.1 ) );
+	setFocusPolicy( Qt::TabFocus );
 }
 
 Knob::~Knob() {
@@ -61,7 +66,7 @@ void Knob::value( float n ) {
 		n = qMin( n, dbmax );
 		n = qMax( n, dbmin );
 		_value = n;
-		repaint();
+		update();
 		_value_inupdate = true;
 		emit valueChanged( n );
 		_value_inupdate = false;
@@ -115,7 +120,7 @@ void Knob::paintEvent( QPaintEvent* ) {
 
 	// Draw highlight-line for the value
 	p.save();
-	p.rotate( 300 * _value );
+	p.rotate( 300 * dbtondb( _value ) );
 	QPen linepen( palette().color( QPalette::HighlightedText ) );
 	linepen.setWidthF( 3 );
 	linepen.setCapStyle( Qt::RoundCap );
@@ -172,6 +177,7 @@ void Knob::mouseEvent( QMouseEvent* ev ) {
 		alpha = qMin( alpha, 300.0 );
 		//qDebug() << " alpha" << alpha;
 
+		//qDebug() << " value =" << alpha/300 << " ndbtodb =" << ndbtodb( alpha/300 );
 		value( ndbtodb( alpha/300 ) );
 	}
 }

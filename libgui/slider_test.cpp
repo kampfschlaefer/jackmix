@@ -29,7 +29,7 @@ int main( int argc, char** argv ) {
 	QApplication *qapp = new QApplication( argc, argv );
 
 	//QWidget *mw = new JackMix::GUI::Slider( 0.5, 0, 1, 3, 0.1, 0 );
-	QWidget *mw = new JackMix::GUI::Knob( 0.5, 0, 1, 3, 0.1, 0 );
+	QWidget *mw = new JackMix::GUI::Knob( 0.5, 0, 2, 3, 0.1, 0 );
 	mw->show();
 
 	int ret = qapp->exec();

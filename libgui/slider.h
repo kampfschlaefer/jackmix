@@ -33,8 +33,6 @@ public:
 	Slider( float value, float min, float max, int precision, float pagestep, QWidget*, QString = "%1 dB" );
 	~Slider();
 
-	QSizePolicy sizePolicy() const { return QSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding ); }
-
 	void value( float );
 	float value() const { return _value; }
 signals:
