@@ -22,6 +22,7 @@
 #define JACKMIX_JACK_BACKEND_H
 
 #include <QtCore/QMap>
+#include <QtCore/QHash>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <jack/jack.h>
@@ -77,8 +78,8 @@ private:
 	::jack_client_t *client;
 	/// First dimension is input-channels, second is output-channels
 	QMap<QString,QMap<QString,float> > volumes;
-	QMap<QString,float> outvolumes;
-	QMap<QString,float> involumes;
+	QHash<QString,float> outvolumes;
+	QHash<QString,float> involumes;
 };
 
 };
