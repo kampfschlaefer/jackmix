@@ -94,10 +94,10 @@ Mono2StereoElement::Mono2StereoElement( QStringList inchannel, QStringList outch
 	menu()->addAction( "Select", this, SLOT( slot_simple_select() ) );
 	menu()->addAction( "Replace", this, SLOT( slot_simple_replace() ) );
 
-	_balance = new JackMix::GUI::Knob( _balance_value, -1, 1, 4, 0.1, this, "%1" );
+	_balance = new JackMix::GUI::Knob( _balance_value, -1, 1, 2, 0.1, this, "%1" );
 	_layout->addWidget( _balance, 10 );
 	connect( _balance, SIGNAL( valueChanged( float ) ), this, SLOT( balance( float ) ) );
-	_volume = new JackMix::GUI::Slider( amptodb( _volume_value ), dbmin, dbmax, 1, 3, this );
+	_volume = new JackMix::GUI::Slider( amptodb( _volume_value ), dbmin, dbmax, 2, 3, this );
 	_layout->addWidget( _volume, 20 );
 	connect( _volume, SIGNAL( valueChanged( float ) ), this, SLOT( volume( float ) ) );
 }

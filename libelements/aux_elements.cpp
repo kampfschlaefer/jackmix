@@ -21,7 +21,6 @@
 #include "aux_elements.h"
 #include "aux_elements.moc"
 
-#include "jack_backend.h"
 #include "knob.h"
 
 
@@ -81,7 +80,7 @@ AuxElement::AuxElement( QStringList inchannel, QStringList outchannel, MixingMat
 
 	JackMix::GUI::Knob* poti = new JackMix::GUI::Knob(
 		amptodb( backend()->getVolume( _inchannel, _outchannel ) ),
-		dbmin, dbmax, 3, 0.1, this );
+		dbmin, dbmax, 2, 3, this );
 	_layout->addWidget( poti, 100 );
 
 	connect( poti, SIGNAL( valueChanged( float ) ), this, SLOT( emitvalue( float ) ) );
