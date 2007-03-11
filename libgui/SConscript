@@ -15,9 +15,6 @@ obj.source='\
 	qfloatcontrol.cpp \
 	qfloatslider.cpp \
 	qfloatpoti.cpp \
-	qtickmarks.cpp \
-	volumeslider.cpp \
-	stereovolumeslider.cpp \
 	qsynthKnob.cpp \
 '
 #	qpoti.cpp \

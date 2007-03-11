@@ -22,8 +22,6 @@
 #include "aux_elements.moc"
 
 #include "qfloatpoti.h"
-#include "qfloatslider.h"
-#include "slider.h"
 #include "jack_backend.h"
 
 #include <QtGui/QLayout>

@@ -22,13 +22,12 @@
 #define SLIDER_H
 
 #include <QtGui/QWidget>
-#include "float_base.h"
 #include "dbvolcalc.h"
 
 namespace JackMix {
 namespace GUI {
 
-class Slider : public QWidget, public dB2VolCalc//, public FloatElement
+class Slider : public QWidget, public dB2VolCalc
 {
 Q_OBJECT
 public:

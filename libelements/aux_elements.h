@@ -28,8 +28,6 @@ namespace JackMix {
 namespace MixerElements {
 
 class AuxElement;
-class Mono2StereoElement;
-class Stereo2StereoElement;
 
 /**
  * Simpliest form of a control connecting one input with one output.
