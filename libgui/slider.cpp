@@ -29,7 +29,7 @@
 using namespace JackMix;
 using namespace JackMix::GUI;
 
-Slider::Slider( float value, float min, float max, int precision, float pagestep, QWidget* p, QString valuestring, const char* n )
+Slider::Slider( float value, float min, float max, int precision, float pagestep, QWidget* p, QString valuestring )
 	: QWidget( p )
 	, dB2VolCalc( min, max )
 	, _value( value ), _pagestep( pagestep )
