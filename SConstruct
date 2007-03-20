@@ -44,7 +44,7 @@ def CheckPKGConfig( context, pkgname ):
 
 conf = Configure( env, custom_tests={'CheckPKGConfig' : CheckPKGConfig }, conf_dir='cache', log_file='cache/config.log' )
 conf.CheckPKGConfig( 'jack' )
-conf.CheckPKGConfig( 'liblo' )
+#conf.CheckPKGConfig( 'liblo' )
 
 env = conf.Finish()
 
@@ -53,7 +53,7 @@ env = conf.Finish()
 ###################################################################
 
 ## target processing is done in the subdirectory
-env.subdirs(['libcore','libgui','backend','libmatrix','libelements','jackmix','osc'])
+env.subdirs(['libcore','libgui','backend','libmatrix','libelements','jackmix'])
 
 ###################################################################
 # CONVENIENCE FUNCTIONS TO EMULATE 'make dist' and 'make distclean'
