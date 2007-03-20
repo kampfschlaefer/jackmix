@@ -36,27 +36,28 @@
 #include <QtGui/QInputDialog>
 #include <QtCore/QSettings>
 #include <QtGui/QFileDialog>
-//#include <QtGui/QScrollArea>
+#include <QtCore/QFile>
 #include <QtGui/QMessageBox>
 #include <QtGui/QAction>
 #include <QtCore/QTimer>
 #include <QtGui/QCloseEvent>
 
-//#include "defaults.xml"
+#include <QtXml/QDomDocument>
+
 
 using namespace JackMix;
 using namespace JackMix::MixingMatrix;
 
-MainWindow::MainWindow( QWidget* p ) : QMainWindow( p ), _backend( new JackBackend() ) {
+MainWindow::MainWindow( QWidget* p ) : QMainWindow( p ), _backend( new JackBackend() ), _autofillscheduled( false ) {
 std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 
 	JackMix::MixerElements::init_aux_elements();
 	JackMix::MixerElements::init_stereo_elements();
 
 	_filemenu = menuBar()->addMenu( "&File" );
-	//_filemenu->insertItem( "Open File...", this, SLOT( openFile() ), CTRL+Key_O );
-	//_filemenu->insertItem( "Save File...", this, SLOT( saveFile() ), CTRL+Key_S );
-	//_filemenu->insertSeparator();
+	_filemenu->addAction( "Open File...", this, SLOT( openFile() ), Qt::CTRL+Qt::Key_O );
+	_filemenu->addAction( "Save File...", this, SLOT( saveFile() ), Qt::CTRL+Qt::Key_S );
+	_filemenu->addSeparator();
 	_filemenu->addAction( "&Quit", this, SLOT( close() ), Qt::CTRL+Qt::Key_Q );
 
 	_editmenu = menuBar()->addMenu( "&Edit" );
@@ -65,7 +66,7 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	connect( _select_action, SIGNAL( triggered() ), this, SLOT( toggleselectmode() ) );
 	//_editmenu->addAction( _select_action );
 	//_select_action->addTo( new QToolBar( this ) );
-	_editmenu->addAction( "&Fill empty spaces", this, SLOT( autofill() ) );
+	_editmenu->addAction( "&Fill empty spaces", this, SLOT( scheduleAutoFill() ) );
 	_editmenu->addSeparator();
 	_add_inchannel_action = new QAction( "Add &Input...", this );
 	connect( _add_inchannel_action, SIGNAL( triggered() ), this, SLOT( addInput() ) );
@@ -95,29 +96,13 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	_mw = new MainWindowHelperWidget( this );
 	setCentralWidget( _mw );
 
-	/*_backend->addInput( "in_1" );
-	_backend->addInput( "in_2" );
-	_backend->addInput( "in_3" );
-	_backend->addInput( "in_4" );
-	_backend->addInput( "in_5" );
-	_backend->addInput( "in_6" );
-	_backend->addInput( "in_7" );
-	_backend->addInput( "in_8" );
-	_backend->addOutput( "out_1" );
-	_backend->addOutput( "out_2" );
-	_backend->addOutput( "out_3" );*/
-
 	QStringList ins = QStringList() << "in_1" << "in_2" << "in_3" << "in_4" << "in_5" << "in_6" << "in_7" << "in_8";
 	QStringList outs = QStringList() << "out_1" << "out_2";
 
-	foreach( QString in, ins ) {
-		//qDebug() << "Trying to add input" << in << "to the backend";
+	foreach( QString in, ins )
 		_backend->addInput( in );
-	}
-	foreach( QString out, outs ) {
-		//qDebug() << "Trying to add output" << out << "to the backend";
+	foreach( QString out, outs )
 		_backend->addOutput( out );
-	}
 
 	ins = _backend->inchannels();
 	outs = _backend->outchannels();
@@ -136,19 +121,7 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	_mw->layout->setColumnStretch( 1, 1 );
 	_mw->layout->setColumnStretch( 0, int( 1E2 ) );
 
-	/*_mixerwidget->createControl( QStringList()<<"in_1"<<"in_2", QStringList()<<"out_1"<<"out_2" );
-	_mixerwidget->createControl( QStringList()<<"in_3"<<"in_4", QStringList()<<"out_1"<<"out_2" );
-	_mixerwidget->createControl( QStringList()<<"in_5", QStringList()<<"out_1"<<"out_2" );
-	_mixerwidget->createControl( QStringList()<<"in_6", QStringList()<<"out_1"<<"out_2" );*/
-	//_mixerwidget->autoFill();
-	QTimer::singleShot( 1, this, SLOT( autofill() ) );
-
-	//_inputswidget->createControl( QStringList()<<"in_1"<<"in_2", QStringList()<<"in_1"<<"in_2" );
-	//_inputswidget->createControl( QStringList()<<"in_3"<<"in_4", QStringList()<<"in_3"<<"in_4" );
-	_inputswidget->autoFill();
-
-	//_outputswidget->createControl( QStringList()<<"out_1"<<"out_2", QStringList()<<"out_1"<<"out_2" );
-	_outputswidget->autoFill();
+	scheduleAutoFill();
 
 //	_debugPrint = new QAction( "DebugPrint", CTRL+Key_P, this );
 //	connect( _debugPrint, SIGNAL( activated() ), _mixerwidget, SLOT( debugPrint() ) );
@@ -171,8 +144,83 @@ std::cerr << "MainWindow::closeEvent( QCloseEvent " << e << " )" << std::endl;
 }
 
 void MainWindow::openFile() {
+	QString path = QFileDialog::getOpenFileName( this, 0, 0, "JackMix-XML (*.jm-xml)" );
+	if ( path.isEmpty() )
+		return;
+
+	QFile file( path );
+	if ( file.open( QIODevice::ReadOnly | QIODevice::Text ) ) {
+		while ( _backend->outchannels().size() > 0 )
+			removeOutput( _backend->outchannels()[ 0 ] );
+		while ( _backend->inchannels().size() > 0 )
+			removeInput( _backend->inchannels()[ 0 ] );
+
+		QDomDocument doc( "bla" );
+		doc.setContent( &file );
+
+		QDomElement jackmix = doc.documentElement();
+		QString version = jackmix.attribute( "version", "0.3" );
+
+		if ( version == "0.3" ) {
+			QDomElement ins = jackmix.firstChildElement( "ins" );
+			for ( QDomElement in = ins.firstChildElement( "channel" ); !in.isNull(); in = in.nextSiblingElement( "channel" ) ) {
+				QString name = in.attribute( "name" );
+				QString volume = in.attribute( "volume" );
+				addInput( name );
+				_backend->setVolume( name, name, volume.toDouble() );
+			}
+			QDomElement outs = jackmix.firstChildElement( "outs" );
+			for ( QDomElement out = outs.firstChildElement( "channel" ); !out.isNull(); out = out.nextSiblingElement( "channel" ) ) {
+				QString name = out.attribute( "name" );
+				QString volume = out.attribute( "volume" );
+				addOutput( name );
+				_backend->setVolume( name, name, volume.toDouble() );
+			}
+			QDomElement matrix = jackmix.firstChildElement( "matrix" );
+			for ( QDomElement volume = matrix.firstChildElement( "volume" ); !volume.isNull(); volume = volume.nextSiblingElement( "volume" ) ) {
+				QString in = volume.attribute( "in" );
+				QString out = volume.attribute( "out" );
+				QString value = volume.attribute( "value" );
+				_backend->setVolume( in, out, value.toDouble() );
+			}
+		}
+
+		file.close();
+	}
 }
 void MainWindow::saveFile() {
+	QString path = QFileDialog::getSaveFileName( this, 0, 0, "JackMix-XML (*.jm-xml)" );
+	if ( path.isEmpty() )
+		return;
+	
+	if ( ! path.endsWith( ".jm-xml" ) )
+		path += ".jm-xml";
+
+	QStringList ins = _backend->inchannels();
+	QStringList outs = _backend->outchannels();
+
+	QString xml = "<jackmix version=\"0.3\"><ins>";
+	foreach( QString in, ins ) {
+		xml += QString( "<channel name=\"%1\" volume=\"%2\" />" ).arg( in ).arg( _backend->getVolume( in,in ) );
+	}
+	xml += "</ins><outs>";
+	foreach( QString out, outs )
+		xml += QString( "<channel name=\"%1\" volume=\"%2\" />" ).arg( out ).arg( _backend->getVolume( out,out ) );
+	xml += "</outs><matrix>";
+	foreach( QString in, ins )
+		foreach( QString out, outs )
+			xml += QString( "<volume in=\"%1\" out=\"%2\" value=\"%3\" />" ).arg( in ).arg( out ).arg( _backend->getVolume( in, out ) );
+	xml += "</matrix></jackmix>";
+
+	QFile file( path );
+	if ( file.open( QIODevice::WriteOnly | QIODevice::Text ) ) {
+		QTextStream stream( &file );
+		stream << xml.replace( ">", ">\n" );
+		file.close();
+	}
+
+	qDebug() << xml;
+
 }
 
 void MainWindow::about() {
@@ -223,9 +271,8 @@ void MainWindow::addInput() {
 void MainWindow::addInput( QString name ) {
 	if ( _backend->addInput( name ) ) {
 		_mixerwidget->addinchannel( name );
-		_mixerwidget->autoFill();
 		_inputswidget->addinchannel( name );
-		_inputswidget->autoFill();
+		scheduleAutoFill();
 	}
 }
 void MainWindow::addOutput() {
@@ -236,9 +283,8 @@ void MainWindow::addOutput() {
 void MainWindow::addOutput( QString name ) {
 	if ( _backend->addOutput( name ) ) {
 		_mixerwidget->addoutchannel( name );
-		_mixerwidget->autoFill();
 		_outputswidget->addoutchannel( name );
-		_outputswidget->autoFill();
+		scheduleAutoFill();
 	}
 }
 
@@ -253,6 +299,7 @@ void MainWindow::removeInput( QString n ) {
 	if ( _backend->removeInput( n ) ) {
 		_inputswidget->removeinchannel( n );
 		_mixerwidget->removeinchannel( n );
+		scheduleAutoFill();
 	}
 }
 void MainWindow::removeOutput() {
@@ -266,12 +313,23 @@ qDebug( "MainWindow::removeOutput( QString %s )", n.toStdString().c_str() );
 	if ( _backend->removeOutput( n ) ) {
 		_outputswidget->removeoutchannel( n );
 		_mixerwidget->removeoutchannel( n );
+		scheduleAutoFill();
 	}
 }
 
-void MainWindow::autofill() {
+void MainWindow::allAutoFill() {
 	_mixerwidget->autoFill();
+	_outputswidget->autoFill();
+	_inputswidget->autoFill();
+	_autofillscheduled = false;
 }
+void MainWindow::scheduleAutoFill() {
+	if ( !_autofillscheduled ) {
+		QTimer::singleShot( 1, this, SLOT( allAutoFill() ) );
+		_autofillscheduled = true;
+	}
+}
+
 
 
 MainWindowHelperWidget::MainWindowHelperWidget( QWidget* p ) : QWidget( p ) {

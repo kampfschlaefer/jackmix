@@ -64,8 +64,6 @@ private slots:
 	void toggleout();
 	void closeEvent( QCloseEvent* );
 
-	void autofill();
-
 	void addInput();
 	void addInput( QString );
 	void addOutput();
@@ -75,6 +73,9 @@ private slots:
 	void removeInput( QString );
 	void removeOutput();
 	void removeOutput( QString );
+
+	void allAutoFill();
+	void scheduleAutoFill();
 
 	void about();
 	void aboutQt();
@@ -86,6 +87,7 @@ private:
 	QAction *_select_action, *_togglein_action, *_toggleout_action, *_add_inchannel_action, *_add_outchannel_action, *_remove_inchannel_action, *_remove_outchannel_action;
 	QAction *_debugPrint;
 	BackendInterface* _backend;
+	bool _autofillscheduled;
 };
 
 };
