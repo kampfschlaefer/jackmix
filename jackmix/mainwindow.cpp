@@ -1,5 +1,5 @@
 /*
-    Copyright ( C ) 2004 Arnold Krille <arnold@arnoldarts.de>
+    Copyright 2004-2007 Arnold Krille <arnold@arnoldarts.de>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -295,7 +295,7 @@ qDebug( "MainWindow::removeInput()" );
 	tmp->show();
 }
 void MainWindow::removeInput( QString n ) {
-	qDebug( "MainWindow::removeInput( QString %s )", n.toStdString().c_str() );
+	//qDebug( "MainWindow::removeInput( QString %s )", qPrintable( n ) );
 	if ( _backend->removeInput( n ) ) {
 		_inputswidget->removeinchannel( n );
 		_mixerwidget->removeinchannel( n );
@@ -309,7 +309,7 @@ qDebug( "MainWindow::removeOutput()" );
 	tmp->show();
 }
 void MainWindow::removeOutput( QString n ) {
-qDebug( "MainWindow::removeOutput( QString %s )", n.toStdString().c_str() );
+	//qDebug( "MainWindow::removeOutput( QString %s )", qPrintable( n ) );
 	if ( _backend->removeOutput( n ) ) {
 		_outputswidget->removeoutchannel( n );
 		_mixerwidget->removeoutchannel( n );
