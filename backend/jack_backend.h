@@ -69,9 +69,6 @@ public:
 	/// returns a QStringList with the names of the in-channels
 	QStringList inchannels();
 
-	void toXML( QDomDocument, QDomElement );
-	void fromXML( QDomElement );
-
 private:
 	portsmap in_ports;
 	portsmap out_ports;

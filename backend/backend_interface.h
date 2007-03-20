@@ -86,20 +86,6 @@ namespace JackMix {
 		 */
 		virtual bool removeInput( QString ) =0;
 
-		/**
-		 * @brief save settings
-		 *
-		 * Save the state into the given QDomElement.
-		 *
-		 * You need the QDomDocument to create new elements...
-		 */
-		virtual void toXML( QDomDocument, QDomElement ) =0;
-		/**
-		 * @brief restore settings
-		 *
-		 * Restore the state from the given QDomElement.
-		 */
-		virtual void fromXML( QDomElement ) =0;
 	};
 };
 
