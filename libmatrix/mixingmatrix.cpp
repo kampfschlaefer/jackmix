@@ -62,7 +62,6 @@ Widget::~Widget() {
 void Widget::addElement( Element* n ) {
 	_elements.push_back( n );
 	connect( n, SIGNAL( replace( Element* ) ), this, SLOT( replace( Element* ) ) );
-	connect( n, SIGNAL( valueChanged( Element*, QString ) ), this, SLOT( valueChanged( Element*, QString ) ) );
 	resizeEvent( 0 );
 }
 void Widget::removeElement( Element* n ) {
@@ -196,10 +195,8 @@ QSize Widget::smallestElement() const {
 	//qDebug( "Widget::smallestElement()" );
 	int w = 1, h = 1;
 	for ( int i=0; i<elements(); i++ ) {
-		if ( _elements[ i ]->minimumSizeHint().width() > w )
-			w = _elements[ i ]->minimumSizeHint().width();
-		if ( _elements[ i ]->minimumSizeHint().height() > h )
-			h = _elements[ i ]->minimumSizeHint().height();
+		w = qMax( _elements[ i ]->minimumSizeHint().width(), w );
+		h = qMax( _elements[ i ]->minimumSizeHint().height(), h );
 	}
 	return QSize( w,h );
 }
@@ -239,33 +236,22 @@ void Widget::removeinchannel( QString name ) {
 	//qDebug( "Widget::removeinchannel( %s )", qPrintable( name ) );
 	for ( QStringList::Iterator it = _outchannels.begin(); it != _outchannels.end(); it++ ) {
 		Element* tmp = getResponsible( name, *it );
-		if ( tmp ) {
-			//qDebug( "removing element %p", tmp );
+		if ( tmp )
 			delete tmp;
-			_inchannels.removeAll( name );
-		}
 	}
-	autoFill();
-	//qDebug( "_inchannels.count = %i", _inchannels.size() );
+	_inchannels.removeAll( name );
 }
 void Widget::removeoutchannel( QString name ) {
 	//qDebug( "Widget::removeoutchannel( %s )", qPrintable( name ) );
 	for ( QStringList::Iterator it = _inchannels.begin(); it != _inchannels.end(); it++ ) {
 		Element* tmp = getResponsible( *it, name );
-		if ( tmp ) {
-			//qDebug( "removing element %p", tmp );
+		if ( tmp )
 			delete tmp;
-			_outchannels.removeAll( name );
-		}
 	}
-	autoFill();
-	//qDebug( "_outchannels.count = %i", _outchannels.size() );
+	_outchannels.removeAll( name );
 }
 
 
-
-void Widget::valueChanged( Element* master, QString signal ) {
-}
 
 void Widget::debugPrint() {
 	qDebug( "\nWidget::debugPrint()" );

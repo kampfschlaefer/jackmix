@@ -107,8 +107,6 @@ public slots:
 	// For testing of the properties
 	void debugPrint();
 
-private slots:
-	void valueChanged( Element*, QString );
 private:
 	enum Mode _mode;
 	Direction _direction;
