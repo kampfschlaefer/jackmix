@@ -11,6 +11,7 @@ obj=env.qt4obj('staticlib', env)
 obj.target='libjackmix_gui'
 obj.source='\
 	channelselector.cpp \
+	abstractslider.cpp \
 	slider.cpp \
 	knob.cpp \
 '

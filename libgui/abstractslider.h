@@ -17,39 +17,46 @@
 
 */
 
-#ifndef KNOB_H
-#define KNOB_H
+#ifndef ABSTRACTSLIDER_H
+#define ABSTRACTSLIDER_H
 
-#include "abstractslider.h"
-
-class QTimer;
+#include <QtGui/QWidget>
+#include "dbvolcalc.h"
 
 namespace JackMix {
+
 namespace GUI {
 
-class Knob : public AbstractSlider
+class AbstractSlider : public QWidget, public dB2VolCalc
 {
 Q_OBJECT
 public:
-	Knob( double value, double min, double max, int precision, double pagestep, QWidget*, QString = "%1 dB" );
-	~Knob();
+	AbstractSlider( double value, double min, double max, int precision, double pagestep, QWidget*, QString valuestring );
+	~AbstractSlider();
 
-	void value( double );
+	virtual void value( double );
+	virtual double value() const { return _value; };
 
+signals:
+	void valueChanged( double );
 protected:
-	void paintEvent( QPaintEvent* );
+	void mousePressEvent( QMouseEvent* );
+	void mouseMoveEvent( QMouseEvent* );
+	void wheelEvent( QWheelEvent* );
 
-private slots:
-	void timeOut();
+	virtual void mouseEvent( QMouseEvent* ) =0;
 
-private:
-	void mouseEvent( QMouseEvent* );
 
-	QTimer *_timer;
-	bool _show_value;
+	double _value;
+	bool _value_inupdate;
+	double _pagestep;
+	int _precision;
+	QString _valuestring;
 };
 
-}; // GUI
-}; // JackMix
-#endif // KNOB_H
+};
+
+};
+
+#endif // ABSTRACTSLIDER_H
 

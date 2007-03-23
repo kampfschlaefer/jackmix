@@ -25,15 +25,15 @@
 
 class dB2VolCalc {
 private:
-	float _base;
+	double _base;
 public:
-	dB2VolCalc( float _dbmin, float _dbmax )
+	dB2VolCalc( double _dbmin, double _dbmax )
 	  : _base( 6/log10( double(2) ) ) // Depends on what you measure: intensity(10), pressure(20), old artscontrol(6/lg2 (near 20))
 	  , dbmax( _dbmax )
 	  , dbmin( _dbmin )
 	{}
 
-	float dbmax, dbmin;
+	double dbmax, dbmin;
 	/**
 		Logarithmic/decimal valuation:
 		p = ampfactor ( linear )
@@ -46,34 +46,34 @@ public:
 		which would be
 			db = 6/lg( 2 ) * lg( p )
 	*/
-	float amptodb( float p ) {
-		float db = _base*log10( p );
+	double amptodb( double p ) {
+		double db = _base*log10( p );
 		if ( db < dbmin ) db = dbmin;
 		if ( db > dbmax ) db = dbmax;
 		return db;
 	}
-	float dbtoamp( float db ) {
-		float amp = pow( 10, db/_base );
+	double dbtoamp( double db ) {
+		double amp = pow( 10, db/_base );
 		if ( db <= dbmin ) amp = 0;
 		return amp;
 	}
 	/// With ndb = normalized dB (between 0 and 1)
-	float amptondb( float p ) {
+	double amptondb( double p ) {
 		return  dbtondb( amptodb( p ) ); //- dbmin ) / ( dbmax - dbmin );
 	}
-	float ndbtoamp( float ndb ) {
+	double ndbtoamp( double ndb ) {
 		return dbtoamp( ndb * ( dbmax - dbmin ) + dbmin );
 	}
 	/// Normalizes a dezibel value.
-	float dbtondb( float db ) {
+	double dbtondb( double db ) {
 		return ( db - dbmin )/( dbmax - dbmin );
 	}
 	/// Normalizes a volume to a logarithmic value between 0 and 1.
-	float dbtovol( float db ) {
+	double dbtovol( double db ) {
 		return ( db -dbmin )/( 0-dbmin );
 	}
 	/// Unnormalizes a dezibel value.
-	float ndbtodb( float ndb ) {
+	double ndbtodb( double ndb ) {
 		return ( ndb * ( dbmax-dbmin ) +dbmin );
 	}
 };

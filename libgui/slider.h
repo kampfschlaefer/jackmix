@@ -20,36 +20,22 @@
 #ifndef SLIDER_H
 #define SLIDER_H
 
-#include <QtGui/QWidget>
-#include "dbvolcalc.h"
+#include "abstractslider.h"
 
 namespace JackMix {
 namespace GUI {
 
-class Slider : public QWidget, public dB2VolCalc
+class Slider : public AbstractSlider
 {
 Q_OBJECT
 public:
-	Slider( float value, float min, float max, int precision, float pagestep, QWidget*, QString = "%1 dB" );
+	Slider( double value, double min, double max, int precision, double pagestep, QWidget*, QString = "%1 dB" );
 	~Slider();
-
-	void value( float );
-	float value() const { return _value; }
-signals:
-	void valueChanged( float );
 
 protected:
 	void paintEvent( QPaintEvent* );
-	void mousePressEvent( QMouseEvent* );
-	void mouseMoveEvent( QMouseEvent* );
-	void wheelEvent( QWheelEvent* );
 
-private:
 	void mouseEvent( QMouseEvent* );
-	float _value, _pagestep;
-	bool _value_inupdate;
-	int _precision;
-	QString _valuestring;
 	QRect _faderarea;
 };
 

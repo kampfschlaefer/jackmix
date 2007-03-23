@@ -44,19 +44,11 @@ double degree( const double n ) {
 	return n;
 }
 
-Knob::Knob( float v, float min, float max, int precision, float pagestep, QWidget*p, QString valuestring )
-	: QWidget( p )
-	, dB2VolCalc( min, max )
-	, _value( v )
-	, _pagestep( pagestep )
-	, _value_inupdate( false )
-	, _precision( precision )
-	, _valuestring( valuestring )
+Knob::Knob( double v, double min, double max, int precision, double pagestep, QWidget*p, QString valuestring )
+	: AbstractSlider( v, min, max, precision, pagestep, p, valuestring )
 	, _timer( new QTimer( this ) )
 	, _show_value( false )
 {
-	//qDebug() << "Knob::Knob(" << v << "," << min << "," << max << "," << precision << "," << pagestep << "," << p << "," << valuestring << ")";
-	int m = QFontMetrics( font() ).width( _valuestring ) + ( _precision+2 )* QFontMetrics( font() ).width( " " );
 	int h = QFontMetrics( font() ).height();
 	setMinimumSize( int( m*1.1 ), int( h*2.2 ) );
 	setFocusPolicy( Qt::TabFocus );
@@ -69,17 +61,11 @@ Knob::Knob( float v, float min, float max, int precision, float pagestep, QWidge
 Knob::~Knob() {
 }
 
-void Knob::value( float n ) {
+void Knob::value( double n ) {
 	if ( !_value_inupdate ) {
-		n = qMin( n, dbmax );
-		n = qMax( n, dbmin );
-		_value = n;
+		AbstractSlider::value( n );
 		_show_value = true;
 		_timer->start();
-		update();
-		_value_inupdate = true;
-		emit valueChanged( n );
-		_value_inupdate = false;
 	}
 }
 
@@ -98,7 +84,7 @@ void Knob::paintEvent( QPaintEvent* ) {
 
 	p.rotate( -240 );
 
-	float radius = qMin( width(), height() ) /2 -4; // "Border" of 10 pixels
+	double radius = qMin( width(), height() ) /2 -4; // "Border" of 10 pixels
 
 	// Draw Arc around whole area
 	//p.drawArc( QRectF( -radius, -radius, 2*radius, 2*radius ), 16* 0, 16* -300 );
@@ -173,13 +159,6 @@ void Knob::paintEvent( QPaintEvent* ) {
 
 }
 
-void Knob::mousePressEvent( QMouseEvent* ev ) {
-	if ( ev->button() == Qt::LeftButton )
-		mouseEvent( ev );
-}
-void Knob::mouseMoveEvent( QMouseEvent* ev ) {
-	mouseEvent( ev );
-}
 void Knob::mouseEvent( QMouseEvent* ev ) {
 	//qDebug() << "Knob::mouseEvent(" << ev << ")";
 	//qDebug() << " ev->x" << ev->x() << " ev->y" << ev->y();
@@ -206,12 +185,6 @@ void Knob::mouseEvent( QMouseEvent* ev ) {
 	}
 }
 
-void Knob::wheelEvent( QWheelEvent* ev ) {
-	if ( ev->delta() > 0 )
-		value( _value + _pagestep );
-	else
-		value( _value - _pagestep );
-}
 
 }; // GUI
 }; // JackMix

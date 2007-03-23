@@ -29,13 +29,8 @@
 using namespace JackMix;
 using namespace JackMix::GUI;
 
-Slider::Slider( float value, float min, float max, int precision, float pagestep, QWidget* p, QString valuestring )
-	: QWidget( p )
-	, dB2VolCalc( min, max )
-	, _value( value ), _pagestep( pagestep )
-	, _value_inupdate( false )
-	, _precision( precision )
-	, _valuestring( valuestring )
+Slider::Slider( double value, double min, double max, int precision, double pagestep, QWidget* p, QString valuestring )
+	: AbstractSlider( value, min, max, precision, pagestep, p, valuestring )
 {
 	setAutoFillBackground( false );
 	int m = QFontMetrics( font() ).height();
@@ -45,18 +40,6 @@ Slider::Slider( float value, float min, float max, int precision, float pagestep
 Slider::~Slider() {
 }
 
-void Slider::value( float n ) {
-	if ( !_value_inupdate ) {
-	//qDebug( "Slider::value( float %f )", n );
-		if ( n>dbmax ) n=dbmax;
-		if ( n<dbmin ) n=dbmin;
-		_value = n;
-		repaint();
-		_value_inupdate=true;
-		emit valueChanged( _value );
-		_value_inupdate=false;
-	}
-}
 
 #define SLIDER_BORDER 10
 
@@ -87,7 +70,7 @@ void Slider::paintEvent( QPaintEvent* ) {
 		style()->drawPrimitive( QStyle::PE_FrameFocusRect, 0, &p, this );
 	}
 
-	float pos = dbtondb( _value )*w-w/2;
+	double pos = dbtondb( _value )*w-w/2;
 
 	// Rect for the bar
 	QRect bar( -w/2, -h/3, int( ceil( pos+w/2 ) ), h/3*2 );
@@ -117,30 +100,16 @@ void Slider::paintEvent( QPaintEvent* ) {
 	_faderarea = p.matrix().mapRect( tmp2 );
 }
 
-void Slider::mousePressEvent( QMouseEvent* ev ) {
-	if ( ev->button() == Qt::LeftButton )
-		mouseEvent( ev );
-}
-
-void Slider::mouseMoveEvent( QMouseEvent* ev ) {
-	mouseEvent( ev );
-}
 
 void Slider::mouseEvent( QMouseEvent* ev ) {
 	if ( width()>=height() )
 		value( ndbtodb(
-			( ev->pos().x() - _faderarea.x() ) / float( _faderarea.width()-1 )
+			( ev->pos().x() - _faderarea.x() ) / double( _faderarea.width()-1 )
 			) );
 	else
 		value( ndbtodb(
-			( _faderarea.height() - ev->pos().y() + _faderarea.y() ) / float( _faderarea.height()-1 )
+			( _faderarea.height() - ev->pos().y() + _faderarea.y() ) / double( _faderarea.height()-1 )
 			) );
 }
 
-void Slider::wheelEvent( QWheelEvent* ev ) {
-	if ( ev->delta()>0 )
-		value( _value + _pagestep );
-	else
-		value( _value - _pagestep );
-}
 
