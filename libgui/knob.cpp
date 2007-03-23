@@ -49,6 +49,7 @@ Knob::Knob( double v, double min, double max, int precision, double pagestep, QW
 	, _timer( new QTimer( this ) )
 	, _show_value( false )
 {
+	int m = QFontMetrics( font() ).width( _valuestring ) + ( _precision+2 )* QFontMetrics( font() ).width( " " );
 	int h = QFontMetrics( font() ).height();
 	setMinimumSize( int( m*1.1 ), int( h*2.2 ) );
 	setFocusPolicy( Qt::TabFocus );
