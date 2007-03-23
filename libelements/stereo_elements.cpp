@@ -75,8 +75,8 @@ Mono2StereoElement::Mono2StereoElement( QStringList inchannel, QStringList outch
 	, _volume_value( 0 )
 {
 	//qDebug( "Mono2StereoElement::Mono2StereoElement()" );
-	float left = backend()->getVolume( _inchannel, _outchannel1 );
-	float right = backend()->getVolume( _inchannel, _outchannel2 );
+	double left = backend()->getVolume( _inchannel, _outchannel1 );
+	double right = backend()->getVolume( _inchannel, _outchannel2 );
 	//qDebug( " volumes: %f, %f", left, right );
 	if ( left>right ) {
 		_volume_value = left;
@@ -95,24 +95,24 @@ Mono2StereoElement::Mono2StereoElement( QStringList inchannel, QStringList outch
 
 	_balance = new JackMix::GUI::Knob( _balance_value, -1, 1, 2, 0.1, this, "%1" );
 	_layout->addWidget( _balance, 10 );
-	connect( _balance, SIGNAL( valueChanged( float ) ), this, SLOT( balance( float ) ) );
+	connect( _balance, SIGNAL( valueChanged( double ) ), this, SLOT( balance( double ) ) );
 	_volume = new JackMix::GUI::Slider( amptodb( _volume_value ), dbmin, dbmax, 2, 3, this );
 	_layout->addWidget( _volume, 20 );
-	connect( _volume, SIGNAL( valueChanged( float ) ), this, SLOT( volume( float ) ) );
+	connect( _volume, SIGNAL( valueChanged( double ) ), this, SLOT( volume( double ) ) );
 }
 Mono2StereoElement::~Mono2StereoElement() {
 }
 
 
-void Mono2StereoElement::balance( float n ) {
-	//qDebug( "Mono2StereoElement::balance( float %f )", n );
+void Mono2StereoElement::balance( double n ) {
+	//qDebug( "Mono2StereoElement::balance( double %f )", n );
 	_balance_value = n;
 	calculateVolumes();
 	_balance->value( n );
 	emit valueChanged( this, QString( "balance" ) );
 }
-void Mono2StereoElement::volume( float n ) {
-	//qDebug( "Mono2StereoElement::volume( float %f )", n );
+void Mono2StereoElement::volume( double n ) {
+	//qDebug( "Mono2StereoElement::volume( double %f )", n );
 	_volume_value = n;
 	calculateVolumes();
 	_volume->value( n );
@@ -120,7 +120,7 @@ void Mono2StereoElement::volume( float n ) {
 }
 
 void Mono2StereoElement::calculateVolumes() {
-	float left, right;
+	double left, right;
 		left = dbtoamp( _volume_value );
 		right = dbtoamp( _volume_value );
 	if ( _balance_value > 0 )
@@ -157,11 +157,11 @@ Stereo2StereoElement::Stereo2StereoElement( QStringList inchannels, QStringList 
 	_balance_widget = new JackMix::GUI::Slider( _balance_value, -1, 1, 2, 0.1, this, "%1" );
 	_layout->addWidget( _balance_widget, 0,0 );
 	_layout->setRowStretch( 0, 0 );
-	connect( _balance_widget, SIGNAL( valueChanged( float ) ), this, SLOT( balance( float ) ) );
+	connect( _balance_widget, SIGNAL( valueChanged( double ) ), this, SLOT( balance( double ) ) );
 	_volume_widget = new JackMix::GUI::Slider( amptodb( _volume_value ), dbmin, dbmax, 1, 3, this );
 	_layout->addWidget( _volume_widget, 1,0 );
 	_layout->setRowStretch( 1, 255 );
-	connect( _volume_widget, SIGNAL( valueChanged( float ) ), this, SLOT( volume( float ) ) );
+	connect( _volume_widget, SIGNAL( valueChanged( double ) ), this, SLOT( volume( double ) ) );
 
 	QAction *toggle = new QAction( "Toggle Selection", this );
 	connect( toggle, SIGNAL( triggered() ), this, SLOT( slot_simple_select() ) );
@@ -173,15 +173,15 @@ Stereo2StereoElement::Stereo2StereoElement( QStringList inchannels, QStringList 
 Stereo2StereoElement::~Stereo2StereoElement() {
 }
 
-void Stereo2StereoElement::balance( float n ) {
-	//qDebug( "Mono2StereoElement::balance( float %f )", n );
+void Stereo2StereoElement::balance( double n ) {
+	//qDebug( "Mono2StereoElement::balance( double %f )", n );
 	_balance_value = n;
 	_balance_widget->value( n );
 	calculateVolumes();
 	emit valueChanged( this, QString( "balance" ) );
 }
-void Stereo2StereoElement::volume( float n ) {
-	//qDebug( "Mono2StereoElement::volume( float %f )", n );
+void Stereo2StereoElement::volume( double n ) {
+	//qDebug( "Mono2StereoElement::volume( double %f )", n );
 	_volume_value = n;
 	_volume_widget->value( n );
 	calculateVolumes();
@@ -189,7 +189,7 @@ void Stereo2StereoElement::volume( float n ) {
 }
 
 void Stereo2StereoElement::calculateVolumes() {
-	float left, right;
+	double left, right;
 		left = dbtoamp( _volume_value );
 		right = dbtoamp( _volume_value );
 	if ( _balance_value > 0 )

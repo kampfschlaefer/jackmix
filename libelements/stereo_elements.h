@@ -58,16 +58,15 @@ signals:
 	void panorama_changed( double );
 public slots:
 	void set_panorama( double n ) { balance( n ); }
-	void balance( float );
-	void volume( float );
-	void volume( double n ) { volume( float( n ) ); }
+	void balance( double );
+	void volume( double );
 private slots:
 	void calculateVolumes();
 private:
 	QString _inchannel, _outchannel1, _outchannel2;
 	JackMix::GUI::Knob *_balance;
 	JackMix::GUI::Slider *_volume;
-	float _balance_value, _volume_value;
+	double _balance_value, _volume_value;
 };
 
 /**
@@ -86,16 +85,14 @@ public:
 	int outchannels() const { return 2; }
 
 	double getVolume() const { return _volume_value; }
-	void volume( double n ) { volume( float( n ) ); }
 	double getBalance() const { return _balance_value; }
-	void balance( double n ) { balance( float( n ) ); }
 private slots:
-	void balance( float );
-	void volume( float );
+	void balance( double );
+	void volume( double );
 	void calculateVolumes();
 private:
 	QString _inchannel1, _inchannel2, _outchannel1, _outchannel2;
-	float _balance_value, _volume_value;
+	double _balance_value, _volume_value;
 	JackMix::GUI::Slider *_volume_widget, *_balance_widget;
 };
 

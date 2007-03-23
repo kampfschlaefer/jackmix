@@ -43,7 +43,7 @@ public:
 	int outchannels() const { return 1; }
 
 public slots:
-	void emitvalue( float );
+	void emitvalue( double );
 
 private:
 	QString _inchannel, _outchannel;

@@ -83,12 +83,12 @@ AuxElement::AuxElement( QStringList inchannel, QStringList outchannel, MixingMat
 		dbmin, dbmax, 2, 3, this );
 	_layout->addWidget( poti, 100 );
 
-	connect( poti, SIGNAL( valueChanged( float ) ), this, SLOT( emitvalue( float ) ) );
+	connect( poti, SIGNAL( valueChanged( double ) ), this, SLOT( emitvalue( double ) ) );
 }
 AuxElement::~AuxElement() {
 }
 
-void AuxElement::emitvalue( float n ) {
+void AuxElement::emitvalue( double n ) {
 	backend()->setVolume( _inchannel, _outchannel, dbtoamp( n ) );
 }
 
