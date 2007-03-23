@@ -24,6 +24,7 @@
 #include <QtGui/QMouseEvent>
 #include <QtGui/QWheelEvent>
 #include <QtCore/QDebug>
+#include <QtCore/QTimer>
 
 namespace JackMix {
 namespace GUI {
@@ -51,11 +52,18 @@ Knob::Knob( float v, float min, float max, int precision, float pagestep, QWidge
 	, _value_inupdate( false )
 	, _precision( precision )
 	, _valuestring( valuestring )
+	, _timer( new QTimer( this ) )
+	, _show_value( false )
 {
 	//qDebug() << "Knob::Knob(" << v << "," << min << "," << max << "," << precision << "," << pagestep << "," << p << "," << valuestring << ")";
-	int m = QFontMetrics( font() ).width( _valuestring ) + ( _precision+1 )* QFontMetrics( font() ).width( " " );
-	setMinimumSize( int( m*1.1 ), int( m*1.1 ) );
+	int m = QFontMetrics( font() ).width( _valuestring ) + ( _precision+2 )* QFontMetrics( font() ).width( " " );
+	int h = QFontMetrics( font() ).height();
+	setMinimumSize( int( m*1.1 ), int( h*2.2 ) );
 	setFocusPolicy( Qt::TabFocus );
+
+	_timer->setInterval( 2000 ); // 2 seconds timeout for showing the value
+	_timer->setSingleShot( true );
+	connect( _timer, SIGNAL( timeout() ), this, SLOT( timeOut() ) );
 }
 
 Knob::~Knob() {
@@ -66,11 +74,18 @@ void Knob::value( float n ) {
 		n = qMin( n, dbmax );
 		n = qMax( n, dbmin );
 		_value = n;
+		_show_value = true;
+		_timer->start();
 		update();
 		_value_inupdate = true;
 		emit valueChanged( n );
 		_value_inupdate = false;
 	}
+}
+
+void Knob::timeOut() {
+	_show_value = false;
+	update();
 }
 
 void Knob::paintEvent( QPaintEvent* ) {
@@ -83,7 +98,7 @@ void Knob::paintEvent( QPaintEvent* ) {
 
 	p.rotate( -240 );
 
-	float radius = qMin( width(), height() ) /2 -10; // "Border" of 10 pixels
+	float radius = qMin( width(), height() ) /2 -4; // "Border" of 10 pixels
 
 	// Draw Arc around whole area
 	//p.drawArc( QRectF( -radius, -radius, 2*radius, 2*radius ), 16* 0, 16* -300 );
@@ -130,23 +145,32 @@ void Knob::paintEvent( QPaintEvent* ) {
 
 	p.restore();
 
+	if ( _show_value ) {
+
 	QString tmp = QString::number( _value );
-	if ( tmp.contains( "." ) ) tmp = _valuestring.arg( tmp.left( tmp.indexOf( "." ) + _precision + 1 ) );
-	else tmp = _valuestring.arg( tmp );
+	if ( tmp.contains( "." ) )
+		tmp = _valuestring.arg( tmp.left( tmp.indexOf( "." ) + _precision + 1 ) );
+	else
+		tmp = _valuestring.arg( tmp );
 
 	QFontMetrics metrics( font() );
 	QRectF rect = metrics.boundingRect( tmp );
 	double x = rect.width() /2;
+	double y = qMax( int( radius ), height()/2 );
 	{
 		// Draw a 50% transparent rect behind the text...
 		p.save();
 		p.setPen( Qt::NoPen );
-		p.setBrush( palette().color( QPalette::Window ) );
+		//p.setBrush( palette().color( QPalette::Window ) );
 		p.setOpacity( 0.75 );
-		p.drawRoundRect( rect.translated( -x, radius*0.9 ).adjusted( -2,-2, 2,0 ), 50, 50 );
+		p.setBrush( palette().color( QPalette::Base ) );
+		p.drawRoundRect( rect.translated( -x, y*0.9 ).adjusted( -2, 1, 2,-2 ), 20, 50 );
 		p.restore();
 	}
-	p.drawText( QPointF( -x, radius*0.9 ), tmp );
+	p.drawText( QPointF( -x, y*0.9 ), tmp );
+
+	}
+
 }
 
 void Knob::mousePressEvent( QMouseEvent* ev ) {

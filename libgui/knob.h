@@ -23,6 +23,8 @@
 #include <QtGui/QWidget>
 #include "dbvolcalc.h"
 
+class QTimer;
+
 namespace JackMix {
 namespace GUI {
 
@@ -45,12 +47,18 @@ protected:
 	void mouseMoveEvent( QMouseEvent* );
 	void wheelEvent( QWheelEvent* );
 
+private slots:
+	void timeOut();
+
 private:
 	void mouseEvent( QMouseEvent* );
 	float _value, _pagestep;
 	bool _value_inupdate;
 	int _precision;
 	QString _valuestring;
+
+	QTimer *_timer;
+	bool _show_value;
 };
 
 }; // GUI
