@@ -21,7 +21,10 @@
 #define ABSTRACTSLIDER_H
 
 #include <QtGui/QWidget>
+#include <QtCore/QPointer>
 #include "dbvolcalc.h"
+
+class QDoubleSpinBox;
 
 namespace JackMix {
 
@@ -34,11 +37,16 @@ public:
 	AbstractSlider( double value, double min, double max, int precision, double pagestep, QWidget*, QString valuestring );
 	~AbstractSlider();
 
+public slots:
 	virtual void value( double );
 	virtual double value() const { return _value; };
 
 signals:
 	void valueChanged( double );
+
+private slots:
+	void hideInput();
+
 protected:
 	void mousePressEvent( QMouseEvent* );
 	void mouseMoveEvent( QMouseEvent* );
@@ -52,6 +60,8 @@ protected:
 	double _pagestep;
 	int _precision;
 	QString _valuestring;
+
+	QPointer<QDoubleSpinBox> _spinbox;
 };
 
 };
