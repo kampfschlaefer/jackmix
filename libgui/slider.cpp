@@ -25,27 +25,46 @@
 #include <QtGui/QStyle>
 #include <QtGui/QMouseEvent>
 #include <QtCore/QDebug>
+#include <QtCore/QTimer>
 
 using namespace JackMix;
 using namespace JackMix::GUI;
 
 Slider::Slider( double value, double min, double max, int precision, double pagestep, QWidget* p, QString valuestring )
 	: AbstractSlider( value, min, max, precision, pagestep, p, valuestring )
+	, _timer( new QTimer( this ) )
+	, _show_value( false )
 {
 	setAutoFillBackground( false );
 	int m = QFontMetrics( font() ).height();
 	setMinimumSize( int( m*2.2 ), int( m*2.2 ) );
 	setFocusPolicy( Qt::TabFocus );
+
+	_timer->setInterval( 2000 );
+	_timer->setSingleShot( true );
+	connect( _timer, SIGNAL( timeout() ), this, SLOT( timeout() ) );
 }
 Slider::~Slider() {
 }
 
+void Slider::value( double n ) {
+	if ( !_value_inupdate ) {
+		AbstractSlider::value( n );
+		_show_value = true;
+		_timer->start();
+	}
+}
+void Slider::timeout() {
+	_show_value = false;
+	update();
+}
 
 #define SLIDER_BORDER 10
 
 void Slider::paintEvent( QPaintEvent* ) {
 	bool rotated = false;
 	QPainter p( this );
+	p.setRenderHints( QPainter::Antialiasing );
 
 	QString tmp = QString::number( _value );
 	if ( tmp.contains( "." ) ) tmp = _valuestring.arg( tmp.left( tmp.indexOf( "." ) + _precision + 1 ) );
@@ -73,8 +92,11 @@ void Slider::paintEvent( QPaintEvent* ) {
 	double pos = dbtondb( _value )*w-w/2;
 
 	// Rect for the bar
+	{
+	//	QLinearGradient grad( 
 	QRect bar( -w/2, -h/3, int( ceil( pos+w/2 ) ), h/3*2 );
 	p.fillRect( bar, palette().color( QPalette::Highlight ) );
+	}
 
 	p.setPen( palette().color( QPalette::WindowText ) );
 
@@ -90,11 +112,22 @@ void Slider::paintEvent( QPaintEvent* ) {
 	QRect tmp2 = QRect( -w/2, -h/3, w, h/3*2 );
 	p.drawRect( tmp2 );
 
-	// Text showing the value
-	p.drawText( -fontwidth/2, metrics.ascent()/2, tmp );
-	p.setClipRect( bar );
-	p.setPen( palette().color( QPalette::HighlightedText ) );
-	p.drawText( -fontwidth/2, metrics.ascent()/2, tmp );
+	p.save();
+	if ( _show_value ) {
+		p.save();
+		p.setPen( Qt::NoPen );
+		p.setBrush( palette().color( QPalette::Base ) );
+		p.setOpacity( 0.75 );
+		p.drawRoundRect( -fontwidth/2 -2, -metrics.ascent()/2 -2, fontwidth +4, metrics.ascent() +4 );
+		p.restore();
+		p.drawText( -fontwidth/2, metrics.ascent()/2, tmp );
+		// Text showing the value
+		//p.drawText( -fontwidth/2, metrics.ascent()/2, tmp );
+		//p.setClipRect( bar );
+		//p.setPen( palette().color( QPalette::HighlightedText ) );
+		//p.drawText( -fontwidth/2, metrics.ascent()/2, tmp );
+	}
+	p.restore();
 
 	// Set _faderarea correctly
 	_faderarea = p.matrix().mapRect( tmp2 );

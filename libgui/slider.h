@@ -32,11 +32,20 @@ public:
 	Slider( double value, double min, double max, int precision, double pagestep, QWidget*, QString = "%1 dB" );
 	~Slider();
 
+	void value( double );
+
 protected:
 	void paintEvent( QPaintEvent* );
 
 	void mouseEvent( QMouseEvent* );
 	QRect _faderarea;
+
+private slots:
+	void timeout();
+
+private:
+	QTimer* _timer;
+	bool _show_value;
 };
 
 }; // GUI

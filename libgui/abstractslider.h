@@ -46,11 +46,14 @@ signals:
 
 private slots:
 	void hideInput();
+	void showInput();
 
 protected:
 	void mousePressEvent( QMouseEvent* );
 	void mouseMoveEvent( QMouseEvent* );
 	void wheelEvent( QWheelEvent* );
+
+	void contextMenuEvent( QContextMenuEvent* );
 
 	virtual void mouseEvent( QMouseEvent* ) =0;
 

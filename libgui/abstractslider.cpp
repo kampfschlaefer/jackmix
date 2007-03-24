@@ -2,6 +2,7 @@
 #include "abstractslider.h"
 #include "abstractslider.moc"
 
+#include <QtCore/QDebug>
 #include <QtGui/QMouseEvent>
 #include <QtGui/QDoubleSpinBox>
 
@@ -36,26 +37,35 @@ void AbstractSlider::hideInput() {
 		_spinbox->deleteLater();
 	}
 }
+void AbstractSlider::showInput() {
+	if ( _spinbox.isNull() ) {
+		_spinbox = new QDoubleSpinBox( this );
+		_spinbox->setMinimum( dbmin );
+		_spinbox->setMaximum( dbmax );
+		_spinbox->setSingleStep( _pagestep );
+		_spinbox->setValue( _value );
+		_spinbox->setFrame( false );
+		connect( _spinbox, SIGNAL( editingFinished() ), this, SLOT( hideInput() ) );
+		connect( _spinbox, SIGNAL( valueChanged( double ) ), this, SLOT( value( double ) ) );
+		connect( this, SIGNAL( valueChanged( double ) ), _spinbox, SLOT( setValue( double ) ) );
+		_spinbox->show();
+		_spinbox->move( ( width()-_spinbox->width() )/2, ( height()-_spinbox->height() )/2 );
+		_spinbox->setFocus();
+	}
+}
+
+void AbstractSlider::contextMenuEvent( QContextMenuEvent* ev ) {
+	//qDebug() << "AbstractSlider::contextMenuEvent(" << ev << ") is accepted?" << ev->isAccepted();
+	if ( _spinbox.isNull() )
+		showInput();
+	else
+		ev->ignore();
+}
 
 void AbstractSlider::mousePressEvent( QMouseEvent* ev ) {
+	//qDebug() << "AbstractSlider::mousePressEvent(" << ev << ") is accepted?" << ev->isAccepted();
 	if ( ev->button() == Qt::LeftButton )
 		mouseEvent( ev );
-	else
-		if ( ev->button() == Qt::RightButton ) {
-			if ( _spinbox.isNull() ) {
-				_spinbox = new QDoubleSpinBox( this );
-				_spinbox->setMinimum( dbmin );
-				_spinbox->setMaximum( dbmax );
-				_spinbox->setSingleStep( _pagestep );
-				_spinbox->setValue( _value );
-				connect( _spinbox, SIGNAL( editingFinished() ), this, SLOT( hideInput() ) );
-				connect( _spinbox, SIGNAL( valueChanged( double ) ), this, SLOT( value( double ) ) );
-				connect( this, SIGNAL( valueChanged( double ) ), _spinbox, SLOT( setValue( double ) ) );
-				_spinbox->show();
-				_spinbox->move( ( width()-_spinbox->width() )/2, ( height()-_spinbox->height() )/2 );
-			}
-			ev->accept();
-		}
 }
 void AbstractSlider::mouseMoveEvent( QMouseEvent* ev ) {
 	mouseEvent( ev );
