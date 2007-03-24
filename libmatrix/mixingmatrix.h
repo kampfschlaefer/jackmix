@@ -37,15 +37,12 @@
 
 namespace JackMix {
 
-//class JackBackend;
-
 namespace MixingMatrix {
 
 class Element;
 
 class Widget : public QFrame
 {
-	friend class ConnectionLister;
 Q_OBJECT
 Q_ENUMS( Mode )
 Q_ENUMS( Direction )
@@ -95,8 +92,6 @@ public:
 	Element* getResponsible( QString in, QString out ) const;
 	int elements() const { return _elements.size(); }
 
-	// Show/Hide the ConnectionLister
-	void toggleConnectionLister( bool );
 
 public slots:
 	void replace( Element* );
@@ -171,7 +166,6 @@ public slots:
 
 signals:
 	void replace( Element* );
-	void connectSlave( Element*, QString );
 
 	// Informs, that Element* n, Property s has changed.
 	void valueChanged( Element* n, QString s );
@@ -181,6 +175,10 @@ protected:
 	const Widget* parent() { return _parent; }
 	// The contextmenu of the Element. Should be filled by the client...
 	QMenu* menu() { return _menu; }
+	/**
+	 * @todo the overall layout is needed for hide/show buttons per channel/element...
+	 */
+	QLayout* layout();
 
 protected slots:
 	// Use this slot if you don't want to do something before replacement.
