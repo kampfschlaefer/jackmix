@@ -344,7 +344,7 @@ void Element::showMenu() {
 	_menu->exec( QCursor::pos() );
 }
 void Element::contextMenuEvent( QContextMenuEvent* ev ) {
-	qDebug() << "Element::contextMenuEvent(" << ev << ") is accepted?" <<ev->isAccepted();
+	//qDebug() << "Element::contextMenuEvent(" << ev << ") is accepted?" <<ev->isAccepted();
 	showMenu();
 	ev->accept();
 }
