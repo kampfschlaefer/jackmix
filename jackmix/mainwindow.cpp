@@ -148,6 +148,9 @@ void MainWindow::openFile() {
 	if ( path.isEmpty() )
 		return;
 
+	// delay autofill until all saved elements are created:
+	_autofillscheduled = true;
+
 	QFile file( path );
 	if ( file.open( QIODevice::ReadOnly | QIODevice::Text ) ) {
 		while ( _backend->outchannels().size() > 0 )
@@ -162,6 +165,7 @@ void MainWindow::openFile() {
 		QString version = jackmix.attribute( "version", "0.3" );
 
 		if ( version == "0.3" ) {
+
 			QDomElement ins = jackmix.firstChildElement( "ins" );
 			for ( QDomElement in = ins.firstChildElement( "channel" ); !in.isNull(); in = in.nextSiblingElement( "channel" ) ) {
 				QString name = in.attribute( "name" );
@@ -169,6 +173,7 @@ void MainWindow::openFile() {
 				addInput( name );
 				_backend->setVolume( name, name, volume.toDouble() );
 			}
+
 			QDomElement outs = jackmix.firstChildElement( "outs" );
 			for ( QDomElement out = outs.firstChildElement( "channel" ); !out.isNull(); out = out.nextSiblingElement( "channel" ) ) {
 				QString name = out.attribute( "name" );
@@ -176,6 +181,7 @@ void MainWindow::openFile() {
 				addOutput( name );
 				_backend->setVolume( name, name, volume.toDouble() );
 			}
+
 			QDomElement matrix = jackmix.firstChildElement( "matrix" );
 			for ( QDomElement volume = matrix.firstChildElement( "volume" ); !volume.isNull(); volume = volume.nextSiblingElement( "volume" ) ) {
 				QString in = volume.attribute( "in" );
@@ -183,10 +189,24 @@ void MainWindow::openFile() {
 				QString value = volume.attribute( "value" );
 				_backend->setVolume( in, out, value.toDouble() );
 			}
+
+			QDomElement elements = jackmix.firstChildElement( "elements" );
+			for ( QDomElement element = elements.firstChildElement( "element" ); !element.isNull(); element = element.nextSiblingElement( "element" ) ) {
+				QStringList ins;
+				for ( QDomElement in = element.firstChildElement( "in" ); !in.isNull(); in = in.nextSiblingElement( "in" ) )
+					ins << in.attribute( "name" );
+				QStringList outs;
+				for ( QDomElement out = element.firstChildElement( "out" ); !out.isNull(); out = out.nextSiblingElement( "out" ) )
+					outs << out.attribute( "name" );
+				_mixerwidget->createControl( ins, outs );
+			}
 		}
 
 		file.close();
 	}
+
+	_autofillscheduled = false;
+	scheduleAutoFill();
 }
 void MainWindow::saveFile() {
 	QString path = QFileDialog::getSaveFileName( this, 0, 0, "JackMix-XML (*.jm-xml)" );
@@ -210,7 +230,27 @@ void MainWindow::saveFile() {
 	foreach( QString in, ins )
 		foreach( QString out, outs )
 			xml += QString( "<volume in=\"%1\" out=\"%2\" value=\"%3\" />" ).arg( in ).arg( out ).arg( _backend->getVolume( in, out ) );
-	xml += "</matrix></jackmix>";
+	xml += "</matrix>";
+
+	xml += "<elements>";
+	// Elements
+	QList<Element*> savedelements;
+	foreach( QString in, ins )
+		foreach( QString out, outs ) {
+			Element* tmp = _mixerwidget->getResponsible( in, out );
+			if ( !savedelements.contains( tmp ) && ( tmp->in().size() > 1 || tmp->out().size() > 1 ) ) {
+				xml += "<element>";
+				foreach( QString input, tmp->in() )
+					xml += QString( "<in name=\"%1\" />" ).arg( input );
+				foreach( QString output, tmp->out() )
+					xml += QString( "<out name=\"%1\" />" ).arg( output );
+				xml += "</element>";
+				savedelements.push_back( tmp );
+			}
+		}
+	xml += "</elements>";
+
+	xml += "</jackmix>";
 
 	QFile file( path );
 	if ( file.open( QIODevice::WriteOnly | QIODevice::Text ) ) {
@@ -218,8 +258,6 @@ void MainWindow::saveFile() {
 		stream << xml.replace( ">", ">\n" );
 		file.close();
 	}
-
-	qDebug() << xml;
 
 }
 
