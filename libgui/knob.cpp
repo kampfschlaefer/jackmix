@@ -94,7 +94,7 @@ void Knob::paintEvent( QPaintEvent* ) {
 	p.save();
 	p.setPen( Qt::NoPen );
 	{
-		QRadialGradient grad( QPointF( 0,0 ), 2*radius, QPointF( 0, radius*0.8 ) );
+		QRadialGradient grad( QPointF( 0,0 ), radius, QPointF( 0, radius*0.7 ) );
 		grad.setColorAt( 0, palette().color( QPalette::Highlight ) );
 		grad.setColorAt( 1, palette().color( QPalette::Highlight ).dark() );
 		grad.setSpread( QGradient::PadSpread );
@@ -102,12 +102,12 @@ void Knob::paintEvent( QPaintEvent* ) {
 		p.drawEllipse( QRectF( -radius*0.8, -radius*0.8, radius*1.6, radius*1.6 ) );
 	}
 	{
-		QRadialGradient grad( QPointF( 0,0 ), radius*0.65, QPointF( 0, radius*0.45 ) );
+		QRadialGradient grad( QPointF( 0,0 ), radius*0.60, QPointF( 0, radius*0.20 ) );
 		grad.setColorAt( 1, palette().color( QPalette::Highlight ) );
 		grad.setColorAt( 0, palette().color( QPalette::Highlight ).light() );
 		grad.setSpread( QGradient::PadSpread );
 		p.setBrush( grad );
-		p.drawEllipse( QRectF( -radius*0.7, -radius*0.7, radius*1.4, radius*1.4 ) );
+		p.drawEllipse( QRectF( -radius*0.65, -radius*0.65, radius*1.3, radius*1.3 ) );
 	}
 	p.restore();
 
