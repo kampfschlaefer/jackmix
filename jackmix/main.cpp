@@ -18,21 +18,32 @@
 
 */
 
-#include <iostream>
+#include <QtCore/QDebug>
+#include <QtCore/QFile>
 #include <QtGui/QApplication>
 
 #include "jack_backend.h"
 #include "mainwindow.h"
 
 int main( int argc, char** argv ) {
-	std::cout << "JackMix starting" << std::endl;
+	qDebug() << "JackMix starting";
 
 	QApplication *qapp = new QApplication( argc, argv );
+	QStringList args = qapp->arguments();
 
-	JackMix::MainWindow *mw = new JackMix::MainWindow();
+	QString file;
+	for( int i=1; i<args.size(); ++i ) {
+		qDebug() << QString( " arg %1: %2" ).arg( i ).arg( args[ i ] );
+		if ( QFile::exists( args[ i ] ) )
+			file = args[ i ];
+	}
+
+	JackMix::MainWindow *mw;
+	if ( !file.isEmpty() )
+		mw = new JackMix::MainWindow( file );
+	else
+		mw = new JackMix::MainWindow();
 	mw->show();
-
-	//qapp->setMainWidget( mw );
 
 	int ret = qapp->exec();
 

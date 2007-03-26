@@ -54,9 +54,11 @@ class MainWindow : public QMainWindow {
 Q_OBJECT
 public:
 	MainWindow( QWidget* =0 );
+	MainWindow( QString filename, QWidget* =0 );
 	~MainWindow();
 public slots:
 	void openFile();
+	void openFile( QString path );
 	void saveFile();
 private slots:
 	void toggleselectmode();
@@ -80,6 +82,7 @@ private slots:
 	void about();
 	void aboutQt();
 private:
+	void init();
 	int config_restore_id;
 	QMenu *_filemenu, *_editmenu, *_viewmenu, *_settingsmenu, *_helpmenu;
 	MixingMatrix::Widget *_mixerwidget, *_inputswidget, *_outputswidget;

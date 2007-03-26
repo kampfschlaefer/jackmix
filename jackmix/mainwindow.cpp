@@ -28,7 +28,6 @@
 #include "aux_elements.h"
 #include "stereo_elements.h"
 
-#include <iostream>
 #include <QtCore/QDebug>
 #include <QtGui/QMenu>
 #include <QtGui/QMenuBar>
@@ -48,8 +47,45 @@
 using namespace JackMix;
 using namespace JackMix::MixingMatrix;
 
-MainWindow::MainWindow( QWidget* p ) : QMainWindow( p ), _backend( new JackBackend() ), _autofillscheduled( false ) {
-std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
+MainWindow::MainWindow( QWidget* p ) : QMainWindow( p ), _backend( new JackBackend() ), _autofillscheduled( true ) {
+	qDebug() << "MainWindow::MainWindow(" << p << ")";
+	init();
+	QStringList ins = QStringList() << "in_1" << "in_2" << "in_3" << "in_4" << "in_5" << "in_6" << "in_7" << "in_8";
+	QStringList outs = QStringList() << "out_1" << "out_2";
+
+	foreach( QString in, ins )
+		addInput( in );
+	foreach( QString out, outs )
+		addOutput( out );
+
+	ins = _backend->inchannels();
+	outs = _backend->outchannels();
+	if ( ins.empty() || outs.empty() )
+		QMessageBox::warning( this, "No Channels available", "<qt>Altough I tried to create 8 inputs and 2 outputs, there are no input/output channels available. This probably means that the engine couldn't connect to the jack-server.<p>Please make sure that jackd is started and try again.</qt>" );
+
+	_autofillscheduled = false;
+	scheduleAutoFill();
+
+	qDebug() << "MainWindow::MainWindow() finished...";
+}
+MainWindow::MainWindow( QString filename, QWidget* p ) : QMainWindow( p ), _backend( new JackBackend() ), _autofillscheduled( true ) {
+	qDebug() << "MainWindow::MainWindow(" << filename << "," << p << ")";
+	init();
+
+	openFile( filename );
+
+	QStringList ins = _backend->inchannels();
+	QStringList outs = _backend->outchannels();
+	if ( ins.empty() || outs.empty() )
+		QMessageBox::warning( this, "No Channels available", "<qt>Altough I tried to create 8 inputs and 2 outputs, there are no input/output channels available. This probably means that the engine couldn't connect to the jack-server.<p>Please make sure that jackd is started and try again.</qt>" );
+
+	_autofillscheduled = false;
+	scheduleAutoFill();
+
+	qDebug() << "MainWindow::MainWindow() finished...";
+}
+
+void MainWindow::init() {
 
 	JackMix::MixerElements::init_aux_elements();
 	JackMix::MixerElements::init_stereo_elements();
@@ -96,24 +132,14 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	_mw = new MainWindowHelperWidget( this );
 	setCentralWidget( _mw );
 
-	QStringList ins = QStringList() << "in_1" << "in_2" << "in_3" << "in_4" << "in_5" << "in_6" << "in_7" << "in_8";
-	QStringList outs = QStringList() << "out_1" << "out_2";
-
-	foreach( QString in, ins )
-		_backend->addInput( in );
-	foreach( QString out, outs )
-		_backend->addOutput( out );
-
-	ins = _backend->inchannels();
-	outs = _backend->outchannels();
-	if ( ins.empty() || outs.empty() )
-		QMessageBox::warning( this, "No Channels available", "<qt>Altough I tried to create 8 inputs and 2 outputs, there are no input/output channels available. This probably means that the engine couldn't connect to the jack-server.<p>Please make sure that jackd is started and try again.</qt>" );
-
-	_mixerwidget = new MixingMatrix::Widget( ins, outs, _backend, _mw );
+	_backend->addInput( "i1" );
+	_backend->addInput( "i2" );
+	_backend->addOutput( "o1" );
+	_mixerwidget = new MixingMatrix::Widget( QStringList() << "i1" << "i2", QStringList() << "o1", _backend, _mw );
 	_mw->layout->addWidget( _mixerwidget, 1,0 );
-	_inputswidget = new MixingMatrix::Widget( ins, QStringList(), _backend, _mw );
+	_inputswidget = new MixingMatrix::Widget( QStringList() << "i1" << "i2", QStringList(), _backend, _mw );
 	_mw->layout->addWidget( _inputswidget, 0,0 );
-	_outputswidget = new MixingMatrix::Widget( QStringList(), outs, _backend, _mw );
+	_outputswidget = new MixingMatrix::Widget( QStringList(), QStringList() << "o1", _backend, _mw );
 	_mw->layout->addWidget( _outputswidget, 1,1 );
 
 	_mw->layout->setRowStretch( 0, 1 );
@@ -121,7 +147,9 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 	_mw->layout->setColumnStretch( 1, 1 );
 	_mw->layout->setColumnStretch( 0, int( 1E2 ) );
 
-	scheduleAutoFill();
+	removeOutput( "o1" );
+	removeInput( "i1" );
+	removeInput( "i2" );
 
 //	_debugPrint = new QAction( "DebugPrint", CTRL+Key_P, this );
 //	connect( _debugPrint, SIGNAL( activated() ), _mixerwidget, SLOT( debugPrint() ) );
@@ -129,26 +157,30 @@ std::cerr << "MainWindow::MainWindow( " << p << ", n )" << std::endl;
 
 	_select_action->toggle();
 	toggleselectmode();
-
-	qDebug() << "MainWindow::MainWindow() finished...";
 }
 
 MainWindow::~MainWindow() {
-	std::cerr << "MainWindow::~MainWindow()" << std::endl;
+	qDebug() << "MainWindow::~MainWindow()";
 	delete _backend;
 }
 
 void MainWindow::closeEvent( QCloseEvent* e ) {
-std::cerr << "MainWindow::closeEvent( QCloseEvent " << e << " )" << std::endl;
+	qDebug() << "MainWindow::closeEvent( QCloseEvent " << e << " )";
 	e->accept();
 }
 
 void MainWindow::openFile() {
 	QString path = QFileDialog::getOpenFileName( this, 0, 0, "JackMix-XML (*.jm-xml)" );
+	openFile( path );
+}
+
+void MainWindow::openFile( QString path ) {
+	//qDebug() << "MainWindow::openFile(" << path << ")";
 	if ( path.isEmpty() )
 		return;
 
-	// delay autofill until all saved elements are created:
+	// delay autofill at least until all saved elements are created:
+	bool save_autofillscheduled = _autofillscheduled;
 	_autofillscheduled = true;
 
 	QFile file( path );
@@ -205,8 +237,9 @@ void MainWindow::openFile() {
 		file.close();
 	}
 
-	_autofillscheduled = false;
+	_autofillscheduled = save_autofillscheduled;
 	scheduleAutoFill();
+	//qDebug() << "MainWindow::openFile() finished";
 }
 void MainWindow::saveFile() {
 	QString path = QFileDialog::getSaveFileName( this, 0, 0, "JackMix-XML (*.jm-xml)" );
