@@ -154,6 +154,8 @@ Stereo2StereoElement::Stereo2StereoElement( QStringList inchannels, QStringList 
 		_volume_value = right;
 	_balance_value = qMin( qMax( right-left, -1.0 ), 1.0 );
 	QGridLayout* _layout = new QGridLayout( this );
+	_layout->setSpacing( 1 );
+	_layout->setMargin( 2 );
 	_balance_widget = new JackMix::GUI::Slider( _balance_value, -1, 1, 2, 0.1, this, "%1" );
 	_layout->addWidget( _balance_widget, 0,0 );
 	_layout->setRowStretch( 0, 0 );
