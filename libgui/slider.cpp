@@ -89,30 +89,44 @@ void Slider::paintEvent( QPaintEvent* ) {
 		style()->drawPrimitive( QStyle::PE_FrameFocusRect, 0, &p, this );
 	}
 
-	double pos = dbtondb( _value )*w-w/2;
-
-	// Rect for the bar
-	{
-	//	QLinearGradient grad( 
-	QRect bar( -w/2, -h/3, int( ceil( pos+w/2 ) ), h/3*2 );
-	p.fillRect( bar, palette().color( QPalette::Highlight ) );
-	}
-
-	p.setPen( palette().color( QPalette::WindowText ) );
-
-	// Top of the bar
-	QPen pen = p.pen();
-	pen.setWidth( 2 );
-	p.setPen( pen );
-	p.drawLine( int( pos ), -( h/3 -1), int( pos ), h/3-1 );
-	pen.setWidth( 1 );
-	p.setPen( pen );
+	//double pos = dbtondb( _value )*w-w/2;
+	QRect bar( -w/2, -h/3, w, h/3*2 );
 
 	// Surrounding rect
-	QRect tmp2 = QRect( -w/2, -h/3, w, h/3*2 );
-	p.drawRect( tmp2 );
+	p.drawRect( bar );
 
-	p.save();
+	// Rect for the whole bar
+	{
+		p.save();
+		QLinearGradient grad( QPointF( -w/2, -h/3 ), QPointF( w/2, -h/3 ) );
+		// Global ends first
+		grad.setColorAt( 0.0, palette().color( QPalette::Highlight ) );
+		grad.setColorAt( 1.0, palette().color( QPalette::Highlight ) );
+		// Next soft-fades
+		grad.setColorAt( qMax( 0.0, dbtondb( _value )-0.01 ), palette().color( QPalette::Highlight ).light() );
+		grad.setColorAt( qMin( 1.0, dbtondb( _value )+0.01 ), palette().color( QPalette::Highlight ).light() );
+		// Last the value itself
+		grad.setColorAt( dbtondb( _value ), palette().color( QPalette::HighlightedText ) );
+		// That way minimum and maximum get the right color
+		p.fillRect( bar, grad );
+		p.restore();
+	}
+
+	// Top of the bar
+	/*if ( false ){
+		p.save();
+		p.setClipRect( bar );
+		QLinearGradient grad( QPointF( pos-10, -h/3 ), QPointF( pos+10, -h/3 ) );
+		grad.setColorAt( 0, palette().color( QPalette::Highlight ) );
+		if ( rotated )
+			grad.setColorAt( 0.4, palette().color( QPalette::Highlight ).light() );
+		else
+			grad.setColorAt( 0.6, palette().color( QPalette::Highlight ).light() );
+		grad.setColorAt( 1, palette().color( QPalette::Highlight ) );
+		p.fillRect( QRectF( pos-10, -h/3, 2*10, h/3*2 ), grad );
+		p.restore();
+	}*/
+
 	if ( _show_value ) {
 		p.save();
 		p.setPen( Qt::NoPen );
@@ -120,17 +134,12 @@ void Slider::paintEvent( QPaintEvent* ) {
 		p.setOpacity( 0.75 );
 		p.drawRoundRect( -fontwidth/2 -2, -metrics.ascent()/2 -2, fontwidth +4, metrics.ascent() +4 );
 		p.restore();
-		p.drawText( -fontwidth/2, metrics.ascent()/2, tmp );
 		// Text showing the value
-		//p.drawText( -fontwidth/2, metrics.ascent()/2, tmp );
-		//p.setClipRect( bar );
-		//p.setPen( palette().color( QPalette::HighlightedText ) );
-		//p.drawText( -fontwidth/2, metrics.ascent()/2, tmp );
+		p.drawText( -fontwidth/2, metrics.ascent()/2, tmp );
 	}
-	p.restore();
 
 	// Set _faderarea correctly
-	_faderarea = p.matrix().mapRect( tmp2 );
+	_faderarea = p.matrix().mapRect( bar );
 }
 
 
