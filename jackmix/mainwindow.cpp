@@ -24,6 +24,7 @@
 #include "jack_backend.h"
 #include "mixingmatrix.h"
 #include "channelselector.h"
+#include "graphicalguiserver.h"
 
 #include "aux_elements.h"
 #include "stereo_elements.h"
@@ -47,7 +48,7 @@
 using namespace JackMix;
 using namespace JackMix::MixingMatrix;
 
-MainWindow::MainWindow( QWidget* p ) : QMainWindow( p ), _backend( new JackBackend() ), _autofillscheduled( true ) {
+MainWindow::MainWindow( QWidget* p ) : QMainWindow( p ), _backend( new JackBackend( new GUI::GraphicalGuiServer( this ) ) ), _autofillscheduled( true ) {
 	qDebug() << "MainWindow::MainWindow(" << p << ")";
 	init();
 	QStringList ins = QStringList() << "in_1" << "in_2" << "in_3" << "in_4" << "in_5" << "in_6" << "in_7" << "in_8";
@@ -61,14 +62,14 @@ MainWindow::MainWindow( QWidget* p ) : QMainWindow( p ), _backend( new JackBacke
 	ins = _backend->inchannels();
 	outs = _backend->outchannels();
 	if ( ins.empty() || outs.empty() )
-		QMessageBox::warning( this, "No Channels available", "<qt>Altough I tried to create 8 inputs and 2 outputs, there are no input/output channels available. This probably means that the engine couldn't connect to the jack-server.<p>Please make sure that jackd is started and try again.</qt>" );
+		QMessageBox::warning( this, "No Channels available", "<qt>Altough I tried to create 8 inputs and 2 outputs, there are no input/output channels available. This probably means that the engine couldn't connect to its server or doesn't allow for creating channels.</qt>" );
 
 	_autofillscheduled = false;
 	scheduleAutoFill();
 
 	qDebug() << "MainWindow::MainWindow() finished...";
 }
-MainWindow::MainWindow( QString filename, QWidget* p ) : QMainWindow( p ), _backend( new JackBackend() ), _autofillscheduled( true ) {
+MainWindow::MainWindow( QString filename, QWidget* p ) : QMainWindow( p ), _backend( new JackBackend( new GUI::GraphicalGuiServer( this ) ) ), _autofillscheduled( true ) {
 	qDebug() << "MainWindow::MainWindow(" << filename << "," << p << ")";
 	init();
 

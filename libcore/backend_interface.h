@@ -22,6 +22,7 @@
 #define BACKEND_INTERFACE_H
 
 #include <QtCore/QStringList>
+#include <guiserver_interface.h>
 
 class QDomElement;
 class QDomDocument;
@@ -36,7 +37,7 @@ namespace JackMix {
 	class BackendInterface
 	{
 	public:
-		BackendInterface();
+		BackendInterface( GuiServer_Interface* );
 		virtual ~BackendInterface();
 
 		/**
@@ -85,6 +86,9 @@ namespace JackMix {
 		 * okay. Just return false..
 		 */
 		virtual bool removeInput( QString ) =0;
+
+	protected:
+		GuiServer_Interface* gui;
 
 	};
 };

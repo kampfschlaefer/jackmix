@@ -22,7 +22,7 @@
 
 namespace JackMix {
 
-BackendInterface::BackendInterface() {
+BackendInterface::BackendInterface( GuiServer_Interface* g ) : gui( g ) {
 }
 BackendInterface::~BackendInterface() {
 }

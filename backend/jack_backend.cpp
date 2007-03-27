@@ -25,7 +25,7 @@
 
 using namespace JackMix;
 
-JackBackend::JackBackend() {
+JackBackend::JackBackend( GuiServer_Interface* g ) : BackendInterface( g ) {
 	qDebug() << "JackBackend::JackBackend()";
 	client = ::jack_client_new( "JackMix" );
 	//client = 0;
@@ -34,8 +34,10 @@ JackBackend::JackBackend() {
 		qDebug() << "JackBackend::JackBackend() activate";
 		::jack_activate( client );
 	}
-	else
-	qWarning() << "\n No jack-connection! :(\n\n";
+	else {
+		qWarning() << "\n No jack-connection! :(\n\n";
+		gui->message( "No Jack-connection :-(", "<qt><p>Sorry, I couldn't connect to Jack. This probably means that <b>no jackd is running</b>. Please start it and try JackMix again.</p><p>If you don't know what I am talking about, than JackMix might not be the program you want...</p></qt>" );
+	}
 	qDebug() << "JackBackend::JackBackend() finished";
 }
 JackBackend::~JackBackend() {
@@ -62,19 +64,16 @@ bool JackBackend::addInput( QString name ) {
 }
 
 bool JackBackend::removeOutput( QString name ) {
-	if ( client )
+	if ( client && out_ports.find( name ) != out_ports.end() )
 		jack_port_unregister( client, out_ports[ name ] );
 	out_ports.remove( name );
 	return true;
 }
 bool JackBackend::removeInput( QString name ) {
-	if ( in_ports.find( name ) != in_ports.end() ) {
-		if ( client )
-			jack_port_unregister( client, in_ports[ name ] );
-		in_ports.remove( name );
-		return true;
-	}
-	return false;
+	if ( client && in_ports.find( name ) != in_ports.end() )
+		jack_port_unregister( client, in_ports[ name ] );
+	in_ports.remove( name );
+	return true;
 }
 
 void JackBackend::setVolume( QString channel, QString output, float volume ) {

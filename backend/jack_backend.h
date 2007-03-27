@@ -43,7 +43,7 @@ class JackBackend : public JackMix::BackendInterface {
 	friend int process( ::jack_nframes_t, void* );
 public:
 	/// Initializes the connection
-	JackBackend();
+	JackBackend( GuiServer_Interface* );
 	/// Ends everything
 	~JackBackend();
 
