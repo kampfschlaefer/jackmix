@@ -41,6 +41,7 @@
 #include <QtGui/QAction>
 #include <QtCore/QTimer>
 #include <QtGui/QCloseEvent>
+#include <QtGui/QStatusBar>
 
 #include <QtXml/QDomDocument>
 
@@ -62,7 +63,7 @@ MainWindow::MainWindow( QWidget* p ) : QMainWindow( p ), _backend( new JackBacke
 	ins = _backend->inchannels();
 	outs = _backend->outchannels();
 	if ( ins.empty() || outs.empty() )
-		QMessageBox::warning( this, "No Channels available", "<qt>Altough I tried to create 8 inputs and 2 outputs, there are no input/output channels available. This probably means that the engine couldn't connect to its server or doesn't allow for creating channels.</qt>" );
+		statusBar()->showMessage( "No Channels available :-(" );
 
 	_autofillscheduled = false;
 	scheduleAutoFill();
@@ -78,7 +79,7 @@ MainWindow::MainWindow( QString filename, QWidget* p ) : QMainWindow( p ), _back
 	QStringList ins = _backend->inchannels();
 	QStringList outs = _backend->outchannels();
 	if ( ins.empty() || outs.empty() )
-		QMessageBox::warning( this, "No Channels available", "<qt>Altough I tried to create 8 inputs and 2 outputs, there are no input/output channels available. This probably means that the engine couldn't connect to the jack-server.<p>Please make sure that jackd is started and try again.</qt>" );
+		statusBar()->showMessage( "No Channels available :-(" );
 
 	_autofillscheduled = false;
 	scheduleAutoFill();
