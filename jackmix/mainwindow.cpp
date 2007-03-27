@@ -405,5 +405,7 @@ void MainWindow::scheduleAutoFill() {
 
 MainWindowHelperWidget::MainWindowHelperWidget( QWidget* p ) : QWidget( p ) {
 	layout = new QGridLayout( this );
+	layout->setMargin( 2 );
+	layout->setSpacing( 2 );
 }
 
