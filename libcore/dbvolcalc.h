@@ -23,6 +23,8 @@
 
 #include <math.h>
 
+namespace JackMix {
+
 class dB2VolCalc {
 private:
 	double _base;
@@ -76,6 +78,8 @@ public:
 	double ndbtodb( double ndb ) {
 		return ( ndb * ( dbmax-dbmin ) +dbmin );
 	}
+};
+
 };
 
 #endif
