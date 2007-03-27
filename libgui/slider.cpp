@@ -37,7 +37,8 @@ Slider::Slider( double value, double min, double max, int precision, double page
 {
 	setAutoFillBackground( false );
 	int m = QFontMetrics( font() ).height();
-	setMinimumSize( int( m*2.2 ), int( m*2.2 ) );
+	int w = QFontMetrics( font() ).width( valuestring );
+	setMinimumSize( int( w*1.2 ), int( m*2.2 ) );
 	setFocusPolicy( Qt::TabFocus );
 
 	_timer->setInterval( 2000 );
@@ -59,7 +60,7 @@ void Slider::timeout() {
 	update();
 }
 
-#define SLIDER_BORDER 10
+#define SLIDER_BORDER 5
 
 void Slider::paintEvent( QPaintEvent* ) {
 	bool rotated = false;
@@ -112,34 +113,24 @@ void Slider::paintEvent( QPaintEvent* ) {
 		p.restore();
 	}
 
-	// Top of the bar
-	/*if ( false ){
-		p.save();
-		p.setClipRect( bar );
-		QLinearGradient grad( QPointF( pos-10, -h/3 ), QPointF( pos+10, -h/3 ) );
-		grad.setColorAt( 0, palette().color( QPalette::Highlight ) );
-		if ( rotated )
-			grad.setColorAt( 0.4, palette().color( QPalette::Highlight ).light() );
-		else
-			grad.setColorAt( 0.6, palette().color( QPalette::Highlight ).light() );
-		grad.setColorAt( 1, palette().color( QPalette::Highlight ) );
-		p.fillRect( QRectF( pos-10, -h/3, 2*10, h/3*2 ), grad );
-		p.restore();
-	}*/
+	// Set _faderarea correctly
+	_faderarea = p.matrix().mapRect( bar );
 
+	// de-rotate
+	if ( rotated )
+		p.rotate( 90 );
+
+	// Draw the value as text in the lower third
 	if ( _show_value ) {
 		p.save();
 		p.setPen( Qt::NoPen );
 		p.setBrush( palette().color( QPalette::Base ) );
 		p.setOpacity( 0.75 );
-		p.drawRoundRect( -fontwidth/2 -2, -metrics.ascent()/2 -2, fontwidth +4, metrics.ascent() +4 );
+		p.drawRoundRect( -fontwidth/2 -2, height()/3 -metrics.ascent() -1, fontwidth +4, metrics.ascent() +4 );
 		p.restore();
 		// Text showing the value
-		p.drawText( -fontwidth/2, metrics.ascent()/2, tmp );
+		p.drawText( -fontwidth/2, height()/3, tmp );
 	}
-
-	// Set _faderarea correctly
-	_faderarea = p.matrix().mapRect( bar );
 }
 
 
