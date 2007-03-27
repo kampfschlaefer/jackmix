@@ -122,7 +122,7 @@ FILE_PATTERNS          = *.c_ \
                          *.M \
                          *.MM
 RECURSIVE              = YES
-EXCLUDE                = 
+EXCLUDE                = osc admin cache doxydoc
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       = *.svn*
 EXAMPLE_PATH           = 
