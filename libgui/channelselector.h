@@ -26,6 +26,9 @@
 class QListWidget;
 class QPushButton;
 
+namespace JackMix {
+namespace GUI {
+
 class ChannelSelector : public QDialog
 {
 Q_OBJECT
@@ -45,5 +48,7 @@ private:
 	QPushButton *_commit, *_commit_n_quit, *_cancel;
 };
 
+};
+};
 #endif // CHANNELSELECTOR_H
 

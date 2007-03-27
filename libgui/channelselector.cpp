@@ -27,6 +27,9 @@
 #include <QtGui/QListWidget>
 #include <QtGui/QPushButton>
 
+namespace JackMix {
+namespace GUI {
+
 ChannelSelector::ChannelSelector( QString title, QString label, QStringList channels, QWidget* p, const char* n ) : QDialog( p ) {
 	this->setWindowTitle( title );
 
@@ -72,4 +75,7 @@ void ChannelSelector::addChannel( QString ) {
 }
 void ChannelSelector::removeChannel( QString ) {
 }
+
+};
+};
 

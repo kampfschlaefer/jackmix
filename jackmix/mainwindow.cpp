@@ -361,7 +361,7 @@ void MainWindow::addOutput( QString name ) {
 
 void MainWindow::removeInput() {
 qDebug( "MainWindow::removeInput()" );
-	ChannelSelector *tmp = new ChannelSelector( "Delete Inputchannels", "Select the inputchannels for deletion:", _backend->inchannels(), this );
+	JackMix::GUI::ChannelSelector *tmp = new JackMix::GUI::ChannelSelector( "Delete Inputchannels", "Select the inputchannels for deletion:", _backend->inchannels(), this );
 	connect( tmp, SIGNAL( selectedChannel( QString ) ), this, SLOT( removeInput( QString ) ) );
 	tmp->show();
 }
@@ -375,7 +375,7 @@ void MainWindow::removeInput( QString n ) {
 }
 void MainWindow::removeOutput() {
 qDebug( "MainWindow::removeOutput()" );
-	ChannelSelector *tmp = new ChannelSelector( "Delete Outputchannels", "Select the outputchannels for deletion:", _backend->outchannels(), this );
+	JackMix::GUI::ChannelSelector *tmp = new JackMix::GUI::ChannelSelector( "Delete Outputchannels", "Select the outputchannels for deletion:", _backend->outchannels(), this );
 	connect( tmp, SIGNAL( selectedChannel( QString ) ), this, SLOT( removeOutput( QString ) ) );
 	tmp->show();
 }
