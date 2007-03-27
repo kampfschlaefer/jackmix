@@ -12,8 +12,8 @@ obj.target='libjackmix_mixingmatrix'
 obj.source='\
 	mixingmatrix.cpp \
 '
-obj.libpaths="../backend ../libgui"
+#obj.libpaths="../backend ../libgui"
 obj.libs="QtCore"
-obj.includes='#/ ./ ../backend ../libgui'
+obj.includes='#/ ./ ../libcore ../libgui'
 obj.execute()
 

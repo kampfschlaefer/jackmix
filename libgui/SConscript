@@ -16,7 +16,7 @@ obj.source='\
 	knob.cpp \
 '
 obj.libs="QtCore"
-obj.includes='#/ ./'
+obj.includes='#/ ./ ../libcore'
 obj.execute()
 
 estapp3=env.qt4obj('program', env)

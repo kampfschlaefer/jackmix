@@ -10,9 +10,10 @@ Import( 'env' )
 obj=env.qt4obj('staticlib', env)
 obj.target='libjackmix_core'
 obj.source='\
-	configoption.cpp \
-	updatefilter.cpp \
+	backend_interface.cpp \
 '
+#	updatefilter.cpp \
+#	configoption.cpp \
 obj.libs="QtCore"
 obj.includes='#/ ./'
 obj.execute()

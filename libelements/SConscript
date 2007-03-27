@@ -14,7 +14,7 @@ obj.source='\
 	aux_elements.cpp \
 '
 obj.libs="jackmix_gui jackmix_mixingmatrix QtCore"
-obj.includes='#/ ./ ../libmatrix ../libgui ../backend'
+obj.includes='#/ ./ ../libcore ../libmatrix ../libgui ../backend'
 obj.execute()
 
 #testapp=env.qt4obj('program', env)
