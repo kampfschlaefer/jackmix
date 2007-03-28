@@ -77,8 +77,8 @@ void Slider::paintEvent( QPaintEvent* ) {
 	// Center the coordinates
 	p.translate( width()/2, height()/2 );
 
-	int w = width()-SLIDER_BORDER;
-	int h = height()-SLIDER_BORDER;
+	double w = width()-SLIDER_BORDER;
+	double h = height()-SLIDER_BORDER;
 	if ( width() < height() ) {
 		w = height()-SLIDER_BORDER;
 		h = width()-SLIDER_BORDER;
@@ -91,7 +91,52 @@ void Slider::paintEvent( QPaintEvent* ) {
 	}
 
 	//double pos = dbtondb( _value )*w-w/2;
-	QRect bar( -w/2, -h/3, w, h/3*2 );
+	QRectF bar( -w/2, -h/3, w, h/3*2 );
+
+	// Tickmarks
+	p.save();
+	p.setPen( palette().color( QPalette::ButtonText ) );
+	QFont small = font();
+	small.setPointSizeF(  qMin(  7.0, font().pointSizeF() ) );
+	p.setFont(  small );
+	for ( double a=_pagestep; a<dbmax; a+=_pagestep )
+		p.drawLine( QPointF( -w/2+w*dbtondb( a ), h/2.7 ), QPointF( -w/2+w*dbtondb( a ), -h/2.7 ) );
+	for ( double a=-_pagestep; a>dbmin; a-=_pagestep )
+		p.drawLine( QPointF( -w/2+w*dbtondb( a ), h/2.7 ), QPointF( -w/2+w*dbtondb( a ), -h/2.7 ) );
+	QList<double> _texts;
+	_texts << dbmin << dbmax;
+	if ( 0>dbmin && 0<dbmax )
+		_texts << 0.0;
+	foreach( double a, _texts ) {
+		p.save();
+		p.translate( -w/2+w*dbtondb( a ), 0 );
+		p.drawLine( QPointF( 0, h/2.5 ), QPointF( 0, -h/2.5 ) );
+		QRectF rect(
+			0,0,
+			QFontMetrics( small ).width( _valuestring ),
+			QFontMetrics( small ).height() );
+		if ( !rotated ) {
+			if ( dbtondb( a ) > 0.5 )
+				rect.translate( -QFontMetrics( small ).width( _valuestring ), 0 );
+			p.drawText( rect.translated( 0, h/2.5 ), Qt::AlignCenter, QString( _valuestring ).arg( a ) );
+			p.drawText( rect.translated( 0, -h/2.5 -rect.height() ), Qt::AlignCenter, QString( _valuestring ).arg( a ) );
+			if ( a == 0.0 ) {
+				_nullclick = p.matrix().mapRect( rect.translated( 0, h/2.5 ) ).toRect();
+				_nullclick = _nullclick.united( p.matrix().mapRect( rect.translated( 0, -h/2.5 -rect.height() ) ).toRect() );
+			}
+		} else {
+			p.rotate( 90 );
+			if ( dbtondb( a ) < 0.5 )
+				rect.translate( 0, -QFontMetrics( small ).height() );
+			p.drawText( rect.translated( h/2.5, 0 ), Qt::AlignCenter, QString( _valuestring ).arg( a ) );
+			p.drawText( rect.translated( -h/2.5 -rect.width(), 0 ), Qt::AlignCenter, QString( _valuestring ).arg( a ) );
+			if ( a == 0.0 )
+				_nullclick = p.matrix().mapRect( rect.translated( h/2.5,0 ) ).toRect();
+				_nullclick = _nullclick.united( p.matrix().mapRect( rect.translated( -h/2.5-rect.width(),0 ) ).toRect() );
+		}
+		p.restore();
+	}
+	p.restore();
 
 	// Surrounding rect
 	p.drawRect( bar );
@@ -102,10 +147,12 @@ void Slider::paintEvent( QPaintEvent* ) {
 		QLinearGradient grad( QPointF( -w/2, -h/3 ), QPointF( w/2, -h/3 ) );
 		// Global ends first
 		grad.setColorAt( 0.0, palette().color( QPalette::Highlight ) );
-		grad.setColorAt( 1.0, palette().color( QPalette::Highlight ) );
+		if ( dbtondb( _value ) < 1.0 )
+			grad.setColorAt( 1.0, palette().color( QPalette::Highlight ).dark() );
 		// Next soft-fades
 		grad.setColorAt( qMax( 0.0, dbtondb( _value )-0.01 ), palette().color( QPalette::Highlight ).light() );
-		grad.setColorAt( qMin( 1.0, dbtondb( _value )+0.01 ), palette().color( QPalette::Highlight ).light() );
+		if ( dbtondb( _value )+0.01 < 1.0 )
+		grad.setColorAt( qMin( 1.0, dbtondb( _value )+0.01 ), palette().color( QPalette::Highlight ) );
 		// Last the value itself
 		grad.setColorAt( dbtondb( _value ), palette().color( QPalette::HighlightedText ) );
 		// That way minimum and maximum get the right color
@@ -114,7 +161,7 @@ void Slider::paintEvent( QPaintEvent* ) {
 	}
 
 	// Set _faderarea correctly
-	_faderarea = p.matrix().mapRect( bar );
+	_faderarea = p.matrix().mapRect( bar ).toRect();
 
 	// de-rotate
 	if ( rotated )
