@@ -91,18 +91,18 @@ void Slider::paintEvent( QPaintEvent* ) {
 	}
 
 	//double pos = dbtondb( _value )*w-w/2;
-	QRectF bar( -w/2, -h/3, w, h/3*2 );
+	QRectF bar( -w/2, -h/4, w, h/2 );
 
 	// Tickmarks
 	p.save();
 	p.setPen( palette().color( QPalette::ButtonText ) );
 	QFont small = font();
-	small.setPointSizeF(  qMin(  7.0, font().pointSizeF() ) );
-	p.setFont(  small );
+	small.setPointSizeF( qMax( 5.0, font().pointSizeF()/2 ) );
+	p.setFont( small );
 	for ( double a=_pagestep; a<dbmax; a+=_pagestep )
-		p.drawLine( QPointF( -w/2+w*dbtondb( a ), h/2.7 ), QPointF( -w/2+w*dbtondb( a ), -h/2.7 ) );
+		p.drawLine( QPointF( -w/2+w*dbtondb( a ), h/3.5 ), QPointF( -w/2+w*dbtondb( a ), -h/3.5 ) );
 	for ( double a=-_pagestep; a>dbmin; a-=_pagestep )
-		p.drawLine( QPointF( -w/2+w*dbtondb( a ), h/2.7 ), QPointF( -w/2+w*dbtondb( a ), -h/2.7 ) );
+		p.drawLine( QPointF( -w/2+w*dbtondb( a ), h/3.5 ), QPointF( -w/2+w*dbtondb( a ), -h/3.5 ) );
 	QList<double> _texts;
 	_texts << dbmin << dbmax;
 	if ( 0>dbmin && 0<dbmax )
@@ -110,7 +110,7 @@ void Slider::paintEvent( QPaintEvent* ) {
 	foreach( double a, _texts ) {
 		p.save();
 		p.translate( -w/2+w*dbtondb( a ), 0 );
-		p.drawLine( QPointF( 0, h/2.5 ), QPointF( 0, -h/2.5 ) );
+		p.drawLine( QPointF( 0, h/3 ), QPointF( 0, -h/3 ) );
 		QRectF rect(
 			0,0,
 			QFontMetrics( small ).width( _valuestring ),
@@ -118,21 +118,22 @@ void Slider::paintEvent( QPaintEvent* ) {
 		if ( !rotated ) {
 			if ( dbtondb( a ) > 0.5 )
 				rect.translate( -QFontMetrics( small ).width( _valuestring ), 0 );
-			p.drawText( rect.translated( 0, h/2.5 ), Qt::AlignCenter, QString( _valuestring ).arg( a ) );
-			p.drawText( rect.translated( 0, -h/2.5 -rect.height() ), Qt::AlignCenter, QString( _valuestring ).arg( a ) );
+			p.drawText( rect.translated( 0, h/3 ), Qt::AlignCenter, QString( _valuestring ).arg( a ) );
+			//p.drawText( rect.translated( 0, -h/3 -rect.height() ), Qt::AlignCenter, QString( _valuestring ).arg( a ) );
 			if ( a == 0.0 ) {
-				_nullclick = p.matrix().mapRect( rect.translated( 0, h/2.5 ) ).toRect();
-				_nullclick = _nullclick.united( p.matrix().mapRect( rect.translated( 0, -h/2.5 -rect.height() ) ).toRect() );
+				_nullclick = p.matrix().mapRect( rect.translated( 0, h/3 ) ).toRect();
+				//_nullclick = _nullclick.united( p.matrix().mapRect( rect.translated( 0, -h/3 -rect.height() ) ).toRect() );
 			}
 		} else {
 			p.rotate( 90 );
 			if ( dbtondb( a ) < 0.5 )
 				rect.translate( 0, -QFontMetrics( small ).height() );
-			p.drawText( rect.translated( h/2.5, 0 ), Qt::AlignCenter, QString( _valuestring ).arg( a ) );
-			p.drawText( rect.translated( -h/2.5 -rect.width(), 0 ), Qt::AlignCenter, QString( _valuestring ).arg( a ) );
-			if ( a == 0.0 )
-				_nullclick = p.matrix().mapRect( rect.translated( h/2.5,0 ) ).toRect();
-				_nullclick = _nullclick.united( p.matrix().mapRect( rect.translated( -h/2.5-rect.width(),0 ) ).toRect() );
+			p.drawText( rect.translated( h/3, 0 ), Qt::AlignCenter, QString( _valuestring ).arg( a ) );
+			//p.drawText( rect.translated( -h/3 -rect.width(), 0 ), Qt::AlignCenter, QString( _valuestring ).arg( a ) );
+			if ( a == 0.0 ) {
+				_nullclick = p.matrix().mapRect( rect.translated( h/3,0 ) ).toRect();
+				//_nullclick = _nullclick.united( p.matrix().mapRect( rect.translated( -h/3-rect.width(),0 ) ).toRect() );
+			}
 		}
 		p.restore();
 	}
@@ -144,7 +145,7 @@ void Slider::paintEvent( QPaintEvent* ) {
 	// Rect for the whole bar
 	{
 		p.save();
-		QLinearGradient grad( QPointF( -w/2, -h/3 ), QPointF( w/2, -h/3 ) );
+		QLinearGradient grad( QPointF( -w/2, -h/4 ), QPointF( w/2, -h/4 ) );
 		// Global ends first
 		grad.setColorAt( 0.0, palette().color( QPalette::Highlight ) );
 		if ( dbtondb( _value ) < 1.0 )

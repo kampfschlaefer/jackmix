@@ -131,7 +131,7 @@ void Knob::paintEvent( QPaintEvent* ) {
 	if ( 0<dbmax && 0>dbmin )
 		_texts << 0.0;
 	QFont small = font();
-	small.setPointSizeF( qMin( 7.0, font().pointSizeF() ) );
+	small.setPointSizeF( qMax( 5.0, font().pointSizeF()/2 ) );
 	p.setFont( small );
 	foreach( double a, _texts ) {
 		p.save();
