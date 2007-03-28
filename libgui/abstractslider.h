@@ -65,6 +65,8 @@ protected:
 	QString _valuestring;
 
 	QPointer<QDoubleSpinBox> _spinbox;
+
+	QRegion _nullclick;
 };
 
 };

@@ -82,8 +82,12 @@ void AbstractSlider::contextMenuEvent( QContextMenuEvent* ev ) {
 
 void AbstractSlider::mousePressEvent( QMouseEvent* ev ) {
 	//qDebug() << "AbstractSlider::mousePressEvent(" << ev << ") is accepted?" << ev->isAccepted();
-	if ( ev->button() == Qt::LeftButton )
-		mouseEvent( ev );
+	if ( ev->button() == Qt::LeftButton ) {
+		if ( _nullclick.contains( ev->pos() ) )
+			value( 0 );
+		else
+			mouseEvent( ev );
+	}
 }
 void AbstractSlider::mouseMoveEvent( QMouseEvent* ev ) {
 	mouseEvent( ev );

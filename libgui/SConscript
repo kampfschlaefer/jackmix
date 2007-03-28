@@ -20,12 +20,13 @@ obj.libs="QtCore"
 obj.includes='#/ ./ ../libcore'
 obj.execute()
 
-estapp3=env.qt4obj('program', env)
-estapp3.target="slider_test"
-estapp3.source="slider_test.cpp"
-estapp3.libs="jackmix_gui QtGui QtCore"
-estapp3.libpaths="#/ ./"
-estapp3.execute()
+testapp3=env.qt4obj('program', env)
+testapp3.target="slider_test"
+testapp3.source="slider_test.cpp"
+testapp3.includes='#/ ./ ../libcore'
+testapp3.libs="jackmix_gui QtGui QtCore"
+testapp3.libpaths="#/ ./"
+testapp3.execute()
 
 testapp4=env.qt4obj('program', env)
 testapp4.target="channelselector_test"
