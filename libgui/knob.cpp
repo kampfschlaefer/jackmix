@@ -49,8 +49,8 @@ Knob::Knob( double v, double min, double max, int precision, double pagestep, QW
 	, _timer( new QTimer( this ) )
 	, _show_value( false )
 {
-	int m = QFontMetrics( font() ).width( _valuestring ) + ( _precision+2 )* QFontMetrics( font() ).width( " " );
-	int h = QFontMetrics( font() ).height();
+	int m = fontMetrics().width( _valuestring ) + ( _precision+2 )* QFontMetrics( font() ).width( " " );
+	int h = fontMetrics().height();
 	setMinimumSize( int( m*1.1 ), int( h*2.2 ) );
 	setFocusPolicy( Qt::TabFocus );
 
@@ -114,9 +114,40 @@ void Knob::paintEvent( QPaintEvent* ) {
 	// Draw ticks
 	p.save();
 	p.setPen( palette().color( QPalette::ButtonText ) );
-	for ( int i=0; i<=300; i+=10 ) {
-		p.drawLine( QPointF( radius*0.80, 0 ), QPointF( radius*0.85, 0 ) );
-		p.rotate( 10 );
+	for ( double a=_pagestep; a<dbmax; a+= _pagestep ) {
+		p.save();
+		p.rotate( dbtondb( a )*300 );
+		p.drawLine( QPointF( radius*0.80,0 ), QPointF( radius*0.85,0 ) );
+		p.restore();
+	}
+	for ( double a=-_pagestep; a>dbmin; a-= _pagestep ) {
+		p.save();
+		p.rotate( dbtondb( a )*300 );
+		p.drawLine( QPointF( radius*0.80,0 ), QPointF( radius*0.85,0 ) );
+		p.restore();
+	}
+	QList<double> _texts;
+	_texts << dbmin << dbmax;
+	if ( 0<dbmax && 0>dbmin )
+		_texts << 0.0;
+	foreach( double a, _texts ) {
+		p.save();
+		QFont small = font();
+		small.setPointSizeF( qMin( 7.0, font().pointSizeF() ) );
+		p.setFont( small );
+		p.rotate( dbtondb( a )*300 );
+		p.drawLine( QPointF( radius*0.80,0 ), QPointF( radius*0.92,0 ) );
+		p.translate( QPointF( radius*0.91,0 ) );
+		p.rotate( -dbtondb( a )*300 +240 );
+		QRectF rect(
+			0,0,
+			QFontMetrics( small ).width( _valuestring ),
+			QFontMetrics( small ).height() );
+		if ( dbtondb( a ) < 0.5 )
+			rect.translate( -QFontMetrics( small ).width( _valuestring ), 0 );
+		p.drawText( rect, Qt::AlignCenter, QString( _valuestring ).arg( a ) );
+		_nullclick = p.matrix().mapRect( rect ).toRect();
+		p.restore();
 	}
 	p.restore();
 
