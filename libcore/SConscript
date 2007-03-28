@@ -18,12 +18,12 @@ obj.libs="QtCore"
 obj.includes='#/ ./'
 obj.execute()
 
-testapp=env.qt4obj('program', env)
-testapp.target="configoption_test"
-testapp.source="configoption_test.cpp"
-testapp.libs="libjackmix_core QtCore"
-testapp.libpaths="#/ ./"
-testapp.execute()
+#testapp=env.qt4obj('program', env)
+#testapp.target="configoption_test"
+#testapp.source="configoption_test.cpp"
+#testapp.libs="libjackmix_core QtCore"
+#testapp.libpaths="#/ ./"
+#testapp.execute()
 
 #testapp2=env.qt4obj('program', env)
 #testapp2.target="namedtreemodel_test"
