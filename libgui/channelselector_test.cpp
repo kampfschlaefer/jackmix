@@ -25,7 +25,7 @@
 int main( int argc, char** argv ) {
 	QApplication *qapp = new QApplication( argc, argv );
 
-	QWidget *mw = new ChannelSelector( "Test", "Testchannels", QStringList()<<"Test1"<<"Test2", 0 );
+	QWidget *mw = new JackMix::GUI::ChannelSelector( "Test", "Testchannels", QStringList()<<"Test1"<<"Test2", 0 );
 	mw->show();
 
 	int ret = qapp->exec();
