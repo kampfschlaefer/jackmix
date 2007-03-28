@@ -130,11 +130,11 @@ void Knob::paintEvent( QPaintEvent* ) {
 	_texts << dbmin << dbmax;
 	if ( 0<dbmax && 0>dbmin )
 		_texts << 0.0;
+	QFont small = font();
+	small.setPointSizeF( qMin( 7.0, font().pointSizeF() ) );
+	p.setFont( small );
 	foreach( double a, _texts ) {
 		p.save();
-		QFont small = font();
-		small.setPointSizeF( qMin( 7.0, font().pointSizeF() ) );
-		p.setFont( small );
 		p.rotate( dbtondb( a )*300 );
 		p.drawLine( QPointF( radius*0.80,0 ), QPointF( radius*0.92,0 ) );
 		p.translate( QPointF( radius*0.91,0 ) );
@@ -146,7 +146,8 @@ void Knob::paintEvent( QPaintEvent* ) {
 		if ( dbtondb( a ) < 0.5 )
 			rect.translate( -QFontMetrics( small ).width( _valuestring ), 0 );
 		p.drawText( rect, Qt::AlignCenter, QString( _valuestring ).arg( a ) );
-		_nullclick = p.matrix().mapRect( rect ).toRect();
+		if ( a == 0.0 )
+			_nullclick = p.matrix().mapRect( rect ).toRect();
 		p.restore();
 	}
 	p.restore();
