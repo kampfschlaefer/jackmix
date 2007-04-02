@@ -10,7 +10,7 @@ Import( 'env' )
 myenv=env.qt4obj('program', env)
 myenv.target="jackmix"
 myenv.instdir=env.join(env['PREFIX'],"bin")
-myenv.libpaths="../libgui ../libelements ../libcore ../libmatrix ../backend"
+myenv.libpaths="../libgui ../libelements ../libcore ../libmatrix ../backend " + env['jack_PATHS']
 myenv.includes="../libgui ../libelements ../libcore ../libmatrix ../backend"
 myenv.libs='jackmix_backend jackmix_core jackmix_mixingmatrix jackmix_mixingelements jackmix_gui QtCore' + env['DEBUG'] + ' QtGui' + env['DEBUG'] + ' QtXml' + env['DEBUG'] + env['jack_LIBS']
 myenv.source='main.cpp mainwindow.cpp'
