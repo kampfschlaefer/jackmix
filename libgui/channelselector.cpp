@@ -19,7 +19,7 @@
 */
 
 #include "channelselector.h"
-#include "channelselector.moc"
+//#include "channelselector.moc"
 
 #include <QtCore/QString>
 #include <QtGui/QLayout>

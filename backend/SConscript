@@ -1,20 +1,8 @@
 #! /usr/bin/env python
-## This script is a quick test to demonstrate (and test) 
-## the bksys moc handling '#include "file.moc"' can be added .. or not
-##
-## Thomas Nagy, 2005
-## This file can be reused freely for any project (see COPYING)
 
 Import( 'env' )
 
-obj=env.qt4obj('staticlib', env)
-obj.target='libjackmix_backend'
-obj.source='\
-	jack_backend.cpp \
-'
-#obj.libpaths="../libcore"
-#obj.libs="jackmix_core QtCore"
-obj.libs="QtCore"
-obj.includes='#/ ./ ../libcore'
-obj.execute()
+env = env.Copy()
+env.AppendUnique( CPPPATH=["#/libcore"] )
+env.StaticLibrary( target="jackmix_backend", source=["jack_backend.cpp"] )
 

@@ -18,7 +18,7 @@
 */
 
 #include "abstractslider.h"
-#include "abstractslider.moc"
+//#include "abstractslider.moc"
 
 #include <QtCore/QDebug>
 #include <QtGui/QMouseEvent>

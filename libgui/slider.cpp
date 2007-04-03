@@ -19,7 +19,7 @@
 */
 
 #include "slider.h"
-#include "slider.moc"
+//#include "slider.moc"
 
 #include <QtGui/QPainter>
 #include <QtGui/QStyle>
@@ -192,5 +192,4 @@ void Slider::mouseEvent( QMouseEvent* ev ) {
 			( _faderarea.height() - ev->pos().y() + _faderarea.y() ) / double( _faderarea.height()-1 )
 			) );
 }
-
 

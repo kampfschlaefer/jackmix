@@ -19,7 +19,7 @@
 */
 
 #include "stereo_elements.h"
-#include "stereo_elements.moc"
+//#include "stereo_elements.moc"
 
 #include "knob.h"
 #include "slider.h"

@@ -1,18 +1,11 @@
 #! /usr/bin/env python
-## This script is a quick test to demonstrate (and test) 
-## the bksys moc handling '#include "file.moc"' can be added .. or not
-##
-## Thomas Nagy, 2005
-## This file can be reused freely for any project (see COPYING)
 
 Import( 'env' )
 
-myenv=env.qt4obj('program', env)
-myenv.target="jackmix"
-myenv.instdir=env.join(env['PREFIX'],"bin")
-myenv.libpaths="../libgui ../libelements ../libcore ../libmatrix ../backend"
-myenv.includes="../libgui ../libelements ../libcore ../libmatrix ../backend"
-myenv.libs='jackmix_backend jackmix_core jackmix_mixingmatrix jackmix_mixingelements jackmix_gui QtCore' + env['DEBUG'] + ' QtGui' + env['DEBUG'] + ' QtXml' + env['DEBUG'] + env['jack_LIBS']
-myenv.source='main.cpp mainwindow.cpp'
-myenv.execute()
+env = env.Copy()
+
+env.AppendUnique( CPPPATH=[ "#/backend", "#/libelements", "#/libmatrix", "#/libgui", "#/libcore", env['jack_CFLAGS'] ] )
+env.AppendUnique( LIBPATH=[ "#/libcore", "#/libgui", "#/backend", "#/libmatrix", "#libelements", env['jack_PATHS'] ] )
+env.AppendUnique( LIBS=[ "jackmix_backend", "jackmix_mixingelements", "jackmix_core", "jackmix_gui", "jackmix_mixingmatrix", env['jack_LIBS'] ] )
+env.Program( target="jackmix", source=["main.cpp","mainwindow.cpp"] )
 

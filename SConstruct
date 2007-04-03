@@ -6,7 +6,7 @@ compile    -> scons
 clean      -> scons -c
 install    -> scons install
 uninstall  -> scons -c install
-configure  -> scons configure prefix=/tmp/ita debug=full extraincludes=/usr/local/include:/tmp/include prefix=/usr/local
+configure  -> scons configure prefix=/tmp/ita debug=full
 
 Run from a subdirectory -> scons -u
 The variables are saved automatically after the first run (look at cache/kde.cache.py, ..)
@@ -17,120 +17,66 @@ The variables are saved automatically after the first run (look at cache/kde.cac
 ###################################################################
 
 ## Load the builders in config
-env = Environment( tools=['default', 'generic', 'qt4' ], toolpath=['./', './admin'])
+env = Environment( tools=['default', 'qt' ] )
 
-#env.KDEuse("environ")
-#env.KDEuse("environ rpath")
-#env.QT4use("environ rpath lang_qt thread nohelp")
+env.Replace( LIBS="" )
+env.Replace( LIBPATH="" )
 
-env['CXXFLAGS']+="-Wall -Werror -g -fpic" #-mcmodel=medium"
-env['BKS_DEBUG'] = "full"
+env['CXXFLAGS']+="-Wall -Werror -g -fpic"
 
-#env['DEBUG']="_debug"
-env['DEBUG']=""
+def CheckPKGConfig( context, pkgname, version="", all=False ):
+	import SCons.Util, os, string
 
-def CheckPKGConfig( context, pkgname ):
-	import SCons.Util, os
+	if version == "":
+		context.Message( "Checking for " + pkgname + "..." )
+		ret = context.TryAction( 'pkg-config --exists ' + pkgname )
+	else:
+		context.Message( "Checking for " + pkgname + " " + version + " or higher..." )
+		ret = context.TryAction( "pkg-config --atleast-version=" + version + " " + pkgname )
 
-	context.Message( "Checking for " + pkgname + "..." )
-	ret = context.TryAction( 'pkg-config --exists ' + pkgname )
 	if ret[0] == 1:
-		tmp = os.popen( 'pkg-config --libs ' + pkgname ).read().strip()
-		env[pkgname + '_LIBS'] = SCons.Util.CLVar( tmp )
+		tmp = os.popen( 'pkg-config --libs-only-l ' + pkgname ).read().strip()
+		if all:
+			env.AppendUnique( LIBS = SCons.Util.CLVar( tmp ) )
+		else:
+			env[pkgname + '_LIBS'] = tmp #SCons.Util.CLVar( tmp )
+
+		tmp = os.popen( 'pkg-config --libs-only-L ' + pkgname ).read().strip()
+		if all:
+			env.AppendUnique( LIBPATH = SCons.Util.CLVar( string.replace( tmp, "-L", "" ) ) )
+		else:
+			env[pkgname + '_PATHS'] = SCons.Util.CLVar( tmp )
+
 		tmp = ' ' + os.popen( 'pkg-config --cflags ' + pkgname ).read().strip()
-		env[pkgname + '_CFLAGS'] = SCons.Util.CLVar( tmp )
+		if all:
+			env.AppendUnique( CXXFLAGS = SCons.Util.CLVar( tmp ) )
+		else:
+			env[pkgname + '_CFLAGS'] = SCons.Util.CLVar( tmp )
+	else:
+		tmp = "\n" + pkgname
+		if version != "":
+			tmp += "Version " + version + " or higher"
+		print tmp + " is really needed!"
+		Exit(1)
+
 	context.Result( ret[0] )
 	return ret[0]
 
 conf = Configure( env, custom_tests={'CheckPKGConfig' : CheckPKGConfig }, conf_dir='cache', log_file='cache/config.log' )
-conf.CheckPKGConfig( 'jack' )
-#conf.CheckPKGConfig( 'liblo' )
+conf.CheckPKGConfig( 'jack', "0.100.0" )
+conf.CheckPKGConfig( 'QtCore', "4.2", True )
+conf.CheckPKGConfig( 'QtGui', "4.2", True )
+conf.CheckPKGConfig( 'QtXml', "4.2", True )
 
 env = conf.Finish()
 
-###################################################################
-# SCRIPTS FOR BUILDING THE TARGETS
-###################################################################
+env.Append( CPPPATH="./ " )
+
+env.Replace( QT_LIB="" )
+
 
 ## target processing is done in the subdirectory
-env.subdirs(['libcore','libgui','backend','libmatrix','libelements','jackmix'])
+#env.subdirs(['libcore','libgui','backend','libmatrix','libelements','jackmix'])
+env.SConscript( dirs=['libcore','libgui','backend','libmatrix','libelements','jackmix'], exports="env" )
+#env.SConscript( dirs=['libcore','libgui','backend','libmatrix','libelements','jackmix'], exports="env" )
 
-###################################################################
-# CONVENIENCE FUNCTIONS TO EMULATE 'make dist' and 'make distclean'
-###################################################################
-
-### To make a tarball of your masterpiece, use 'scons dist'
-#if 'dist' in COMMAND_LINE_TARGETS:
-#
-#	## The target scons dist requires the python module shutil which is in 2.3
-#	env.EnsurePythonVersion(2, 3)
-#
-#	import os
-#	APPNAME = 'epos'
-#	VERSION = os.popen("cat VERSION").read().rstrip()
-#	FOLDER  = APPNAME+'-'+VERSION
-#	TMPFOLD = ".tmp"+FOLDER
-#	ARCHIVE = FOLDER+'.tar.bz2'
-#
-#	## If your app name and version number are defined in 'version.h', use this instead:
-#	## (contributed by Dennis Schridde devurandom@gmx@net)
-#	#import re
-#	#INFO = dict( re.findall( '(?m)^#define\s+(\w+)\s+(.*)(?<=\S)', open(r"version.h","rb").read() ) )
-#	#APPNAME = INFO['APPNAME']
-#	#VERSION = INFO['VERSION']
-#
-#	import shutil
-#	import glob
-#
-#	## check if the temporary directory already exists
-#	for dir in [FOLDER, TMPFOLD, ARCHIVE]:
-#		if os.path.isdir(dir):
-#			shutil.rmtree(dir)
-#
-#	## create a temporary directory
-#	startdir = os.getcwd()
-#	
-#	os.popen("mkdir -p "+TMPFOLD)	
-#	os.popen("cp -R * "+TMPFOLD)
-#	os.popen("mv "+TMPFOLD+" "+FOLDER)
-#
-#	## remove scons-local if it is unpacked
-#	os.popen("rm -rf "+FOLDER+"/scons "+FOLDER+"/sconsign "+FOLDER+"/scons-local-0.96.1")
-#
-#	## remove our object files first
-#	os.popen("find "+FOLDER+" -name \"*cache*\" | xargs rm -rf")
-#	os.popen("find "+FOLDER+" -name \"*.pyc\" | xargs rm -f")
-#
-#	## CVS cleanup
-#	os.popen("find "+FOLDER+" -name \"CVS\" | xargs rm -rf")
-#	os.popen("find "+FOLDER+" -name \".cvsignore\" | xargs rm -rf")
-#
-#	## Subversion cleanup
-#	os.popen("find %s -name .svn -type d | xargs rm -rf" % FOLDER)
-#
-#	## GNU Arch cleanup
-#	os.popen("find "+FOLDER+" -name \"{arch}\" | xargs rm -rf")
-#	os.popen("find "+FOLDER+" -name \".arch-i*\" | xargs rm -rf")
-#
-#	## Create the tarball (coloured output)
-#	print "\033[92m"+"Writing archive "+ARCHIVE+"\033[0m"
-#	os.popen("tar cjf "+ARCHIVE+" "+FOLDER)
-#
-#	## Remove the temporary directory
-#	if os.path.isdir(FOLDER):
-#		shutil.rmtree(FOLDER)
-#
-#	env.Default(None)
-#        env.Exit(0)
-#
-#### Emulate "make distclean"
-#if 'distclean' in COMMAND_LINE_TARGETS:
-#	## Remove the cache directory
-#	import os, shutil
-#	if os.path.isdir(env['CACHEDIR']):
-#		shutil.rmtree(env['CACHEDIR'])
-#	os.popen("find . -name \"*.pyc\" | xargs rm -rf")
-#
-#	env.Default(None)
-#	env.Exit(0)
-#

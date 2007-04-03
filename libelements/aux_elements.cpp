@@ -19,7 +19,7 @@
 */
 
 #include "aux_elements.h"
-#include "aux_elements.moc"
+//#include "aux_elements.moc"
 
 #include "knob.h"
 
