@@ -6,10 +6,10 @@ compile    -> scons
 clean      -> scons -c
 install    -> scons install
 uninstall  -> scons -c install
-configure  -> scons configure prefix=/tmp/ita debug=full
+configure  -> scons configure prefix=/tmp/ita
 
 Run from a subdirectory -> scons -u
-The variables are saved automatically after the first run (look at cache/kde.cache.py, ..)
+The variables are saved automatically after the first run
 """
 
 ###################################################################
@@ -32,6 +32,11 @@ env['CXXFLAGS']+="-Wall -Werror -g -fpic"
 def CheckPKGConfig( context, pkgname, version="", all=False ):
 	import SCons.Util, os, string
 
+	pkg = pkgname.replace( ".", "" )
+	pkg = pkg.replace( "-", "" )
+	if pkg != pkgname:
+		print pkgname + " changes to " + pkg
+
 	if version == "":
 		context.Message( "Checking for " + pkgname + "..." )
 		ret = context.TryAction( 'pkg-config --exists ' + pkgname )
@@ -44,19 +49,19 @@ def CheckPKGConfig( context, pkgname, version="", all=False ):
 		if all:
 			env.AppendUnique( LIBS = SCons.Util.CLVar( tmp ) )
 		else:
-			env[pkgname + '_LIBS'] = tmp #SCons.Util.CLVar( tmp )
+			env[pkg + '_LIBS'] = SCons.Util.CLVar( string.replace( tmp, "-l", "" ) )
 
 		tmp = os.popen( 'pkg-config --libs-only-L ' + pkgname ).read().strip()
 		if all:
 			env.AppendUnique( LIBPATH = SCons.Util.CLVar( string.replace( tmp, "-L", "" ) ) )
 		else:
-			env[pkgname + '_PATHS'] = SCons.Util.CLVar( tmp )
+			env[pkg + '_PATHS'] = SCons.Util.CLVar( tmp )
 
 		tmp = ' ' + os.popen( 'pkg-config --cflags ' + pkgname ).read().strip()
 		if all:
 			env.AppendUnique( CXXFLAGS = SCons.Util.CLVar( tmp ) )
 		else:
-			env[pkgname + '_CFLAGS'] = SCons.Util.CLVar( tmp )
+			env[pkg + '_CFLAGS'] = SCons.Util.CLVar( string.replace( tmp, "-I", "" ) )
 	else:
 		tmp = "\n" + pkgname
 		if version != "":
@@ -69,6 +74,7 @@ def CheckPKGConfig( context, pkgname, version="", all=False ):
 
 conf = Configure( env, custom_tests={'CheckPKGConfig' : CheckPKGConfig }, conf_dir='cache', log_file='cache/config.log' )
 conf.CheckPKGConfig( 'jack', "0.100.0" )
+conf.CheckPKGConfig( 'lash-1.0', "0.5.1" )
 conf.CheckPKGConfig( 'QtCore', "4.2", True )
 conf.CheckPKGConfig( 'QtGui', "4.2", True )
 conf.CheckPKGConfig( 'QtXml', "4.2", True )
@@ -80,5 +86,5 @@ env = conf.Finish()
 
 
 ## target processing is done in the subdirectory
-env.SConscript( dirs=['libcore','libgui','backend','libmatrix','libelements','jackmix'], exports="env" )
+env.SConscript( dirs=['libcore','libgui','backend','libmatrix','libelements','jackmix','simple_lash_client'], exports="env" )
 
