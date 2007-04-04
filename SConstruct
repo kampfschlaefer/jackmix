@@ -19,6 +19,11 @@ The variables are saved automatically after the first run (look at cache/kde.cac
 ## Load the builders in config
 env = Environment( tools=['default', 'qt' ] )
 
+if env['QTDIR'].find( '3' ) >= 0:
+	env['QTDIR'] = "/usr"
+	env['QT_CPPPATH'] = "";
+	env['QT_LIB'] = ""
+
 env.Replace( LIBS="" )
 env.Replace( LIBPATH="" )
 
@@ -70,13 +75,10 @@ conf.CheckPKGConfig( 'QtXml', "4.2", True )
 
 env = conf.Finish()
 
-env.Append( CPPPATH="./ " )
+#env.Append( CPPPATH="./ " )
 
-env.Replace( QT_LIB="" )
 
 
 ## target processing is done in the subdirectory
-#env.subdirs(['libcore','libgui','backend','libmatrix','libelements','jackmix'])
 env.SConscript( dirs=['libcore','libgui','backend','libmatrix','libelements','jackmix'], exports="env" )
-#env.SConscript( dirs=['libcore','libgui','backend','libmatrix','libelements','jackmix'], exports="env" )
 

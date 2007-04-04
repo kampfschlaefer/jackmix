@@ -4,7 +4,7 @@ Import( 'env' )
 
 env = env.Copy()
 
-env.AppendUnique( CPPPATH = ["#/libcore "] )
+env.AppendUnique( CPPPATH = ["#/libcore"] )
 env.StaticLibrary( target="jackmix_gui", source =["channelselector.cpp","graphicalguiserver.cpp","abstractslider.cpp","slider.cpp","knob.cpp"] )
 
 env.AppendUnique( LIBPATH= ["./"] )
