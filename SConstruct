@@ -86,5 +86,5 @@ env = conf.Finish()
 
 
 ## target processing is done in the subdirectory
-env.SConscript( dirs=['libcore','libgui','backend','libmatrix','libelements','jackmix','simple_lash_client'], exports="env" )
+env.SConscript( dirs=['libcore','libqlash','libgui','backend','libmatrix','libelements','jackmix','simple_lash_client'], exports="env" )
 
