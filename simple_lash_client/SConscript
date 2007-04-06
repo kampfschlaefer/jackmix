@@ -4,8 +4,8 @@ Import( 'env' )
 
 env = env.Copy()
 
-env.AppendUnique( CPPPATH=[ env['lash10_CFLAGS'] ] )
-env.AppendUnique( LIBPATH=[ env['lash10_PATHS'] ] )
-env.AppendUnique( LIBS   =[ env['lash10_LIBS'] ] )
+env.AppendUnique( CPPPATH= env['lash10_CFLAGS'] )
+env.AppendUnique( LIBPATH= env['lash10_PATHS'] )
+env.AppendUnique( LIBS   = env['lash10_LIBS'] )
 env.Program( target="simple_lash_client", source=["main.cpp"] )
 
