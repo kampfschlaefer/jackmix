@@ -5,5 +5,5 @@ Import( 'env' )
 env = env.Copy()
 
 #env.AppendUnique( CPPPATH=["#/libcore"] )
-env.StaticLibrary( target="qlash", source= ['bla.cpp'] )
+env.StaticLibrary( target="qlash", source= ['qlash.cpp'] )
 
