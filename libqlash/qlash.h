@@ -2,6 +2,8 @@
 #define QLASH_H
 
 #include <QtCore/QObject>
+#include <QtCore/QMap>
+#include <QtCore/QVariant>
 
 #include <lash/lash.h>
 
@@ -31,11 +33,13 @@ class qLashClient : public QObject
 		 */
 		void saveToDirFinished();
 		/**
-		 * @brief Saving to config finished
+		 * @brief Finalize saving to config finished
 		 *
-		 * Tell the server that saving to configs is finished.
+		 * Saves the values stored inside this object and tells the server that saving to configs is finished.
+		 *
+		 * If you implement this, you should call this function at the end.
 		 */
-		void saveToConfigFinished();
+		virtual void saveToConfigFinalize();
 		/**
 		 * @brief Restoring from dir finished
 		 *
@@ -47,12 +51,20 @@ class qLashClient : public QObject
 		 *
 		 * Tell the server that restoring from configs is finished.
 		 */
-		void restoreFromConfigFinished();
+		virtual void restoreFromConfigFinalize();
 
 		/**
 		 * @todo not finished yet. Have to think about saving/restoring to/from configs a while.
 		 */
-		void saveToConfig( int );
+		//void saveToConfig( int );
+		//void readFromConfig( int );
+
+		// @{
+		/**
+		 */
+		void setValue( QString, QVariant );
+		QVariant getValue( QString ) const;
+		// @}
 
 	signals:
 		/**
@@ -70,7 +82,9 @@ class qLashClient : public QObject
 		/**
 		 * @brief Save data into configs
 		 *
-		 * You should ( have to ) call saveToConfigFinished() afterwards.
+		 * saveToConfigFinalize() is called after returning from this signal to save the values stored in this object. @see setValue(), getValue()
+		 *
+		 * You can either subclass from qLashClient and implement saveToConfigFinalize or use this signal to save your settings via setValue or both.
 		 */
 		void saveToConfig();
 		/**
@@ -86,11 +100,14 @@ class qLashClient : public QObject
 		 */
 		void restoreFromConfig();
 
+		void valueChanged( QString, QVariant );
+
 	protected:
 		void timerEvent( QTimerEvent* );
 
 	private:
 		lash_client_t *_client;
+		QMap<QString,QVariant> _values;
 
 }; // qLashClient
 

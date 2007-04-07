@@ -28,17 +28,48 @@ bool qLashClient::isConnected() {
 void qLashClient::saveToDirFinished() {
 	lash_send_event( _client, lash_event_new_with_type( LASH_Save_File ) );
 }
-void qLashClient::saveToConfigFinished() {
+void qLashClient::saveToConfigFinalize() {
+	qDebug() << "qLashClient::saveToConfigFinalize()";
+	foreach ( QString n, _values.keys() ) {
+		qDebug() << " saving \"" << n << "," << _values[ n ] << "\"";
+		QByteArray tmp;
+		{
+			QDataStream out( &tmp, QIODevice::WriteOnly );
+			out << _values[ n ];
+		}
+		qDebug() << " string will be [" << tmp.data() << "]" << tmp.length();
+		lash_config_t* config = lash_config_new_with_key( n.toStdString().c_str() );
+		lash_config_set_value( config, tmp.data(), sizeof( tmp.data() ) );
+		lash_send_config( _client, config );
+	}
 	lash_send_event( _client, lash_event_new_with_type( LASH_Save_Data_Set ) );
 }
 void qLashClient::restoreFromDirFinished() {
 	lash_send_event( _client, lash_event_new_with_type( LASH_Restore_File ) );
 }
-void qLashClient::restoreFromConfigFinished() {
+void qLashClient::restoreFromConfigFinalize() {
+	qDebug() << "qLashClient::restoreFromConfigFinalize()";
+	lash_config_t* config =0;
+	while ( config = lash_get_config( _client ) ) {
+		qDebug() << " got config" << config;
+		QString n = lash_config_get_key( config );
+		//qDebug() << "  lash returnes" << static_cast<const QVariant*>( lash_config_get_value( config ) );
+		QByteArray tmp( ( const char* ) lash_config_get_value( config ), lash_config_get_value_size( config ) +1 );
+		qDebug() << " tmp.size()" << tmp.size();
+		lash_config_destroy( config );
+		QVariant v;
+		{
+			QDataStream in( &tmp, QIODevice::ReadOnly );
+			in >> v;
+		}
+		_values[ n ] = v;
+		qDebug() << "  evaluates to [" << n << "," << v << "]";
+		emit valueChanged( n,v );
+	}
 	lash_send_event( _client, lash_event_new_with_type( LASH_Restore_Data_Set ) );
 }
 
-void qLashClient::saveToConfig( int data ) {
+/*void qLashClient::saveToConfig( int data ) {
 	qDebug() << "qLashClient::saveToConfig(" << data << ")";
 	qDebug() << " sender()" << sender();
 	if ( sender() && sender()->objectName().isEmpty() ) {
@@ -47,6 +78,13 @@ void qLashClient::saveToConfig( int data ) {
 		lash_send_config( _client, config );
 		saveToConfigFinished();
 	}
+}*/
+
+void qLashClient::setValue( QString n, QVariant v ) {
+	_values[ n ] = v;
+}
+QVariant qLashClient::getValue( QString n ) const {
+	return _values[ n ];
 }
 
 void qLashClient::timerEvent( QTimerEvent* ) {
@@ -75,10 +113,12 @@ void qLashClient::timerEvent( QTimerEvent* ) {
 			case LASH_Save_Data_Set:
 				qDebug() << "Event: Should save data in configs";
 				emit saveToConfig();
+				saveToConfigFinalize();
 				break;
 			case LASH_Restore_Data_Set:
 				qDebug() << "Event: Should restore data from configs";
 				emit restoreFromConfig();
+				restoreFromConfigFinalize();
 				break;
 			case LASH_Quit:
 				qDebug() << "Event: Should terminate now";
