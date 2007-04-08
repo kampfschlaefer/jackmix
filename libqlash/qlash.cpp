@@ -2,6 +2,7 @@
 #include "qlash.h"
 
 #include <QtCore/QDebug>
+#include <QtCore/QFile>
 
 namespace qLash {
 
@@ -25,60 +26,41 @@ bool qLashClient::isConnected() {
 	return lash_enabled( _client );
 }
 
-void qLashClient::saveToDirFinished() {
+void qLashClient::saveToDirFinalize( QString path ) {
+	//qDebug() << "qLashClient::saveToDirFinalize()";
+	QFile file( QString( "%1/_qlashvalues" ).arg( path ) );
+	if ( file.open( QIODevice::WriteOnly ) ) {
+		QDataStream out( &file );
+		foreach( QString n, _values.keys() )
+			out << n << _values[ n ];
+		file.close();
+	}
 	lash_send_event( _client, lash_event_new_with_type( LASH_Save_File ) );
 }
 void qLashClient::saveToConfigFinalize() {
-	qDebug() << "qLashClient::saveToConfigFinalize()";
-	foreach ( QString n, _values.keys() ) {
-		qDebug() << " saving \"" << n << "," << _values[ n ] << "\"";
-		QByteArray tmp;
-		{
-			QDataStream out( &tmp, QIODevice::WriteOnly );
-			out << _values[ n ];
-		}
-		qDebug() << " string will be [" << tmp.data() << "]" << tmp.length();
-		lash_config_t* config = lash_config_new_with_key( n.toStdString().c_str() );
-		lash_config_set_value( config, tmp.data(), sizeof( tmp.data() ) );
-		lash_send_config( _client, config );
-	}
+	//qDebug() << "qLashClient::saveToConfigFinalize()";
 	lash_send_event( _client, lash_event_new_with_type( LASH_Save_Data_Set ) );
 }
-void qLashClient::restoreFromDirFinished() {
+void qLashClient::restoreFromDirFinalize( QString path ) {
+	//qDebug() << "qLashClient::restoreFromDirFinalize()";
+	QFile file( QString( "%1/_qlashvalues" ).arg( path ) );
+	if ( file.open( QIODevice::ReadOnly ) ) {
+		QDataStream in( &file );
+		while ( !in.atEnd() ) {
+			QString n;
+			QVariant v;
+			in >> n >> v;
+			_values[ n ] = v;
+			emit valueChanged( n,v );
+		}
+		file.close();
+	}
 	lash_send_event( _client, lash_event_new_with_type( LASH_Restore_File ) );
 }
 void qLashClient::restoreFromConfigFinalize() {
-	qDebug() << "qLashClient::restoreFromConfigFinalize()";
-	lash_config_t* config =0;
-	while ( config = lash_get_config( _client ) ) {
-		qDebug() << " got config" << config;
-		QString n = lash_config_get_key( config );
-		//qDebug() << "  lash returnes" << static_cast<const QVariant*>( lash_config_get_value( config ) );
-		QByteArray tmp( ( const char* ) lash_config_get_value( config ), lash_config_get_value_size( config ) +1 );
-		qDebug() << " tmp.size()" << tmp.size();
-		lash_config_destroy( config );
-		QVariant v;
-		{
-			QDataStream in( &tmp, QIODevice::ReadOnly );
-			in >> v;
-		}
-		_values[ n ] = v;
-		qDebug() << "  evaluates to [" << n << "," << v << "]";
-		emit valueChanged( n,v );
-	}
+	//qDebug() << "qLashClient::restoreFromConfigFinalize()";
 	lash_send_event( _client, lash_event_new_with_type( LASH_Restore_Data_Set ) );
 }
-
-/*void qLashClient::saveToConfig( int data ) {
-	qDebug() << "qLashClient::saveToConfig(" << data << ")";
-	qDebug() << " sender()" << sender();
-	if ( sender() && sender()->objectName().isEmpty() ) {
-		lash_config_t* config = lash_config_new_with_key( sender()->objectName().toStdString().c_str() );
-		lash_config_set_value_int( config, data );
-		lash_send_config( _client, config );
-		saveToConfigFinished();
-	}
-}*/
 
 void qLashClient::setValue( QString n, QVariant v ) {
 	_values[ n ] = v;
@@ -105,14 +87,19 @@ void qLashClient::timerEvent( QTimerEvent* ) {
 			case LASH_Save_File:
 				qDebug() << "Event: Should save data into dir" << lash_event_get_string( event );
 				emit saveToDir( lash_event_get_string( event ) );
+				emit saveValues();
+				saveToDirFinalize( lash_event_get_string( event ) );
 				break;
 			case LASH_Restore_File:
 				qDebug() << "Event: Should restore data from dir" << lash_event_get_string( event );
 				emit restoreFromDir( lash_event_get_string( event ) );
+				restoreFromDirFinalize( lash_event_get_string( event ) );
+				emit restoreValues();
 				break;
 			case LASH_Save_Data_Set:
 				qDebug() << "Event: Should save data in configs";
 				emit saveToConfig();
+				//emit saveValues(); // The values are saved in their own file in the dir...
 				saveToConfigFinalize();
 				break;
 			case LASH_Restore_Data_Set:

@@ -13,54 +13,68 @@ class qLashClient : public QObject
 {
 	Q_OBJECT
 	public:
-		qLashClient( QString clientname, int argc =0, char** argv =0, QObject* =0 );
+		/**
+		 * @brief Construct a LASH-connection
+		 *
+		 * LASH needs a client-name and wants access to the commandline args.
+		 *
+		 * @param clientname The name of this client. This should always be the
+		 * same to restore configs.
+		 * @param argc Number of arguments stored in argv
+		 * @param argv Commandline arguments.
+		 * @param p The parent QObject.
+		 */
+		qLashClient( QString clientname, int argc =0, char** argv =0, QObject* p=0 );
+		/**
+		 * @brief destructor
+		 */
 		virtual ~qLashClient();
 
+		/**
+		 * @brief Connected to LASH?
+		 */
 		bool isConnected();
 
-		/**
-		 * Only for DEBUGGING!
-		 *
-		 * @todo Remove me!
-		 */
-		lash_client_t* client() { return _client; }
-
-	public slots:
+	protected slots:
 		/**
 		 * @brief Saving to dir finished
 		 *
-		 * Tell the server that saving to directory is finished.
+		 * Save the values stored in this class and tell the server that saving
+		 * to directory is finished.
+		 *
+		 * @param path The path where the data has to be stored.
 		 */
-		void saveToDirFinished();
+		void saveToDirFinalize( QString path );
 		/**
 		 * @brief Finalize saving to config finished
 		 *
-		 * Saves the values stored inside this object and tells the server that saving to configs is finished.
-		 *
-		 * If you implement this, you should call this function at the end.
+		 * Tells the server that saving to configs is finished.
 		 */
-		virtual void saveToConfigFinalize();
+		void saveToConfigFinalize();
 		/**
 		 * @brief Restoring from dir finished
 		 *
 		 * Tell the server that restoring from directory is finished.
+		 *
+		 * @param path The path where to restore the data from.
 		 */
-		void restoreFromDirFinished();
+		void restoreFromDirFinalize( QString path );
 		/**
 		 * @brief Restoring from config finished
 		 *
 		 * Tell the server that restoring from configs is finished.
 		 */
-		virtual void restoreFromConfigFinalize();
+		void restoreFromConfigFinalize();
 
-		/**
-		 * @todo not finished yet. Have to think about saving/restoring to/from configs a while.
-		 */
-		//void saveToConfig( int );
-		//void readFromConfig( int );
-
+	public slots:
 		// @{
 		/**
+		 * @brief Store named values inside this object.
+		 *
+		 * This removes the burden to save and restore little options by
+		 * yourself. Just save them on the signal saveValues() and restore your
+		 * values either on valueChanged( QString,QVariant ) or on
+		 * restoreValues().
 		 */
 		void setValue( QString, QVariant );
 		QVariant getValue( QString ) const;
@@ -70,42 +84,46 @@ class qLashClient : public QObject
 		/**
 		 * @brief The server tells us to quit immediatly.
 		 *
-		 * ...without saving.
+		 * ...without saving or user interaction ( if possible, otherwise
+		 * handling of lash-sessions gets very painful ).
 		 */
 		void quitApp();
 		/**
 		 * @brief Save data into directory
 		 *
-		 * You should ( have to ) call saveToDirFinished() afterwards.
+		 * @param dir The path where to store your files in
 		 */
 		void saveToDir( QString dir );
 		/**
 		 * @brief Save data into configs
-		 *
-		 * saveToConfigFinalize() is called after returning from this signal to save the values stored in this object. @see setValue(), getValue()
-		 *
-		 * You can either subclass from qLashClient and implement saveToConfigFinalize or use this signal to save your settings via setValue or both.
 		 */
 		void saveToConfig();
 		/**
 		 * @brief Restore data from directory
 		 *
-		 * You should ( have to ) call restoreFromDirFinished() afterwards.
+		 * @param dir The path where to restore your files from
 		 */
 		void restoreFromDir( QString dir );
 		/**
 		 * @brief Restore data from configs
-		 *
-		 * You should ( have to ) call restoreFromConfigFinished() afterwards.
 		 */
 		void restoreFromConfig();
 
+		/**
+		 * @brief Signal clients to save values with setValue()
+		 */
+		void saveValues();
+		/**
+		 * @brief Signal clients to restore values with getValue()
+		 */
+		void restoreValues();
+		/**
+		 * @brief A specific value has changed through lash.
+		 */
 		void valueChanged( QString, QVariant );
 
-	protected:
-		void timerEvent( QTimerEvent* );
-
 	private:
+		void timerEvent( QTimerEvent* );
 		lash_client_t *_client;
 		QMap<QString,QVariant> _values;
 
