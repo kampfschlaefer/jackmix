@@ -78,32 +78,32 @@ void qLashClient::timerEvent( QTimerEvent* ) {
 			case LASH_Client_Name:
 				qDebug() << "Event: This clients name is:" << lash_event_get_string( event );
 				break;
-			/*case LASH_Jack_Client_Name:
+			case LASH_Jack_Client_Name:
 				qDebug() << "Event: This clients JACK-name is:" << lash_event_get_string( event );
-				break;*/
-			/*case LASH_Alsa_Client_ID:
+				break;
+			case LASH_Alsa_Client_ID:
 				qDebug() << "Event: This clients Alsa-ID is:" << lash_event_get_string( event );
-				break;*/
+				break;
 			case LASH_Save_File:
-				qDebug() << "Event: Should save data into dir" << lash_event_get_string( event );
+				//qDebug() << "Event: Should save data into dir" << lash_event_get_string( event );
 				emit saveToDir( lash_event_get_string( event ) );
 				emit saveValues();
 				saveToDirFinalize( lash_event_get_string( event ) );
 				break;
 			case LASH_Restore_File:
-				qDebug() << "Event: Should restore data from dir" << lash_event_get_string( event );
+				//qDebug() << "Event: Should restore data from dir" << lash_event_get_string( event );
 				emit restoreFromDir( lash_event_get_string( event ) );
 				restoreFromDirFinalize( lash_event_get_string( event ) );
 				emit restoreValues();
 				break;
 			case LASH_Save_Data_Set:
-				qDebug() << "Event: Should save data in configs";
+				//qDebug() << "Event: Should save data in configs";
 				emit saveToConfig();
 				//emit saveValues(); // The values are saved in their own file in the dir...
 				saveToConfigFinalize();
 				break;
 			case LASH_Restore_Data_Set:
-				qDebug() << "Event: Should restore data from configs";
+				//qDebug() << "Event: Should restore data from configs";
 				emit restoreFromConfig();
 				restoreFromConfigFinalize();
 				break;
