@@ -16,8 +16,8 @@ class MyButton : public QPushButton
 
 	public slots:
 		void signalState() {
-			qDebug() << "MyButton::signalState() saving" << QVariant( isChecked() ).toInt() + 10;
-			emit state( objectName(), QVariant( QVariant( isChecked() ).toInt() + 10 ) );
+			qDebug() << "MyButton::signalState() saving" << isChecked();
+			emit state( objectName(), QVariant( isChecked() ) );
 		}
 
 		void setState( QString n, QVariant v ) {

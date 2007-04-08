@@ -18,7 +18,7 @@ int main( int argc, char** argv ) {
 	MyButton* btn = new MyButton( "Button" );
 	btn->setCheckable( true );
 	QObject::connect( btn, SIGNAL( state( QString,QVariant ) ), c, SLOT( setValue( QString,QVariant ) ) );
-	QObject::connect( c, SIGNAL( saveToConfig() ), btn, SLOT( signalState() ) );
+	QObject::connect( c, SIGNAL( saveValues() ), btn, SLOT( signalState() ) );
 	QObject::connect( c, SIGNAL( valueChanged( QString,QVariant ) ), btn, SLOT( setState( QString,QVariant ) ) );
 
 	btn->show();
