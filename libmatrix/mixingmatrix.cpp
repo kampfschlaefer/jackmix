@@ -221,19 +221,21 @@ QString Widget::nextOut( QString n ) const {
 }
 
 void Widget::addinchannel( QString name ) {
+	//qDebug() << "Widget::addinchannel(" << name << ")";
 	_inchannels.push_back( name );
 	if ( _direction == Horizontal )
 		_outchannels.push_back( name );
 	this->updateGeometry();
 }
 void Widget::addoutchannel( QString name ) {
+	//qDebug() << "Widget::addoutchannel(" << name << ")";
 	_outchannels.push_back( name );
 	if ( _direction == Vertical )
 		_inchannels.push_back( name );
 	this->updateGeometry();
 }
 void Widget::removeinchannel( QString name ) {
-	//qDebug( "Widget::removeinchannel( %s )", qPrintable( name ) );
+	//qDebug() << "Widget::removeinchannel(" << name << ")";
 	for ( QStringList::Iterator it = _outchannels.begin(); it != _outchannels.end(); it++ ) {
 		Element* tmp = getResponsible( name, *it );
 		if ( tmp )
@@ -242,7 +244,7 @@ void Widget::removeinchannel( QString name ) {
 	_inchannels.removeAll( name );
 }
 void Widget::removeoutchannel( QString name ) {
-	//qDebug( "Widget::removeoutchannel( %s )", qPrintable( name ) );
+	//qDebug() << "Widget::removeoutchannel(" << name << ")";
 	for ( QStringList::Iterator it = _inchannels.begin(); it != _inchannels.end(); it++ ) {
 		Element* tmp = getResponsible( *it, name );
 		if ( tmp )
