@@ -55,8 +55,20 @@ using namespace JackMix::MixingMatrix;
 MainWindow::MainWindow( QWidget* p ) : QMainWindow( p ), _backend( new JackBackend( new GUI::GraphicalGuiServer( this ) ) ), _autofillscheduled( true ) {
 	qDebug() << "MainWindow::MainWindow(" << p << ")";
 	init();
-	QStringList ins = QStringList() << "in_1" << "in_2" << "in_3" << "in_4" << "in_5" << "in_6" << "in_7" << "in_8";
-	QStringList outs = QStringList() << "out_1" << "out_2";
+
+	QStringList ins;
+	QStringList outs;
+	{
+		QStringList args = qApp->arguments();
+		bool yes = false;
+		foreach( QString tmp, args )
+			if ( tmp.contains( "lash" ) )
+				yes = true;
+		if ( !yes ) {
+			ins = QStringList() << "in_1" << "in_2" << "in_3" << "in_4" << "in_5" << "in_6" << "in_7" << "in_8";
+			outs = QStringList() << "out_1" << "out_2";
+		}
+	}
 
 	foreach( QString in, ins )
 		addInput( in );
@@ -137,24 +149,21 @@ void MainWindow::init() {
 	_mw = new MainWindowHelperWidget( this );
 	setCentralWidget( _mw );
 
-	_backend->addInput( "i1" );
-	_backend->addInput( "i2" );
-	_backend->addOutput( "o1" );
-	_mixerwidget = new MixingMatrix::Widget( QStringList() << "i1" << "i2", QStringList() << "o1", _backend, _mw );
+	_mixerwidget = new MixingMatrix::Widget( QStringList() << "i1", QStringList() << "o1", _backend, _mw );
+	_mixerwidget->removeinchannel( "i1" );
+	_mixerwidget->removeoutchannel( "o1" );
 	_mw->layout->addWidget( _mixerwidget, 1,0 );
-	_inputswidget = new MixingMatrix::Widget( QStringList() << "i1" << "i2", QStringList(), _backend, _mw );
+	_inputswidget = new MixingMatrix::Widget( QStringList() << "i1", QStringList(), _backend, _mw );
+	_inputswidget->removeinchannel( "i1" );
 	_mw->layout->addWidget( _inputswidget, 0,0 );
 	_outputswidget = new MixingMatrix::Widget( QStringList(), QStringList() << "o1", _backend, _mw );
+	_outputswidget->removeoutchannel( "o1" );
 	_mw->layout->addWidget( _outputswidget, 1,1 );
 
 	_mw->layout->setRowStretch( 0, 1 );
 	_mw->layout->setRowStretch( 1, int( 1E2 ) );
 	_mw->layout->setColumnStretch( 1, 1 );
 	_mw->layout->setColumnStretch( 0, int( 1E2 ) );
-
-	removeOutput( "o1" );
-	removeInput( "i1" );
-	removeInput( "i2" );
 
 //	_debugPrint = new QAction( "DebugPrint", CTRL+Key_P, this );
 //	connect( _debugPrint, SIGNAL( activated() ), _mixerwidget, SLOT( debugPrint() ) );
@@ -167,6 +176,7 @@ void MainWindow::init() {
 	connect( _lashclient, SIGNAL( quitApp() ), this, SLOT( close() ) );
 	connect( _lashclient, SIGNAL( saveToDir( QString ) ), this, SLOT( saveLash( QString ) ) );
 	connect( _lashclient, SIGNAL( restoreFromDir( QString ) ), this, SLOT( restoreLash( QString ) ) );
+	_lashclient->setJackName( "JackMix" );
 }
 
 MainWindow::~MainWindow() {
@@ -371,7 +381,7 @@ void MainWindow::addOutput( QString name ) {
 }
 
 void MainWindow::removeInput() {
-qDebug( "MainWindow::removeInput()" );
+	//qDebug( "MainWindow::removeInput()" );
 	JackMix::GUI::ChannelSelector *tmp = new JackMix::GUI::ChannelSelector( "Delete Inputchannels", "Select the inputchannels for deletion:", _backend->inchannels(), this );
 	connect( tmp, SIGNAL( selectedChannel( QString ) ), this, SLOT( removeInput( QString ) ) );
 	tmp->show();
@@ -385,7 +395,7 @@ void MainWindow::removeInput( QString n ) {
 	}
 }
 void MainWindow::removeOutput() {
-qDebug( "MainWindow::removeOutput()" );
+	//qDebug( "MainWindow::removeOutput()" );
 	JackMix::GUI::ChannelSelector *tmp = new JackMix::GUI::ChannelSelector( "Delete Outputchannels", "Select the outputchannels for deletion:", _backend->outchannels(), this );
 	connect( tmp, SIGNAL( selectedChannel( QString ) ), this, SLOT( removeOutput( QString ) ) );
 	tmp->show();
