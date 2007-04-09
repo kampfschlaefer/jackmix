@@ -16,7 +16,11 @@ class qLashClient : public QObject
 		/**
 		 * @brief Construct a LASH-connection
 		 *
-		 * LASH needs a client-name and wants access to the commandline args.
+		 * LASH needs a client-name and needs at least the first of the
+		 * commandline arguments to determine the executable ( the others will
+		 * be used to determine session and co if lashd has to autostart... ).
+		 * If argc and argv both are 0, the arguments will be extracted from
+		 * QCoreApplication::arguments().
 		 *
 		 * @param clientname The name of this client. This should always be the
 		 * same to restore configs.

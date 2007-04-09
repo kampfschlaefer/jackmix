@@ -3,10 +3,25 @@
 
 #include <QtCore/QDebug>
 #include <QtCore/QFile>
+#include <QtCore/QCoreApplication>
+#include <QtCore/QStringList>
 
 namespace qLash {
 
 qLashClient::qLashClient( QString clientname, int argc, char** argv, QObject* p ) : QObject( p ) {
+	qDebug() << "qLashClient::qLashClient(" << clientname << "," << argc << "," << argv << "," << p << ")";
+	if ( argc==0 && argv==0 ) {
+		QStringList args = QCoreApplication::instance()->arguments();
+		argc = args.size();
+		QByteArray* arrays[ args.size() ];
+		for ( int i=0; i<args.size(); ++i )
+			arrays[ i ] = new QByteArray( args[ i ].toAscii() );
+		argv = new char*[ args.size() ];
+		for ( int i=0; i<args.size(); ++i )
+			argv[ i ] = arrays[ i ]->data();
+	}
+	for ( int i=0; i<argc; ++i )
+		qDebug() << i << "-" << argv[ i ];
 	_client = lash_init( lash_extract_args( &argc, &argv ), clientname.toStdString().c_str(), LASH_Config_Data_Set | LASH_Config_File, LASH_PROTOCOL( 2,0 ) );
 
 	if ( isConnected() ) {
