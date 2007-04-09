@@ -4,10 +4,12 @@ Import( 'env' )
 
 env = env.Copy()
 
-env.AppendUnique( CPPPATH=[ "#/backend", "#/libelements", "#/libmatrix", "#/libgui", "#/libcore" ] )
+env.AppendUnique( CPPPATH=[ "#/backend", "#/libelements", "#/libmatrix", "#/libgui", "#/libqlash", "#/libcore" ] )
 env.AppendUnique( CPPPATH=env['jack_CFLAGS'] )
-env.AppendUnique( LIBPATH=[ "#/libcore", "#/libgui", "#/backend", "#/libmatrix", "#libelements"] )
+env.AppendUnique( CPPPATH=env['lash10_CFLAGS'] )
+env.AppendUnique( LIBPATH=[ "#/libcore", "#/libgui", "#/backend", "#/libmatrix", "#libelements", "#/libqlash" ] )
 env.AppendUnique( LIBPATH=env['jack_PATHS'] )
-env.AppendUnique( LIBS=[ "jackmix_backend", "jackmix_mixingelements", "jackmix_core", "jackmix_gui", "jackmix_mixingmatrix", env['jack_LIBS'] ] )
+env.AppendUnique( LIBPATH=env['lash10_PATHS'] )
+env.AppendUnique( LIBS=[ "jackmix_backend", "jackmix_mixingelements", "jackmix_core", "jackmix_gui", "jackmix_mixingmatrix", "qlash", env['jack_LIBS'], env['lash10_LIBS'] ] )
 env.Program( target="jackmix", source=["main.cpp","mainwindow.cpp"] )
 

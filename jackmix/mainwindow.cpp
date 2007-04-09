@@ -29,6 +29,8 @@
 #include "aux_elements.h"
 #include "stereo_elements.h"
 
+#include "qlash.h"
+
 #include <QtCore/QDebug>
 #include <QtGui/QMenu>
 #include <QtGui/QMenuBar>
@@ -42,6 +44,7 @@
 #include <QtCore/QTimer>
 #include <QtGui/QCloseEvent>
 #include <QtGui/QStatusBar>
+#include <QtGui/QApplication>
 
 #include <QtXml/QDomDocument>
 
@@ -159,6 +162,11 @@ void MainWindow::init() {
 
 	_select_action->toggle();
 	toggleselectmode();
+
+	_lashclient = new qLash::qLashClient( "JackMix", 0,0, this );
+	connect( _lashclient, SIGNAL( quitApp() ), this, SLOT( close() ) );
+	connect( _lashclient, SIGNAL( saveToDir( QString ) ), this, SLOT( saveLash( QString ) ) );
+	connect( _lashclient, SIGNAL( restoreFromDir( QString ) ), this, SLOT( restoreLash( QString ) ) );
 }
 
 MainWindow::~MainWindow() {
@@ -243,8 +251,9 @@ void MainWindow::openFile( QString path ) {
 	scheduleAutoFill();
 	//qDebug() << "MainWindow::openFile() finished";
 }
-void MainWindow::saveFile() {
-	QString path = QFileDialog::getSaveFileName( this, 0, 0, "JackMix-XML (*.jm-xml)" );
+void MainWindow::saveFile( QString path ) {
+	if ( path.isEmpty() )
+		path = QFileDialog::getSaveFileName( this, 0, 0, "JackMix-XML (*.jm-xml)" );
 	if ( path.isEmpty() )
 		return;
 	
@@ -403,6 +412,16 @@ void MainWindow::scheduleAutoFill() {
 	}
 }
 
+void MainWindow::saveLash( QString dir ) {
+	qDebug() << "MainWindow::saveLash(" << dir << ")";
+	QString file = QString( "%1/jackmix.jm-xml" ).arg( dir );
+	saveFile( file );
+}
+void MainWindow::restoreLash( QString dir ) {
+	qDebug() << "MainWindow::restoreLash(" << dir << ")";
+	QString file = QString( "%1/jackmix.jm-xml" ).arg( dir );
+	openFile( file );
+}
 
 
 MainWindowHelperWidget::MainWindowHelperWidget( QWidget* p ) : QWidget( p ) {

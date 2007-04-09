@@ -33,6 +33,10 @@ class QVBox;
 class QAction;
 class QMenu;
 
+namespace qLash {
+	class qLashClient;
+};
+
 namespace JackMix {
 
 class BackendInterface;
@@ -58,7 +62,7 @@ public:
 public slots:
 	void openFile();
 	void openFile( QString path );
-	void saveFile();
+	void saveFile( QString path="" );
 private slots:
 	void toggleselectmode();
 	void togglein();
@@ -80,6 +84,10 @@ private slots:
 
 	void about();
 	void aboutQt();
+
+	void saveLash( QString dir );
+	void restoreLash( QString dir );
+
 private:
 	void init();
 	int config_restore_id;
@@ -90,6 +98,8 @@ private:
 	QAction *_debugPrint;
 	BackendInterface* _backend;
 	bool _autofillscheduled;
+
+	qLash::qLashClient* _lashclient;
 };
 
 };
