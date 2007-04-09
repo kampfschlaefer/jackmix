@@ -89,6 +89,10 @@ class qLashClient : public QObject
 		QVariant getValue( QString ) const;
 		// @}
 
+		/**
+		 */
+		void setJackName( QString );
+
 	signals:
 		/**
 		 * @brief The server tells us to quit immediatly.

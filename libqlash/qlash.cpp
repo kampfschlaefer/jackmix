@@ -84,6 +84,11 @@ QVariant qLashClient::getValue( QString n ) const {
 	return _values[ n ];
 }
 
+void qLashClient::setJackName( QString n ) {
+	if ( isConnected() )
+		lash_jack_client_name( _client, n.toStdString().c_str() );
+}
+
 void qLashClient::timerEvent( QTimerEvent* ) {
 	while ( isConnected() && lash_get_pending_event_count( _client ) > 0 ) {
 		lash_event_t* event = lash_get_event( _client );
