@@ -43,13 +43,14 @@ JackBackend::JackBackend( GuiServer_Interface* g ) : BackendInterface( g ) {
 JackBackend::~JackBackend() {
 	qDebug() << "JackBackend::~JackBackend()";
 	if ( client ) {
-		qDebug() << " return code" << ::jack_deactivate( client );
-		qDebug() << " return code" << ::jack_client_close( client );
+		/*qDebug() << " return code" <<*/ ::jack_deactivate( client );
+		/*qDebug() << " return code" <<*/ ::jack_client_close( client );
 	}
 }
 
 bool JackBackend::addOutput( QString name ) {
 	if ( client ) {
+		qDebug() << "JackBackend::addOutput(" << name << ")";
 		out_ports.insert( name, jack_port_register ( client, name.toStdString().c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0 ) );
 		return true;
 	}
@@ -57,6 +58,7 @@ bool JackBackend::addOutput( QString name ) {
 }
 bool JackBackend::addInput( QString name ) {
 	if ( client ) {
+		qDebug() << "JackBackend::addInput(" << name << ")";
 		in_ports.insert( name, jack_port_register ( client, name.toStdString().c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0 ) );
 		return true;
 	}
@@ -64,12 +66,14 @@ bool JackBackend::addInput( QString name ) {
 }
 
 bool JackBackend::removeOutput( QString name ) {
+	qDebug() << "JackBackend::removeOutput(" << name << ")";
 	if ( client && out_ports.find( name ) != out_ports.end() )
 		jack_port_unregister( client, out_ports[ name ] );
 	out_ports.remove( name );
 	return true;
 }
 bool JackBackend::removeInput( QString name ) {
+	qDebug() << "JackBackend::removeInput(" << name << ")";
 	if ( client && in_ports.find( name ) != in_ports.end() )
 		jack_port_unregister( client, in_ports[ name ] );
 	in_ports.remove( name );
