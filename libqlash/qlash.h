@@ -9,6 +9,11 @@
 
 namespace qLash {
 
+/**
+ * @brief LASH frontend for Qt4
+ *
+ * @todo more dox
+ */
 class qLashClient : public QObject
 {
 	Q_OBJECT
