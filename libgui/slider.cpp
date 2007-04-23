@@ -99,10 +99,12 @@ void Slider::paintEvent( QPaintEvent* ) {
 	QFont small = font();
 	small.setPointSizeF( qMax( 5.0, font().pointSizeF()/2 ) );
 	p.setFont( small );
-	for ( double a=_pagestep; a<dbmax; a+=_pagestep )
-		p.drawLine( QPointF( -w/2+w*dbtondb( a ), h/3.5 ), QPointF( -w/2+w*dbtondb( a ), -h/3.5 ) );
-	for ( double a=-_pagestep; a>dbmin; a-=_pagestep )
-		p.drawLine( QPointF( -w/2+w*dbtondb( a ), h/3.5 ), QPointF( -w/2+w*dbtondb( a ), -h/3.5 ) );
+	if ( _show_value ) {
+		for ( double a=_pagestep; a<dbmax; a+=_pagestep )
+			p.drawLine( QPointF( -w/2+w*dbtondb( a ), h/3.5 ), QPointF( -w/2+w*dbtondb( a ), -h/3.5 ) );
+		for ( double a=-_pagestep; a>dbmin; a-=_pagestep )
+			p.drawLine( QPointF( -w/2+w*dbtondb( a ), h/3.5 ), QPointF( -w/2+w*dbtondb( a ), -h/3.5 ) );
+	}
 	QList<double> _texts;
 	_texts << dbmin << dbmax;
 	if ( 0>dbmin && 0<dbmax )

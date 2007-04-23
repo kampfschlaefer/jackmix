@@ -114,17 +114,19 @@ void Knob::paintEvent( QPaintEvent* ) {
 	// Draw ticks
 	p.save();
 	p.setPen( palette().color( QPalette::ButtonText ) );
-	for ( double a=_pagestep; a<dbmax; a+= _pagestep ) {
-		p.save();
-		p.rotate( dbtondb( a )*300 );
-		p.drawLine( QPointF( radius*0.80,0 ), QPointF( radius*0.85,0 ) );
-		p.restore();
-	}
-	for ( double a=-_pagestep; a>dbmin; a-= _pagestep ) {
-		p.save();
-		p.rotate( dbtondb( a )*300 );
-		p.drawLine( QPointF( radius*0.80,0 ), QPointF( radius*0.85,0 ) );
-		p.restore();
+	if ( _show_value ) {
+		for ( double a=_pagestep; a<dbmax; a+= _pagestep ) {
+			p.save();
+			p.rotate( dbtondb( a )*300 );
+			p.drawLine( QPointF( radius*0.80,0 ), QPointF( radius*0.85,0 ) );
+			p.restore();
+		}
+		for ( double a=-_pagestep; a>dbmin; a-= _pagestep ) {
+			p.save();
+			p.rotate( dbtondb( a )*300 );
+			p.drawLine( QPointF( radius*0.80,0 ), QPointF( radius*0.85,0 ) );
+			p.restore();
+		}
 	}
 	QList<double> _texts;
 	_texts << dbmin << dbmax;
