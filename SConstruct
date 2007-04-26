@@ -6,7 +6,7 @@ compile    -> scons
 clean      -> scons -c
 install    -> scons install
 uninstall  -> scons -c install
-configure  -> scons configure prefix=/tmp/ita
+configure  -> scons configure prefix=/home/arnold
 
 Run from a subdirectory -> scons -u
 The variables are saved automatically after the first run
@@ -27,6 +27,7 @@ if env['QTDIR'].find( '3' ) >= 0:
 env.Replace( LIBS="" )
 env.Replace( LIBPATH="" )
 
+#env['CXXFLAGS']+="-Wall -Werror -g -fpic"
 env['CXXFLAGS']+="-Wall -Werror -g -fpic"
 
 def CheckPKGConfig( context, pkgname, version="", all=False ):
@@ -86,5 +87,5 @@ env = conf.Finish()
 
 
 ## target processing is done in the subdirectory
-env.SConscript( dirs=['libcore','libqlash','libgui','backend','libmatrix','libelements','jackmix','simple_lash_client'], exports="env" )
+env.SConscript( dirs=['libcore','libqlash','libgui','backend','libmatrix','libelements','jackmix'], exports="env" )
 

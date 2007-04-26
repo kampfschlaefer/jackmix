@@ -6,11 +6,11 @@ To install JackMix you basicly need to do:
  scons configure
  scons
 
-JackMix requires Qt4.2 or higher and the jack-audio-connection-kit version 0.100.0 or higher.
+JackMix requires Qt4.2 or higher, the jack-audio-connection-kit version 0.100.0 or higher and lash-1 version 0.5.1 or higher.
 
 If you want to install JackMix into some other dir than the default, please add "prefix=<path>" to the "scons configure".
 
-If you Qt4 is install into /usr and libs are under /usr/lib/qt4 and headers in /usr/include/qt4 you need to have a configure call like this:
+If your Qt4 is install into /usr and libs are under /usr/lib/qt4 and headers in /usr/include/qt4 you need to have a configure call like this:
 
  QTDIR=/usr scons configure qtlibs=/usr/lib/qt4
 

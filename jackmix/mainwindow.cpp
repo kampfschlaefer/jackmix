@@ -99,6 +99,8 @@ MainWindow::MainWindow( QString filename, QWidget* p ) : QMainWindow( p ), _back
 	_autofillscheduled = false;
 	scheduleAutoFill();
 
+	//_lashclient->setJackName( "JackMix" );
+
 	qDebug() << "MainWindow::MainWindow() finished...";
 }
 
@@ -176,7 +178,7 @@ void MainWindow::init() {
 	connect( _lashclient, SIGNAL( quitApp() ), this, SLOT( close() ) );
 	connect( _lashclient, SIGNAL( saveToDir( QString ) ), this, SLOT( saveLash( QString ) ) );
 	connect( _lashclient, SIGNAL( restoreFromDir( QString ) ), this, SLOT( restoreLash( QString ) ) );
-	_lashclient->setJackName( "JackMix" );
+	//_lashclient->setJackName( "JackMix" );
 }
 
 MainWindow::~MainWindow() {
@@ -431,6 +433,8 @@ void MainWindow::restoreLash( QString dir ) {
 	qDebug() << "MainWindow::restoreLash(" << dir << ")";
 	QString file = QString( "%1/jackmix.jm-xml" ).arg( dir );
 	openFile( file );
+	_lashclient->setJackName( "JackMix" );
+	qDebug() << "MainWindow::restoreLash() finished";
 }
 
 
