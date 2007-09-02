@@ -28,7 +28,7 @@ env.Replace( LIBS="" )
 env.Replace( LIBPATH="" )
 
 #env['CXXFLAGS']+="-Wall -Werror -g -fpic"
-env['CXXFLAGS']+="-Wall -Werror -g -fpic"
+env['CXXFLAGS']+="-fpic"
 
 def CheckPKGConfig( context, pkgname, version="", all=False ):
 	import SCons.Util, os, string
