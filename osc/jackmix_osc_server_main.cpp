@@ -18,10 +18,10 @@
 
 */
 
-#include <iostream>
 #include <QtGui/QApplication>
 #include <QtGui/QSlider>
 #include <QtGui/QLabel>
+#include <QtCore/QDebug>
 
 #include "osc_server.h"
 #include "osc_connection.h"
@@ -47,6 +47,10 @@ int main( int argc, char** argv ) {
 	w->show();
 
 	int ret = qapp->exec();
+
+	qDebug() << " finished. deleting:";
 	delete _oscconnectionserver;
+	qDebug() << "done.";
+
 	return ret;
 }
