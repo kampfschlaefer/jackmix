@@ -1,5 +1,6 @@
 
 #include "qlash.h"
+#include "qlash.moc"
 
 #include <QtCore/QDebug>
 #include <QtCore/QFile>

@@ -5,6 +5,7 @@
 #include <qlash.h>
 
 #include "main.h"
+#include "main.moc"
 
 int main( int argc, char** argv ) {
 	qDebug() << "simple_lash_client starting";

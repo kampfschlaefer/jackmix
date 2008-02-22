@@ -57,6 +57,9 @@ public:
 	/// returns the volume of channel,output
 	float getVolume( QString,QString );
 
+	bool renameInput( QString, QString );
+	bool renameOutput( QString, QString );
+
 private:
 	void setOutVolume( QString, float );
 	float getOutVolume( QString );

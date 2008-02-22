@@ -4,11 +4,8 @@ Import( 'env' )
 
 env = env.Copy()
 
-env.AppendUnique( CPPPATH= env['lash10_CFLAGS'] )
-env.AppendUnique( CPPPATH= [ '#/libqlash' ] )
-env.AppendUnique( LIBPATH= env['lash10_PATHS'] )
-env.AppendUnique( LIBPATH= [ '#/libqlash'] )
-env.AppendUnique( LIBS   = env['lash10_LIBS'] )
-env.AppendUnique( LIBS   = [ 'qlash' ] )
+env.MergeFlags( env['LASH10_FLAGS'] )
+env.MergeFlags( env['QTGUI_FLAGS'] )
+env.MergeFlags( '-I#/libqlash -L#/libqlash -lqlash' )
 env.Program( target="simple_lash_client", source=["main.cpp"] )
 

@@ -87,6 +87,15 @@ namespace JackMix {
 		 */
 		virtual bool removeInput( QString ) =0;
 
+		/**
+		 * @todo doc
+		 */
+		virtual bool renameInput( QString oldname, QString newname ) =0;
+		/**
+		 * @todo doc
+		 */
+		virtual bool renameOutput( QString oldname, QString newname ) =0;
+
 	protected:
 		GuiServer_Interface* gui;
 

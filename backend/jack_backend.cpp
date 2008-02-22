@@ -80,6 +80,28 @@ bool JackBackend::removeInput( QString name ) {
 	return true;
 }
 
+bool JackBackend::renameInput( QString oldname, QString newname ) {
+	if ( oldname == newname )
+		return true;
+	if ( in_ports.contains( oldname ) ) {
+		jack_port_t* port = in_ports.take( oldname );
+		bool ret = jack_port_set_name( port, newname.toStdString().c_str() );
+		QString tmp = jack_port_short_name( port );
+		in_ports.insert( tmp, port );
+		if ( ret ) {
+			involumes.insert( newname, involumes.take( oldname ) );
+			volumes.insert( newname, volumes.take( oldname ) );
+		}
+		return ret;
+	}
+	return false;
+}
+
+bool JackBackend::renameOutput( QString oldname, QString newname ) {
+	qWarning() << "JackBackend::renameOutput(" << oldname << "," << newname << ")";
+	return false;
+}
+
 void JackBackend::setVolume( QString channel, QString output, float volume ) {
 	//qDebug() << "JackBackend::setVolume( " << channel << ", " << output << ", " << volume << " )";
 	if ( channel == output ) {

@@ -4,6 +4,10 @@ Import( 'env' )
 
 env = env.Copy()
 
-env.AppendUnique( CPPPATH=["#/libcore","#/libgui"] )
-env.StaticLibrary( target="jackmix_mixingmatrix", source=["mixingmatrix.cpp"] )
+env.MergeFlags( "-I#/libcore -I#/libgui" )
+env.StaticLibrary( target="jackmix_mixingmatrix", source=["mixingmatrix.cpp","mixingwidget2.cpp"] )
 
+env.MergeFlags( "-L./" )
+env.MergeFlags( '-ljackmix_mixingmatrix' )
+env.MergeFlags( env['QTGUI_FLAGS'] )
+env.Program( target="widget2app", source=['widget2app.cpp'] )

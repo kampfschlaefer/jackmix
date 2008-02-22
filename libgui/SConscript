@@ -4,11 +4,14 @@ Import( 'env' )
 
 env = env.Copy()
 
+env.MergeFlags( "-I." )
+
 env.AppendUnique( CPPPATH = ["#/libcore"] )
 env.StaticLibrary( target="jackmix_gui", source =["channelselector.cpp","graphicalguiserver.cpp","abstractslider.cpp","slider.cpp","knob.cpp"] )
 
-env.AppendUnique( LIBPATH= ["./"] )
-env.AppendUnique( LIBS= ["jackmix_gui"] )
-env.Program( target="slider_test", source=["slider_test.cpp"] )
-env.Program( target="channelselector_test", source=["channelselector_test.cpp"] )
+e = env.Clone()
+e.MergeFlags( "-L./  -ljackmix_gui" )
+e.MergeFlags( env['QTGUI_FLAGS'] )
+e.Program( target="slider_test", source=["slider_test.cpp"] )
+e.Program( target="channelselector_test", source=["channelselector_test.cpp"] )
 

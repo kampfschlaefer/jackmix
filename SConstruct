@@ -1,89 +1,53 @@
 #! /usr/bin/env python
 
-"""
-help       -> scons -h
-compile    -> scons
-clean      -> scons -c
-install    -> scons install
-uninstall  -> scons -c install
-configure  -> scons configure prefix=/tmp/ita
-
-Run from a subdirectory -> scons -u
-The variables are saved automatically after the first run
-"""
-
 ###################################################################
 # LOAD THE ENVIRONMENT AND SET UP THE TOOLS
 ###################################################################
 
 ## Load the builders in config
-env = Environment( tools=['default', 'qt' ] )
-
-if env['QTDIR'].find( '3' ) >= 0:
-	env['QTDIR'] = "/usr"
-	env['QT_CPPPATH'] = "";
-	env['QT_LIB'] = ""
+env = Environment( tools=['default', 'pkgconfig', 'qt4muc' ], toolpath=['admin'] )
 
 env.Replace( LIBS="" )
 env.Replace( LIBPATH="" )
 
 env['CXXFLAGS']+="-Wall -Werror -g -fpic"
 
-def CheckPKGConfig( context, pkgname, version="", all=False ):
-	import SCons.Util, os, string
+tests = { }
+tests.update( env['PKGCONFIG_TESTS'] )
 
-	pkg = pkgname.replace( ".", "" )
-	pkg = pkg.replace( "-", "" )
-	if pkg != pkgname:
-		print pkgname + " changes to " + pkg
+conf = Configure( env, custom_tests=tests, conf_dir='cache', log_file='cache/config.log' )
 
-	if version == "":
-		context.Message( "Checking for " + pkgname + "..." )
-		ret = context.TryAction( 'pkg-config --exists ' + pkgname )
-	else:
-		context.Message( "Checking for " + pkgname + " " + version + " or higher..." )
-		ret = context.TryAction( "pkg-config --atleast-version=" + version + " " + pkgname )
+if not conf.CheckHeader( 'stdio.h', language="C" ):
+	Exit( 1 )
+if not conf.CheckHeader( "iostream", language="C++" ):
+	Exit( 1 )
 
-	if ret[0] == 1:
-		tmp = os.popen( 'pkg-config --libs-only-l ' + pkgname ).read().strip()
-		if all:
-			env.AppendUnique( LIBS = SCons.Util.CLVar( tmp ) )
-		else:
-			env[pkg + '_LIBS'] = SCons.Util.CLVar( string.replace( tmp, "-l", "" ) )
+allpresent = 1
 
-		tmp = os.popen( 'pkg-config --libs-only-L ' + pkgname ).read().strip()
-		if all:
-			env.AppendUnique( LIBPATH = SCons.Util.CLVar( string.replace( tmp, "-L", "" ) ) )
-		else:
-			env[pkg + '_PATHS'] = SCons.Util.CLVar( tmp )
+allpresent &= conf.CheckForPKGConfig()
 
-		tmp = ' ' + os.popen( 'pkg-config --cflags ' + pkgname ).read().strip()
-		if all:
-			env.AppendUnique( CXXFLAGS = SCons.Util.CLVar( tmp ) )
-		else:
-			env[pkg + '_CFLAGS'] = SCons.Util.CLVar( string.replace( tmp, "-I", "" ) )
-	else:
-		tmp = "\n" + pkgname
-		if version != "":
-			tmp += "Version " + version + " or higher"
-		print tmp + " is really needed!"
-		Exit(1)
+pkgs = {
+	'jack' : '0.100.0',
+	'lash-1.0' : '0.5.1',
+	'QtCore' : '4.2',
+	'QtGui' : '4.2',
+	'QtXml' : '4.2',
+	}
+for pkg in pkgs:
+	name2 = pkg.replace("+","").replace(".","").replace("-","").upper()
+	env['%s_FLAGS' % name2] = conf.GetPKGFlags( pkg, pkgs[pkg] )
+	if env['%s_FLAGS'%name2] == 0:
+		allpresent &= 0
 
-	context.Result( ret[0] )
-	return ret[0]
-
-conf = Configure( env, custom_tests={'CheckPKGConfig' : CheckPKGConfig }, conf_dir='cache', log_file='cache/config.log' )
-conf.CheckPKGConfig( 'jack', "0.100.0" )
-conf.CheckPKGConfig( 'lash-1.0', "0.5.1" )
-conf.CheckPKGConfig( 'QtCore', "4.2", True )
-conf.CheckPKGConfig( 'QtGui', "4.2", True )
-conf.CheckPKGConfig( 'QtXml', "4.2", True )
+if not allpresent:
+	print "(At least) One of the dependencies is missing. I can't go on without it..."
+	Exit( 1 )
 
 env = conf.Finish()
 
-#env.Append( CPPPATH="./ " )
+env.MergeFlags( "-I#" )
 
-
+env.MergeFlags( env["QTCORE_FLAGS"] )
 
 ## target processing is done in the subdirectory
 env.SConscript( dirs=['libcore','libqlash','libgui','backend','libmatrix','libelements','jackmix','simple_lash_client'], exports="env" )
