@@ -11,10 +11,6 @@ import SCons.Tool
 def exists( env ):
 	return True
 
-moc = SCons.Builder.Builder( action="moc $SOURCES > $TARGET", suffix='.moc', src_suffix='.h'   )
-uic = SCons.Builder.Builder( action="uic $SOURCES > $TARGET", suffix='.h',   src_suffix='.ui'  )
-rcc = SCons.Builder.Builder( action="rcc $SOURCES > $TARGET", suffix='.cpp', src_suffix=".qrc" )
-
 def moc_emitter( target, source, env ):
 	base = str(source[0]).split(".")[0:-1][0]
 	contents = source[0].get_contents();
@@ -75,9 +71,55 @@ def uic_scanner( node, env, path ):
 	print "\nWarning! was called with an unhandled suffix: " + str(node).split(".")[-1] + " !\n"
 	return []
 
+def GetAppVersion( context, app, version ):
+	import os
+
+	context.Message( "Checking if the output of '%s' contains '%s' " % (app,version) )
+
+	out = os.popen3( app )
+	#print out[1] + out[2]
+	str = out[1].read() + out[2].read()
+
+	ret = False
+
+	if str.count( version ) > 0:
+		ret = True
+
+	context.Result( ret )
+	return ret
 
 def generate( env ):
-	print "qt4muc"
+	print "Configuring qt4muc..."
+
+	conf = env.Configure( custom_tests = { 'GetAppVersion' : GetAppVersion } )
+
+	moc = "moc"
+	if not conf.GetAppVersion( "%s -v" % moc, "Qt 4." ):
+		moc = "moc4"
+		if not conf.GetAppVersion( "%s -v" % moc, "Qt 4." ):
+			print "\nI Could not find a valid moc from Qt4. I need it!\n"
+			env.Exit( 1 )
+
+	uic = "uic"
+	if not conf.GetAppVersion( "%s -v" % uic, "4." ):
+		uic = "uic4"
+		if not conf.GetAppVersion( "%s -v" % uic, "Qt 4." ):
+			print "\nI Could not find a valid uic from Qt4. I need it!\n"
+			env.Exit( 1 )
+
+	rcc = "rcc"
+	if not conf.GetAppVersion( "%s -v" % rcc, "4." ):
+		rcc = "rcc4"
+		if not conf.GetAppVersion( "%s -v" % rcc, "Qt 4." ):
+			print "\nI Could not find a valid rcc from Qt4. I need it!\n"
+			env.Exit( 1 )
+
+	env = conf.Finish()
+	print "Done. Will define a more or less automatic environment to do all the qt-specific stuff."
+
+	moc = SCons.Builder.Builder( action="%s $SOURCES > $TARGET" % moc, suffix='.moc', src_suffix='.h'   )
+	uic = SCons.Builder.Builder( action="%s $SOURCES > $TARGET" % uic, suffix='.h',   src_suffix='.ui'  )
+	rcc = SCons.Builder.Builder( action="%s $SOURCES > $TARGET" % rcc, suffix='.cpp', src_suffix=".qrc" )
 
 	env['BUILDERS']['UIBuilder'] = uic
 	env['BUILDERS']['MOCBuilder'] = moc
