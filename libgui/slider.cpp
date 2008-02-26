@@ -19,7 +19,7 @@
 */
 
 #include "slider.h"
-//#include "slider.moc"
+#include "slider.moc"
 
 #include <QtGui/QPainter>
 #include <QtGui/QStyle>

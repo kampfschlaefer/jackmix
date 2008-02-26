@@ -4,6 +4,6 @@ Import( 'env' )
 
 env = env.Copy()
 
-env.AppendUnique( CPPPATH=["#/libcore","#/libgui"] )
+env.MergeFlags( "-I#/libcore -I#/libgui" )
 env.StaticLibrary( target="jackmix_mixingmatrix", source=["mixingmatrix.cpp"] )
 

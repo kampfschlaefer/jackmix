@@ -19,7 +19,7 @@
 */
 
 #include "mainwindow.h"
-//#include "mainwindow.moc"
+#include "mainwindow.moc"
 
 #include "jack_backend.h"
 #include "mixingmatrix.h"

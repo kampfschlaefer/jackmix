@@ -20,8 +20,8 @@
 
 #include "mixingmatrix.h"
 #include "mixingmatrix_privat.h"
-//#include "mixingmatrix.moc"
-//#include "mixingmatrix_privat.moc"
+#include "mixingmatrix.moc"
+#include "mixingmatrix_privat.moc"
 
 #include <QtGui/QLayout>
 #include <QtGui/QListWidget>

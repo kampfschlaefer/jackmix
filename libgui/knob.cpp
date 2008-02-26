@@ -18,7 +18,7 @@
 */
 
 #include "knob.h"
-//#include "knob.moc"
+#include "knob.moc"
 
 #include <QtGui/QPainter>
 #include <QtGui/QMouseEvent>
