@@ -93,26 +93,25 @@ def generate( env ):
 
 	conf = env.Configure( custom_tests = { 'GetAppVersion' : GetAppVersion } )
 
-	moc = "moc"
-	if not conf.GetAppVersion( "%s -v" % moc, "Qt 4." ):
-		moc = "moc4"
-		if not conf.GetAppVersion( "%s -v" % moc, "Qt 4." ):
-			print "\nI Could not find a valid moc from Qt4. I need it!\n"
-			env.Exit( 1 )
+	def CommandFromList( commandlist, version ):
+		ret = ""
+		for command in commandlist:
+			if len( ret ) == 0:
+				if conf.GetAppVersion( "%s -v" % command, version ):
+					ret = command
+		return ret
 
-	uic = "uic"
-	if not conf.GetAppVersion( "%s -v" % uic, "4." ):
-		uic = "uic4"
-		if not conf.GetAppVersion( "%s -v" % uic, "Qt 4." ):
-			print "\nI Could not find a valid uic from Qt4. I need it!\n"
-			env.Exit( 1 )
+	moc = CommandFromList( ( "moc", "moc4", "moc-qt4" ), "Qt 4." )
+	if len( moc ) < 3:
+		env.Exit( 1 )
 
-	rcc = "rcc"
-	if not conf.GetAppVersion( "%s -v" % rcc, "4." ):
-		rcc = "rcc4"
-		if not conf.GetAppVersion( "%s -v" % rcc, "Qt 4." ):
-			print "\nI Could not find a valid rcc from Qt4. I need it!\n"
-			env.Exit( 1 )
+	uic = CommandFromList( ( "uic", "uic4", "uic-qt4" ), "4." )
+	if len( uic ) < 3:
+		env.Exit( 1 )
+
+	rcc = CommandFromList( ( "rcc", "rcc4", "rcc-qt4" ), "4." )
+	if len( rcc ) < 3:
+		env.Exit( 1 )
 
 	env = conf.Finish()
 	print "Done. Will define a more or less automatic environment to do all the qt-specific stuff."
