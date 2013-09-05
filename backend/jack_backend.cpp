@@ -27,8 +27,7 @@ using namespace JackMix;
 
 JackBackend::JackBackend( GuiServer_Interface* g ) : BackendInterface( g ) {
 	qDebug() << "JackBackend::JackBackend()";
-	client = ::jack_client_new( "JackMix" );
-	//client = 0;
+	client = ::jack_client_open( "JackMix", JackNoStartServer, NULL );
 	if ( client ) {
 		::jack_set_process_callback( client, JackMix::process, this );
 		qDebug() << "JackBackend::JackBackend() activate";

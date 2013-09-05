@@ -2,7 +2,7 @@
 
 Import( 'env' )
 
-env = env.Copy()
+env = env.Clone()
 
 env.AppendUnique( CPPPATH = ["#/libmatrix","#/libgui","#/libcore"] )
 env.StaticLibrary( target="jackmix_mixingelements", source=["stereo_elements.cpp","aux_elements.cpp"] )

@@ -2,7 +2,7 @@
 
 Import( 'env' )
 
-env = env.Copy()
+env = env.Clone()
 env.MergeFlags( "-I#/libcore" )
 env.StaticLibrary( target="jackmix_backend", source=["jack_backend.cpp"] )
 

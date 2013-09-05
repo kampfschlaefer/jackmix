@@ -2,7 +2,7 @@
 
 Import( 'env' )
 
-env = env.Copy()
+env = env.Clone()
 
 env.MergeFlags( env['LASH10_FLAGS'] )
 env.StaticLibrary( target="qlash", source= ['qlash.cpp'] )

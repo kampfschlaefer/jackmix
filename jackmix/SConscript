@@ -2,7 +2,7 @@
 
 Import( 'env' )
 
-env = env.Copy()
+env = env.Clone()
 
 env.MergeFlags( "-L#/backend -L#/libelements -L#/libmatrix -L#/libgui -L#/libqlash -L#/libcore" )
 env.MergeFlags( "-I#/libcore -I#/libgui -I#/backend -I#/libmatrix -I#libelements -I#/libqlash" )

@@ -10,7 +10,7 @@ env = Environment( tools=['default', 'pkgconfig', 'qt4muc' ], toolpath=['admin']
 env.Replace( LIBS="" )
 env.Replace( LIBPATH="" )
 
-env.MergeFlags( "-Wall -Werror -g -fpic" )
+env.MergeFlags( ['-Wall', '-Werror', '-g', '-fpic'] )
 
 tests = { }
 tests.update( env['PKGCONFIG_TESTS'] )
