@@ -1,4 +1,15 @@
-JackMix v0.4.1
+JackMix
 Arnold Krille <arnold@arnoldarts.de>
 
 See INSTALL for installation instructions.
+
+JackMix is a matrix mixer allowing p input channels to be mixed into
+q output channles by a matrix of faders. It relys on the Jack framework
+to route these inputs and outputs.
+
+This version of jackmix is enhanced for compatibility with an external
+MIDI control surface.
+
+It is based on Arnold Krille's version 0.4.2
+
+Nick Bailey <nick@n-ism.org>
