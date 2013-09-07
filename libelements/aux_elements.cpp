@@ -85,6 +85,7 @@ AuxElement::AuxElement( QStringList inchannel, QStringList outchannel, MixingMat
 
 	connect( poti, SIGNAL( valueChanged( double ) ), this, SLOT( emitvalue( double ) ) );
 	connect( poti, SIGNAL( select() ), this, SLOT( slot_simple_select() ) );
+	connect( poti, SIGNAL( replace() ), this, SLOT( slot_simple_replace() ) );
 }
 AuxElement::~AuxElement() {
 }

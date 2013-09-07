@@ -44,11 +44,17 @@ public slots:
 signals:
 	void valueChanged( double );
 	/** Propagate selection requests
-	 *  The slider may emit a select signal on receiving an appropraite event
-	 *  (e.g. a shift-mouse1 event). This signal can be connected to the 
-	 *  responsible element's slot_simple_select.
+	 *  The slider may emit a select signal on receiving a shift-left-mouse click.
+	 *  This signal would normally be connected to the responsible element's
+	 *  slot_simple_select.
 	 */
-	void select( void ); 
+	void select( void );
+	/** Propagate replace requests
+	 *  Ctrl-Shift-left-click is associated with a replace request.
+	 *  This signal would normally be connected to the responsible element's
+	 *  slot_simple_replace
+	 */
+	void replace(void);
 
 private slots:
 	void hideInput();

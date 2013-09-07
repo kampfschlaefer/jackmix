@@ -83,8 +83,11 @@ void AbstractSlider::contextMenuEvent( QContextMenuEvent* ev ) {
 void AbstractSlider::mousePressEvent( QMouseEvent* ev ) {
 	//qDebug() << "AbstractSlider::mousePressEvent(" << ev << ") is accepted?" << ev->isAccepted();
 	if ( ev->button() == Qt::LeftButton) {
-		if (ev->modifiers() & Qt::ShiftModifier) {
+		if (ev->modifiers() == Qt::ShiftModifier) {
 			emit(select());
+			ev->accept();
+		} else if ( ev->modifiers() == (Qt::ShiftModifier | Qt::ControlModifier) ) {
+			emit(replace());
 			ev->accept();
 		} else {
 			if ( _nullclick.contains( ev->pos() ) )

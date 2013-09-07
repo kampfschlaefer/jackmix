@@ -96,10 +96,13 @@ Mono2StereoElement::Mono2StereoElement( QStringList inchannel, QStringList outch
 	_balance = new JackMix::GUI::Knob( _balance_value, -1, 1, 2, 0.1, this, "%1" );
 	_layout->addWidget( _balance, 10 );
 	connect( _balance, SIGNAL( valueChanged( double ) ), this, SLOT( balance( double ) ) );
+	connect( _balance, SIGNAL( select() ), this, SLOT( slot_simple_select() ) );
+	connect( _balance, SIGNAL( replace() ), this, SLOT( slot_simple_replace() ) );
 	_volume = new JackMix::GUI::Slider( amptodb( _volume_value ), dbmin, dbmax, 2, 3, this );
 	_layout->addWidget( _volume, 20 );
 	connect( _volume, SIGNAL( valueChanged( double ) ), this, SLOT( volume( double ) ) );
 	connect( _volume, SIGNAL( select() ), this, SLOT( slot_simple_select() ) );
+	connect( _volume, SIGNAL( replace() ), this, SLOT( slot_simple_replace() ) );
 }
 Mono2StereoElement::~Mono2StereoElement() {
 }
@@ -161,11 +164,14 @@ Stereo2StereoElement::Stereo2StereoElement( QStringList inchannels, QStringList 
 	_layout->addWidget( _balance_widget, 0,0 );
 	_layout->setRowStretch( 0, 0 );
 	connect( _balance_widget, SIGNAL( valueChanged( double ) ), this, SLOT( balance( double ) ) );
+	connect( _balance_widget, SIGNAL( select() ), this, SLOT( slot_simple_select() ) );
+	connect( _balance_widget, SIGNAL( replace() ), this, SLOT( slot_simple_replace() ) );
 	_volume_widget = new JackMix::GUI::Slider( amptodb( _volume_value ), dbmin, dbmax, 1, 3, this );
 	_layout->addWidget( _volume_widget, 1,0 );
 	_layout->setRowStretch( 1, 255 );
 	connect( _volume_widget, SIGNAL( valueChanged( double ) ), this, SLOT( volume( double ) ) );
 	connect( _volume_widget, SIGNAL( select() ), this, SLOT( slot_simple_select() ) );
+	connect( _volume_widget, SIGNAL( replace() ), this, SLOT( slot_simple_replace() ) );
 
 	QAction *toggle = new QAction( "Toggle Selection", this );
 	connect( toggle, SIGNAL( triggered() ), this, SLOT( slot_simple_select() ) );
