@@ -179,12 +179,13 @@ protected:
 	 * @todo the overall layout is needed for hide/show buttons per channel/element...
 	 */
 	QLayout* layout();
+	virtual void mousePressedEvent(QMouseEvent*);
 
 protected slots:
 	// Use this slot if you don't want to do something before replacement.
-	void slot_simple_replace() { emit replace( this ); }
+	virtual void slot_simple_replace() { emit replace( this ); }
 	// Use this slot if you want a simple selection toggle
-	void slot_simple_select() { select( !isSelected() ); }
+	virtual void slot_simple_select() { select( !isSelected() ); }
 
 	void contextMenuEvent( QContextMenuEvent* );
 private slots:

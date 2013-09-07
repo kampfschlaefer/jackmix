@@ -38,7 +38,7 @@ class AuxFactory : public JackMix::MixingMatrix::ElementFactory
 {
 public:
 	AuxFactory() : ElementFactory() {
-	qDebug() << "AuxFactory::AuxFactory()";
+		qDebug() << "AuxFactory::AuxFactory()";
 		globaldebug();
 	}
 	~AuxFactory() {}
@@ -84,6 +84,7 @@ AuxElement::AuxElement( QStringList inchannel, QStringList outchannel, MixingMat
 	_layout->addWidget( poti, 100 );
 
 	connect( poti, SIGNAL( valueChanged( double ) ), this, SLOT( emitvalue( double ) ) );
+	connect( poti, SIGNAL( select() ), this, SLOT( slot_simple_select() ) );
 }
 AuxElement::~AuxElement() {
 }

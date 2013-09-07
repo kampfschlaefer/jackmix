@@ -20,17 +20,16 @@
 
 #include <iostream>
 #include <QtGui/QApplication>
-#include <QtGui/QColor>
 
 #include "slider.h"
-#include "knob.h"
 
 int main( int argc, char** argv ) {
 	QApplication *qapp = new QApplication( argc, argv );
 
-	QWidget *mw = new JackMix::GUI::Slider( 0, -20, 3, 2, 1, 0 );
-	//QWidget *mw = new JackMix::GUI::Knob( 0, -20, 3, 2, 1, 0 );
+	QWidget *mw = new JackMix::GUI::Slider( 0, -20, 3, 2, 1, NULL );
+	std::cout << "Here I am!" << std::endl;
 	mw->show();
+	std::cout << "Here I am!" << std::endl;
 
 	int ret = qapp->exec();
 	return ret;

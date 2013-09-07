@@ -20,7 +20,7 @@
 #ifndef ABSTRACTSLIDER_H
 #define ABSTRACTSLIDER_H
 
-#include <QtGui/QWidget>
+#include <QtGui/QFrame>
 #include <QtCore/QPointer>
 #include "dbvolcalc.h"
 
@@ -30,7 +30,7 @@ namespace JackMix {
 
 namespace GUI {
 
-class AbstractSlider : public QWidget, public dB2VolCalc
+class AbstractSlider : public QFrame, public dB2VolCalc
 {
 Q_OBJECT
 public:
@@ -43,6 +43,12 @@ public slots:
 
 signals:
 	void valueChanged( double );
+	/** Propagate selection requests
+	 *  The slider may emit a select signal on receiving an appropraite event
+	 *  (e.g. a shift-mouse1 event). This signal can be connected to the 
+	 *  responsible element's slot_simple_select.
+	 */
+	void select( void ); 
 
 private slots:
 	void hideInput();

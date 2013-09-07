@@ -253,10 +253,8 @@ void Widget::removeoutchannel( QString name ) {
 	_outchannels.removeAll( name );
 }
 
-
-
 void Widget::debugPrint() {
-	qDebug( "\nWidget::debugPrint()" );
+        qDebug( "\nWidget::debugPrint()" );
 }
 
 
@@ -299,7 +297,9 @@ void Element::select( bool n ) {
 				pal.setColor( QPalette::Window, pal.color( QPalette::Window ).dark() );
 			} else {
 				setFrameShadow( QFrame::Raised );
-				pal.setColor( QPalette::Window, pal.color( QPalette::Window ).light() );
+				// The dark() method above returns the selected colour, but doesn't
+				// change the palette. To return to normal, we just use the old colour again.
+				pal.setColor( QPalette::Window, pal.color( QPalette::Window ) );
 			}
 			setPalette( pal );
 			isSelected( n );
@@ -346,10 +346,16 @@ void Element::showMenu() {
 	_menu->exec( QCursor::pos() );
 }
 void Element::contextMenuEvent( QContextMenuEvent* ev ) {
-	//qDebug() << "Element::contextMenuEvent(" << ev << ") is accepted?" <<ev->isAccepted();
+	qDebug() << "Element::contextMenuEvent(" << ev << ") is accepted?" <<ev->isAccepted();
 	showMenu();
 	ev->accept();
 }
+void Element::mousePressedEvent( QMouseEvent* ev) {
+	qDebug() << "Element::mousePressedEvent(" << ev << ") is accepted?" <<ev->isAccepted();
+	qDebug() << (int)(ev->modifiers() & Qt::ShiftModifier);
+}
+
+
 
 ElementFactory::ElementFactory() {
 	Global::the()->registerFactory( this );
@@ -391,6 +397,7 @@ QStringList Global::canCreate( int in, int out ) {
 bool Global::create( QString type, QStringList ins, QStringList outs, Widget* parent, const char* name ) {
 	//qDebug( "Global::create( QString %s, QStringList '%s', QStringList '%s', Widget* %p, const char* %s )", qPrintable( type ), qPrintable( ins.join( "," ) ), qPrintable( outs.join( "," ) ), parent, name );
 	Element* elem=0;
+
 	for ( int i=0; i<_factories.size() && elem==0; i++ )
 		elem = _factories[ i ]->create( type, ins, outs, parent, name );
 	//qDebug( "Will show and return %p", elem );

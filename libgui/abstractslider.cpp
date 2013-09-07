@@ -28,7 +28,7 @@ namespace JackMix {
 namespace GUI {
 
 AbstractSlider::AbstractSlider( double value, double min, double max, int precision, double pagestep, QWidget* p, QString valuestring )
-	: QWidget( p )
+	: QFrame( p )
 	, dB2VolCalc( min, max )
 	, _value( value ), _value_inupdate( false ), _pagestep( pagestep )
 	, _precision( precision )
@@ -78,15 +78,20 @@ void AbstractSlider::contextMenuEvent( QContextMenuEvent* ev ) {
 		showInput();
 	else
 		ev->ignore();
-}
+}	
 
 void AbstractSlider::mousePressEvent( QMouseEvent* ev ) {
 	//qDebug() << "AbstractSlider::mousePressEvent(" << ev << ") is accepted?" << ev->isAccepted();
-	if ( ev->button() == Qt::LeftButton ) {
-		if ( _nullclick.contains( ev->pos() ) )
-			value( 0 );
-		else
-			mouseEvent( ev );
+	if ( ev->button() == Qt::LeftButton) {
+		if (ev->modifiers() & Qt::ShiftModifier) {
+			emit(select());
+			ev->accept();
+		} else {
+			if ( _nullclick.contains( ev->pos() ) )
+				value( 0 );
+			else
+				mouseEvent( ev );
+		}
 	}
 }
 void AbstractSlider::mouseMoveEvent( QMouseEvent* ev ) {
