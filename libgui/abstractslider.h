@@ -20,7 +20,7 @@
 #ifndef ABSTRACTSLIDER_H
 #define ABSTRACTSLIDER_H
 
-#include <QtGui/QFrame>
+#include <QtGui/QWidget>
 #include <QtCore/QPointer>
 #include "dbvolcalc.h"
 
@@ -30,7 +30,7 @@ namespace JackMix {
 
 namespace GUI {
 
-class AbstractSlider : public QFrame, public dB2VolCalc
+class AbstractSlider : public QWidget, public dB2VolCalc
 {
 Q_OBJECT
 public:

@@ -179,7 +179,6 @@ protected:
 	 * @todo the overall layout is needed for hide/show buttons per channel/element...
 	 */
 	QLayout* layout();
-	virtual void mousePressedEvent(QMouseEvent*);
 
 protected slots:
 	// Use this slot if you don't want to do something before replacement.

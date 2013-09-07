@@ -28,7 +28,7 @@ namespace JackMix {
 namespace GUI {
 
 AbstractSlider::AbstractSlider( double value, double min, double max, int precision, double pagestep, QWidget* p, QString valuestring )
-	: QFrame( p )
+	: QWidget( p )
 	, dB2VolCalc( min, max )
 	, _value( value ), _value_inupdate( false ), _pagestep( pagestep )
 	, _precision( precision )

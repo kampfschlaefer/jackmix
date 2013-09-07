@@ -350,11 +350,6 @@ void Element::contextMenuEvent( QContextMenuEvent* ev ) {
 	showMenu();
 	ev->accept();
 }
-void Element::mousePressedEvent( QMouseEvent* ev) {
-	qDebug() << "Element::mousePressedEvent(" << ev << ") is accepted?" <<ev->isAccepted();
-	qDebug() << (int)(ev->modifiers() & Qt::ShiftModifier);
-}
-
 
 
 ElementFactory::ElementFactory() {
