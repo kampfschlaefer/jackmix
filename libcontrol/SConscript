@@ -1,0 +1,16 @@
+#! /usr/bin/env python
+
+Import( 'env' )
+
+env = env.Clone()
+
+env.MergeFlags( "-I." )
+
+env.AppendUnique( CPPPATH = ["#/libcore"] )
+env.StaticLibrary( target="jackmix_control", source =["controlreceiver.cpp"] )
+
+e = env.Clone()
+e.MergeFlags( "-L./  -ljackmix_control" )
+e.MergeFlags( env['QTGUI_FLAGS'] )
+#e.Program( target="channelselector_test", source=["channelselector_test.cpp"] )
+

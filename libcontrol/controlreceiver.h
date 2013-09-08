@@ -1,0 +1,4 @@
+class ControlReceiver {
+public:
+	ControlReceiver();
+};

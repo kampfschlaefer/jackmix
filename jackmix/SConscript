@@ -4,9 +4,9 @@ Import( 'env' )
 
 env = env.Clone()
 
-env.MergeFlags( "-L#/backend -L#/libelements -L#/libmatrix -L#/libgui -L#/libqlash -L#/libcore" )
-env.MergeFlags( "-I#/libcore -I#/libgui -I#/backend -I#/libmatrix -I#libelements -I#/libqlash" )
-env.MergeFlags( "-ljackmix_backend -ljackmix_mixingelements -ljackmix_core -ljackmix_gui -ljackmix_mixingmatrix -lqlash" )
+env.MergeFlags( "-L#/backend -L#/libelements -L#/libmatrix -L#/libgui -L#/libqlash -L#/libcore -L#/libcontrol" )
+env.MergeFlags( "-I#/libcore -I#/libgui -I#/backend -I#/libmatrix -I#libelements -I#/libqlash -I#/libcontrol" )
+env.MergeFlags( "-ljackmix_backend -ljackmix_mixingelements -ljackmix_core -ljackmix_gui -ljackmix_mixingmatrix -lqlash -ljackmix_control" )
 env.MergeFlags( env['JACK_FLAGS'] )
 env.MergeFlags( env['LASH10_FLAGS'] )
 env.MergeFlags( env['QTGUI_FLAGS'] )

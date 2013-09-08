@@ -22,6 +22,7 @@
 #include "slider.moc"
 
 #include <QtGui/QPainter>
+#include <QtGui/QStyleOption>
 #include <QtGui/QStyle>
 #include <QtGui/QMouseEvent>
 #include <QtCore/QDebug>
@@ -64,9 +65,9 @@ void Slider::timeout() {
 
 void Slider::paintEvent( QPaintEvent* ) {
 	bool rotated = false;
+	QStyleOption opt;
 	QPainter p( this );
 	p.setRenderHints( QPainter::Antialiasing );
-
 	QString tmp = QString::number( _value );
 	if ( tmp.contains( "." ) ) tmp = _valuestring.arg( tmp.left( tmp.indexOf( "." ) + _precision + 1 ) );
 	else tmp = _valuestring.arg( tmp );
@@ -87,7 +88,7 @@ void Slider::paintEvent( QPaintEvent* ) {
 	}
 
 	if ( hasFocus() ) {
-		style()->drawPrimitive( QStyle::PE_FrameFocusRect, 0, &p, this );
+		style()->drawPrimitive( QStyle::PE_FrameFocusRect, &opt, &p, this );
 	}
 
 	//double pos = dbtondb( _value )*w-w/2;

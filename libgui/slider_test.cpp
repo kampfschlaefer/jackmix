@@ -20,16 +20,15 @@
 
 #include <iostream>
 #include <QtGui/QApplication>
+#include <QtGui/QWidget>
 
 #include "slider.h"
 
 int main( int argc, char** argv ) {
 	QApplication *qapp = new QApplication( argc, argv );
 
-	QWidget *mw = new JackMix::GUI::Slider( 0, -20, 3, 2, 1, NULL );
-	std::cout << "Here I am!" << std::endl;
+	QWidget *mw = new JackMix::GUI::Slider( 0, -20, 3, 2, 1.0, 0, "Test slider %1" );
 	mw->show();
-	std::cout << "Here I am!" << std::endl;
 
 	int ret = qapp->exec();
 	return ret;
