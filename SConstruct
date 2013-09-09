@@ -10,7 +10,7 @@ env = Environment( tools=['default', 'pkgconfig', 'qt4muc' ], toolpath=['admin']
 env.Replace( LIBS="" )
 env.Replace( LIBPATH="" )
 
-env.MergeFlags( ['-Wall', '-Werror', '-g', '-fpic'] )
+env.MergeFlags( "-Wall -Werror -g -fpic" )
 
 tests = { }
 tests.update( env['PKGCONFIG_TESTS'] )
@@ -50,5 +50,5 @@ env.MergeFlags( "-I#" )
 env.MergeFlags( env["QTCORE_FLAGS"] )
 
 ## target processing is done in the subdirectory
-env.SConscript( dirs=['libcore','libqlash','libgui','backend','libmatrix','libelements','libcontrol','jackmix'], exports="env" )
+env.SConscript( dirs=['libcore','libqlash','libgui','backend','libmatrix','libelements','jackmix'], exports="env" )
 
