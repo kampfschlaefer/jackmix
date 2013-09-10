@@ -1,6 +1,13 @@
 #include "controlreceiver.h"
 
-ControlReceiver::ControlReceiver()
-{
+namespace JackMix {
+namespace MidiControl {
 
+ControlReceiver::ControlReceiver() {
 }
+
+ControlReceiver::~ControlReceiver() {
+}
+
+};
+};

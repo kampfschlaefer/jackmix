@@ -50,5 +50,5 @@ env.MergeFlags( "-I#" )
 env.MergeFlags( env["QTCORE_FLAGS"] )
 
 ## target processing is done in the subdirectory
-env.SConscript( dirs=['libcore','libqlash','libgui','backend','libmatrix','libelements','jackmix'], exports="env" )
+env.SConscript( dirs=['libcore','libqlash','libgui','backend','libmatrix','libelements','libcontrol','jackmix'], exports="env" )
 
