@@ -50,6 +50,19 @@ void AbstractSlider::value( double v ) {
 	}
 }
 
+void AbstractSlider::setNormalisedValue(double v) {
+	v = qMax(v, 0.0);
+	v = qMin(v, 1.0);
+	value(dbmin + v*(dbmax-dbmin));
+}
+
+void AbstractSlider::setMidiValue(int iv) {
+	iv = qMax(iv, 0);
+	iv = qMin(iv, 127);
+	setNormalisedValue(iv/127.0);
+}
+
+
 void AbstractSlider::hideInput() {
 	if ( !_spinbox.isNull() ) {
 		_spinbox->deleteLater();

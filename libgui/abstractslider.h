@@ -40,6 +40,9 @@ public:
 public slots:
 	virtual void value( double );
 	virtual double value() const { return _value; };
+	virtual void setNormalisedValue(double);   //<! Set the slider position in the range (0.0, 1.0)
+	virtual void setMidiValue(int);            //<! Set the slider position in the range [0, 127]
+
 
 signals:
 	void valueChanged( double );

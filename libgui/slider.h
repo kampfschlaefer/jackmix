@@ -33,7 +33,7 @@ public:
 	~Slider();
 
 	void value( double );
-
+	
 protected:
 	void paintEvent( QPaintEvent* );
 

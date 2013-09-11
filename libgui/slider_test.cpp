@@ -27,7 +27,7 @@
 int main( int argc, char** argv ) {
 	QApplication *qapp = new QApplication( argc, argv );
 
-	QWidget *mw = new JackMix::GUI::Slider( 0, -20, 3, 2, 1.0, 0, "Test slider %1" );
+	QWidget *mw = new JackMix::GUI::Slider( 0, -20, 3, 2, 1.0, 0 );
 	mw->show();
 
 	int ret = qapp->exec();

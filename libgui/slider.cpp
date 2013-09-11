@@ -195,4 +195,3 @@ void Slider::mouseEvent( QMouseEvent* ev ) {
 			( _faderarea.height() - ev->pos().y() + _faderarea.y() ) / double( _faderarea.height()-1 )
 			) );
 }
-

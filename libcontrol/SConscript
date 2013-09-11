@@ -7,10 +7,11 @@ env = env.Clone()
 env.MergeFlags( "-I." )
 
 env.AppendUnique( CPPPATH = ["#/libcore"] )
-env.StaticLibrary( target="jackmix_control", source =["controlreceiver.cpp", "controlsender.cpp"] )
+env.StaticLibrary( target="jackmix_control", source =["controlreceiver.cpp",
+                                                      "controlsender.cpp"] )
 
 e = env.Clone()
-e.MergeFlags( "-L./  -ljackmix_control -lasound" )
+e.MergeFlags( "-L./  -L../libgui -ljackmix_gui -ljackmix_control -lasound" )
 e.MergeFlags( env['QTGUI_FLAGS'] )
 e.Program( target="controlsender_test", source=["controlsender_test.cpp"] )
 
