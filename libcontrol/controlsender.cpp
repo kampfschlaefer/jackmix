@@ -98,10 +98,11 @@ void ControlSender::unsubscribe(ControlReceiver *receiver, int parameter) {
 		dtab[parameter].removeAll(receiver);
 }
 
-void ControlSender::despatch_message(int ch, int val) {
-	//qDebug() << "ControlSender:despatch_message: parameter " << ch << ", value=" << val;
-	if (ch==5)
-		emit controlSignal(val);
+void ControlSender::despatch_message(int param, int val) {
+	//qDebug() << "ControlSender:despatch_message: parameter " << param << ", value=" << val;
+	QListIterator<ControlReceiver*> iterator(dtab[param]);
+	while (iterator.hasNext())
+		iterator.next()->controlEvent(param, val);
 }
 
 };

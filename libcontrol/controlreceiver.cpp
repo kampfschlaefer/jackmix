@@ -1,3 +1,5 @@
+#include <QtCore/QtDebug>
+
 #include "controlreceiver.h"
 #include "controlsender.h"
 
@@ -11,6 +13,11 @@ ControlReceiver::ControlReceiver(int parameter) {
 ControlReceiver::~ControlReceiver() {
 	ControlSender::unsubscribe(this);
 }
+
+void ControlReceiver::controlEvent(int param, int value) {
+	//qDebug() << "ControlReceiver::controlEvent: parameter " << param << ", value " << value;
+}
+
 
 };
 };

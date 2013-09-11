@@ -9,6 +9,7 @@ Q_OBJECT
 public:
 	ControlledSlider(int channel, double value, double min, double max, int precision, double pagestep, QWidget* p);
 	~ControlledSlider();
+	virtual void controlEvent(int param, int value);
 };
 
 #endif

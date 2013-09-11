@@ -16,6 +16,10 @@ ControlledSlider::~ControlledSlider()
 {
 }
 
+void ControlledSlider::controlEvent(int param, int value) {
+	setMidiValue(value);
+}
+
 
 int main(int argc, char *argv[])
 {
