@@ -32,7 +32,7 @@ public:
 	Slider( double value, double min, double max, int precision, double pagestep, QWidget*, QString = "%1 dB" );
 	~Slider();
 
-	void value( double );
+	virtual void value( double n, bool show_numeric=true );
 	
 protected:
 	void paintEvent( QPaintEvent* );

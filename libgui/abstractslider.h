@@ -38,10 +38,12 @@ public:
 	~AbstractSlider();
 
 public slots:
-	virtual void value( double );
-	virtual double value() const { return _value; };
-	virtual void setNormalisedValue(double);   //<! Set the slider position in the range (0.0, 1.0)
-	virtual void setMidiValue(int);            //<! Set the slider position in the range [0, 127]
+	virtual void value(double);
+	// Abstract class has no timed auxilliary displays, so ignore second argument if supplied
+	virtual void value(double n, bool) { value(n); };
+	double value() const { return _value; };
+	virtual void setNormalisedValue(double, bool show_numeric=true); //<! Set the slider position in the range (0.0, 1.0)
+	virtual void setMidiValue(int);                                  //<! Set the slider position in the range [0, 127]
 
 
 signals:
@@ -64,8 +66,8 @@ private slots:
 	void showInput();
 
 protected:
-	void mousePressEvent( QMouseEvent* );
-	void mouseMoveEvent( QMouseEvent* );
+	virtual void mousePressEvent( QMouseEvent* );
+	virtual void mouseMoveEvent( QMouseEvent* );
 	void wheelEvent( QWheelEvent* );
 
 	void contextMenuEvent( QContextMenuEvent* );

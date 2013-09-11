@@ -3,7 +3,7 @@ namespace MidiControl {
 
 class ControlReceiver {
 public:
-	ControlReceiver();
+	ControlReceiver(int parameter);
 	~ControlReceiver();
 };
 

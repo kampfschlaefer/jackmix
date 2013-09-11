@@ -7,6 +7,7 @@
 
 #include "controlsender.h"
 #include "controlsender.moc"
+#include "controlreceiver.h"
 
 namespace JackMix {
 namespace MidiControl {
@@ -78,6 +79,23 @@ ControlSender::~ControlSender() {
 	// then close the MIDI port
 	snd_seq_delete_simple_port(seq_handle, port_id);
 	snd_seq_close(seq_handle);
+}
+
+QList<ControlReceiver*> ControlSender::dtab[maxMidiParam];
+
+void ControlSender::subscribe(ControlReceiver *receiver, int parameter) {
+	if (parameter >= 0 && parameter < maxMidiParam) {
+		unsubscribe(receiver, parameter);
+		dtab[parameter].append(receiver);
+	}
+}
+
+void ControlSender::unsubscribe(ControlReceiver *receiver, int parameter) {
+	if (parameter < 0)                      // remove receiver from all routing table entries
+		for (int i = 0; i < maxMidiParam; i++)
+			unsubscribe(receiver, i);
+	else                                    // remove all occurances from this routing entry
+		dtab[parameter].removeAll(receiver);
 }
 
 void ControlSender::despatch_message(int ch, int val) {

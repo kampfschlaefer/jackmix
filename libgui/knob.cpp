@@ -22,7 +22,6 @@
 
 #include <QtGui/QPainter>
 #include <QtGui/QMouseEvent>
-#include <QtGui/QWheelEvent>
 #include <QtCore/QDebug>
 #include <QtCore/QTimer>
 
@@ -62,11 +61,13 @@ Knob::Knob( double v, double min, double max, int precision, double pagestep, QW
 Knob::~Knob() {
 }
 
-void Knob::value( double n ) {
+void Knob::value( double n, bool show_numeric ) {
 	if ( !_value_inupdate ) {
 		AbstractSlider::value( n );
-		_show_value = true;
-		_timer->start();
+		if (show_numeric) {
+			_show_value = true;
+			_timer->start();
+		}
 	}
 }
 

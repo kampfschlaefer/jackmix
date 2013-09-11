@@ -22,6 +22,8 @@
 
 #include <QtCore/QString>
 #include <QtCore/QThread>
+#include <QtCore/QList>
+
 #include <exception>
 
 #include <alsa/asoundlib.h>
@@ -30,6 +32,7 @@ namespace JackMix {
 namespace MidiControl {
 
 class PortListener;
+class ControlReceiver;
 
 /** MidiControlException: thrown when there are problems communicating with
  *  the kerenel's MIDI subsystem
@@ -49,6 +52,14 @@ public:
 	/** Listen on a new virtual port with the given port name */
 	ControlSender(const char* port_name) throw (MidiControlException);
 	~ControlSender();
+	/** Have certain controls signals sent to a particular receiver (but only once!) */
+	static void subscribe(ControlReceiver *receiver, int parameter);
+	/** Remove all registration of a particular receiver
+	 * @param receiver  The ControlReceiver to deregister
+	 * @param parameter Optionally remove only from a given control parameter
+	 *                  < 0 means remove interest in all control parameters
+	 */
+	static void unsubscribe(ControlReceiver *receiver, int parameter=-1);
 
 signals:
 	void controlSignal(int val); //<! broadcast any change of control value
@@ -56,9 +67,15 @@ signals:
 protected:
 	int port_id;
 	snd_seq_t *seq_handle;
-	
+	static const int maxMidiParam = 120;
+	/** Despatch table
+	 *  An array of vectors, one for each MIDI parameter read from the input
+	 *  channel.
+	 */
+	static QList<ControlReceiver *> dtab[maxMidiParam];
+
 protected slots:
-	void despatch_message(int ch, int val); //<! Route message
+	void despatch_message(int ch, int val);      //<! Route message
 
 private:
 	PortListener *port_listener;

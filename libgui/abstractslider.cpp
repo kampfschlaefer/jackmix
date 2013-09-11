@@ -50,16 +50,22 @@ void AbstractSlider::value( double v ) {
 	}
 }
 
-void AbstractSlider::setNormalisedValue(double v) {
+void AbstractSlider::setNormalisedValue(double v, bool show_numeric) {
 	v = qMax(v, 0.0);
 	v = qMin(v, 1.0);
-	value(dbmin + v*(dbmax-dbmin));
+	// The call below will be handled by a virtual method in a derived class
+	// The second argument enables or suppresses an auxilliary numeric display
+	// of the slider's value.
+	value(dbmin + v*(dbmax-dbmin), show_numeric);
 }
 
 void AbstractSlider::setMidiValue(int iv) {
 	iv = qMax(iv, 0);
 	iv = qMin(iv, 127);
-	setNormalisedValue(iv/127.0);
+	// Some cheap MIDI controllers "dither" (change randomly by 1 or more LSBs)
+	// so we'll suppress any auxilliary display of slider value because it might
+	// keep popping up annoyingly when the slider isn't being adjusted.
+	setNormalisedValue(iv/127.0, false);
 }
 
 
@@ -76,7 +82,8 @@ void AbstractSlider::showInput() {
 		_spinbox->setSingleStep( _pagestep );
 		_spinbox->setValue( _value );
 		_spinbox->setFrame( false );
-		connect( _spinbox, SIGNAL( editingFinished() ), this, SLOT( hideInput() ) );
+		connect( _spinbox, SIGNAL( editingFinished() ), this, SLOT( hideInput() ) );	//qDebug() << iv << "=>" << ((static_cast<double>(iv))/127.0);
+
 		connect( _spinbox, SIGNAL( valueChanged( double ) ), this, SLOT( value( double ) ) );
 		connect( this, SIGNAL( valueChanged( double ) ), _spinbox, SLOT( setValue( double ) ) );
 		_spinbox->show();
@@ -115,9 +122,9 @@ void AbstractSlider::mouseMoveEvent( QMouseEvent* ev ) {
 }
 void AbstractSlider::wheelEvent( QWheelEvent* ev ) {
 	if ( ev->delta() > 0 )
-		value( value() + _pagestep );
+		value( value() + _pagestep, true );
 	else
-		value( value() - _pagestep );
+		value( value() - _pagestep, true );
 }
 
 };

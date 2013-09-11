@@ -34,7 +34,7 @@ public:
 	Knob( double value, double min, double max, int precision, double pagestep, QWidget*, QString = "%1 dB" );
 	~Knob();
 
-	virtual void value( double );
+	virtual void value( double n, bool show_numeric = true );
 
 protected:
 	void paintEvent( QPaintEvent* );
@@ -43,7 +43,7 @@ private slots:
 	void timeOut();
 
 private:
-	virtual void mouseEvent( QMouseEvent* );
+	void mouseEvent( QMouseEvent* );
 
 	QTimer *_timer;
 	bool _show_value;

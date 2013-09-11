@@ -49,11 +49,13 @@ Slider::Slider( double value, double min, double max, int precision, double page
 Slider::~Slider() {
 }
 
-void Slider::value( double n ) {
+void Slider::value( double n, bool show_numeric ) {
 	if ( !_value_inupdate ) {
 		AbstractSlider::value( n );
-		_show_value = true;
-		_timer->start();
+		if (show_numeric) {
+			_show_value = true;
+			_timer->start();
+		}
 	}
 }
 void Slider::timeout() {
