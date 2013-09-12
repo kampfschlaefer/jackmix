@@ -7,7 +7,8 @@ namespace JackMix {
 namespace MidiControl {
 
 ControlReceiver::ControlReceiver(int parameter) {
-	ControlSender::subscribe(this, parameter);
+	if (parameter >= 0)
+		ControlSender::subscribe(this, parameter);
 }
 
 ControlReceiver::~ControlReceiver() {

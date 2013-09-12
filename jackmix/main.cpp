@@ -24,13 +24,14 @@
 
 #include "jack_backend.h"
 #include "mainwindow.h"
+#include "controlsender.h"
 
 int main( int argc, char** argv ) {
 	qDebug() << "JackMix starting";
 
 	QApplication *qapp = new QApplication( argc, argv );
 	QStringList args = qapp->arguments();
-
+	JackMix::MidiControl::ControlSender midiControlSender("Control");
 	QString file;
 	for( int i=1; i<args.size(); ++i ) {
 		qDebug() << QString( " arg %1: %2" ).arg( i ).arg( args[ i ] );

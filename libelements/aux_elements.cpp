@@ -27,7 +27,13 @@
 #include <QtGui/QLayout>
 #include <QtGui/QPushButton>
 #include <QtGui/QLabel>
+#include <QtCore/QStringList>
 #include <QtCore/QDebug>
+
+#include <controlreceiver.h>
+#include <controlsender.h>
+#include <midicontrolchannelassigner.h>
+
 
 using namespace JackMix;
 using namespace JackMix::MixerElements;
@@ -65,12 +71,21 @@ void MixerElements::init_aux_elements() {
 
 AuxElement::AuxElement( QStringList inchannel, QStringList outchannel, MixingMatrix::Widget* p, const char* n )
 	: Element( inchannel, outchannel, p, n )
+	, JackMix::MidiControl::ControlReceiver(7)
 	, dB2VolCalc( -42, 6 )
 	, _inchannel( inchannel[ 0 ] )
 	, _outchannel( outchannel[ 0 ] )
 {
 	menu()->addAction( "Select", this, SLOT( slot_simple_select() ) );
 	menu()->addAction( "Replace", this, SLOT( slot_simple_replace() ) );
+	menu()->addAction( "Assign MIDI Parameter", this, SLOT( slot_assign_midi_parameters() ) );
+	_cca = new JackMix::GUI::MidiControlChannelAssigner(QString("Set MIDI control parameter"),
+	                                                     "<html>" + _inchannel + " &rarr; "  + _outchannel + "</html>",
+	                                                     QStringList() << "Gain",
+	                                                     &gain_param,
+		                                             this
+	                                                    );
+	connect( _cca, SIGNAL(assignParameters(QVector<int>)), this, SLOT(update_midi_parameters(QVector<int>)) );
 	QVBoxLayout* _layout = new QVBoxLayout( this );
 
 	if ( _inchannel == _outchannel )
@@ -78,16 +93,32 @@ AuxElement::AuxElement( QStringList inchannel, QStringList outchannel, MixingMat
 			new QLabel( QString( "<qt><center>%1</center></qt>" ).arg( _inchannel ), this ),
 			0 );
 
-	JackMix::GUI::Knob* poti = new JackMix::GUI::Knob(
+	_poti = new JackMix::GUI::Knob(
 		amptodb( backend()->getVolume( _inchannel, _outchannel ) ),
 		dbmin, dbmax, 2, 3, this );
-	_layout->addWidget( poti, 100 );
+	_layout->addWidget( _poti, 100 );
 
-	connect( poti, SIGNAL( valueChanged( double ) ), this, SLOT( emitvalue( double ) ) );
-	connect( poti, SIGNAL( select() ), this, SLOT( slot_simple_select() ) );
-	connect( poti, SIGNAL( replace() ), this, SLOT( slot_simple_replace() ) );
+	connect( _poti, SIGNAL( valueChanged( double ) ), this, SLOT( emitvalue( double ) ) );
+	connect( _poti, SIGNAL( select() ), this, SLOT( slot_simple_select() ) );
+	connect( _poti, SIGNAL( replace() ), this, SLOT( slot_simple_replace() ) );
 }
 AuxElement::~AuxElement() {
+}
+
+void AuxElement::slot_assign_midi_parameters() {
+	_cca->show();
+}
+
+void AuxElement::update_midi_parameters(QVector< int > pv) {
+	qDebug() << "Midi parameter" << pv[0];
+	JackMix::MidiControl::ControlSender::unsubscribe(this, gain_param);
+	gain_param = pv[0];
+	JackMix::MidiControl::ControlSender::subscribe(this, gain_param);
+}
+
+void AuxElement::controlEvent(int p, int v) {
+	if (_poti)
+		_poti->setMidiValue(v);
 }
 
 void AuxElement::emitvalue( double n ) {

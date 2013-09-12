@@ -58,7 +58,7 @@ public:
 	MidiControlChannelAssigner( QString title, QString label, QStringList controls, const int *init, QWidget*  p = NULL );
 	~MidiControlChannelAssigner();
 signals:
-	void assignChannels( QVector<int> );
+	void assignParameters( QVector<int> );
 private slots:
 	void commit();
 	void commitnquit();

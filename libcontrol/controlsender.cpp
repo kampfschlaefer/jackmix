@@ -90,11 +90,13 @@ void ControlSender::subscribe(ControlReceiver *receiver, int parameter) {
 	}
 }
 
+void ControlSender::unsubscribe(ControlReceiver *receiver) {
+	// remove receiver from all routing table entries
+	for (int i = 0; i < maxMidiParam; i++)
+		unsubscribe(receiver, i);
+}
 void ControlSender::unsubscribe(ControlReceiver *receiver, int parameter) {
-	if (parameter < 0)                      // remove receiver from all routing table entries
-		for (int i = 0; i < maxMidiParam; i++)
-			unsubscribe(receiver, i);
-	else                                    // remove all occurances from this routing entry
+	if (parameter > 0 && parameter < maxMidiParam)  // remove all occurances from this routing entry
 		dtab[parameter].removeAll(receiver);
 }
 

@@ -11,16 +11,16 @@ class ResultPrinter : public QWidget {
 Q_OBJECT
 public:
 	ResultPrinter(JackMix::GUI::MidiControlChannelAssigner* emitter) {
-		connect(emitter, SIGNAL(assignChannels(QVector<int>)),
-			this, SLOT(showCtrlValues(QVector<int>)) );
+		connect(emitter, SIGNAL(assignParameters(QVector<int>)),
+			this, SLOT(showParameterValues(QVector<int>)) );
 	};
 
 	virtual ~ResultPrinter() { };
 	
 private slots:
-	void showCtrlValues(QVector<int> v) {
+	void showParameterValues(QVector<int> v) {
 		for (int i=0; i < v.size(); i++)
-			qDebug() << "Control " << i << ": " << v[i];
+			qDebug() << "Parameter " << i << ": " << v[i];
 	};
 };
 

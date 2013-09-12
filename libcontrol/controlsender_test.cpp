@@ -27,8 +27,7 @@ int main(int argc, char *argv[])
 
 	JackMix::MidiControl::ControlSender cs("Test Connection");
 
-	ControlledSlider *slider = new ControlledSlider(6, 0, 0, 128, 4, 8, 0);
-	QObject::connect (&cs, SIGNAL(controlSignal(int)), slider, SLOT(setMidiValue(int)) );
+	ControlledSlider *slider = new ControlledSlider(7, 0, 0, 128, 4, 8, 0);
 	slider->show();
 
 	int ret = qapp->exec();

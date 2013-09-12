@@ -54,12 +54,15 @@ public:
 	~ControlSender();
 	/** Have certain controls signals sent to a particular receiver (but only once!) */
 	static void subscribe(ControlReceiver *receiver, int parameter);
-	/** Remove all registration of a particular receiver
-	 * @param receiver  The ControlReceiver to deregister
-	 * @param parameter Optionally remove only from a given control parameter
-	 *                  < 0 means remove interest in all control parameters
+	/** Remove all reistration of a particular receiver for all parameter changes
+	 * @param receiver The ControlReceiver to deregister
 	 */
-	static void unsubscribe(ControlReceiver *receiver, int parameter=-1);
+	static void unsubscribe(ControlReceiver *receiver);
+	/** Remove all registration of a particular receiver for a given parameter change
+	 * @param receiver  The ControlReceiver to deregister
+	 * @param parameter Remove only from a given control parameter
+	 */
+	static void unsubscribe(ControlReceiver *receiver, int parameter);
 
 signals:
 	void controlSignal(int val); //<! broadcast any change of control value

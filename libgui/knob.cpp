@@ -59,6 +59,7 @@ Knob::Knob( double v, double min, double max, int precision, double pagestep, QW
 }
 
 Knob::~Knob() {
+	qDebug()<<"One less knob";
 }
 
 void Knob::value( double n, bool show_numeric ) {

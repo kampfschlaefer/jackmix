@@ -21,18 +21,27 @@
 #ifndef AUX_ELEMENTS_H
 #define AUX_ELEMENTS_H
 
+#include <QtCore/QVector>
+
 #include <mixingmatrix.h>
 #include <dbvolcalc.h>
+#include <controlreceiver.h>
 
 namespace JackMix {
+
+namespace GUI {
+	class Knob;
+	class MidiControlChannelAssigner;
+}
+
 namespace MixerElements {
-
-class AuxElement;
-
+	
 /**
  * Simpliest form of a control connecting one input with one output.
  */
-class AuxElement : public JackMix::MixingMatrix::Element, public dB2VolCalc
+class AuxElement : public JackMix::MixingMatrix::Element
+                 , public JackMix::MidiControl::ControlReceiver
+                 , public dB2VolCalc
 {
 Q_OBJECT
 public:
@@ -43,10 +52,19 @@ public:
 	int outchannels() const { return 1; }
 
 public slots:
+	void controlEvent(int p, int v);
 	void emitvalue( double );
 
+protected:
+	int gain_param;
+	JackMix::GUI::MidiControlChannelAssigner *_cca;
+
+protected slots:
+	void slot_assign_midi_parameters();
+	void update_midi_parameters(QVector<int>);
 private:
 	QString _inchannel, _outchannel;
+	JackMix::GUI::Knob *_poti;
 };
 
 void init_aux_elements();

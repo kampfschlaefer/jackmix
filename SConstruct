@@ -32,6 +32,7 @@ pkgs = {
 	'QtCore' : '4.2',
 	'QtGui' : '4.2',
 	'QtXml' : '4.2',
+	'alsa' : '1.0'
 	}
 for pkg in pkgs:
 	name2 = pkg.replace("+","").replace(".","").replace("-","").upper()
