@@ -23,6 +23,7 @@
 
 #include "knob.h"
 #include "slider.h"
+#include "midicontrolchannelassigner.h"
 
 #include <QtGui/QLayout>
 #include <QtGui/QPushButton>
@@ -30,6 +31,8 @@
 #include <QtGui/QLabel>
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
+
+#include <controlsender.h>
 
 using namespace JackMix;
 using namespace JackMix::MixerElements;
@@ -92,6 +95,16 @@ Mono2StereoElement::Mono2StereoElement( QStringList inchannel, QStringList outch
 
 	menu()->addAction( "Select", this, SLOT( slot_simple_select() ) );
 	menu()->addAction( "Replace", this, SLOT( slot_simple_replace() ) );
+	menu()->addAction( "Assign MIDI Parameter", this, SLOT( slot_assign_midi_parameters() ) );
+	midi_params[0] = 0;
+	midi_params[1] = 0;
+	_cca = new JackMix::GUI::MidiControlChannelAssigner(QString("Set MIDI control parameter"),
+	                                                     "<html>" + _inchannel + " &rarr; ("  + _outchannel1 + "/" + _outchannel2 + ")</html>",
+	                                                     QStringList() << "Gain" << "Pan",
+	                                                     midi_params,
+		                                             this
+	                                                    );
+	connect( _cca, SIGNAL(assignParameters(QVector<int>)), this, SLOT(update_midi_parameters(QVector<int>)) );
 
 	_balance = new JackMix::GUI::Knob( _balance_value, -1, 1, 2, 0.1, this, "%1" );
 	_layout->addWidget( _balance, 10 );
@@ -107,6 +120,25 @@ Mono2StereoElement::Mono2StereoElement( QStringList inchannel, QStringList outch
 Mono2StereoElement::~Mono2StereoElement() {
 }
 
+void Mono2StereoElement::slot_assign_midi_parameters() {
+	_cca->show();
+}
+
+void Mono2StereoElement::update_midi_parameters(QVector< int > pv) {
+	// Update MIDI control parameters for both fader and pan pots
+	for (int i = 0; i < 2 ; i++) {
+		JackMix::MidiControl::ControlSender::unsubscribe(this, midi_params[i]);
+		midi_params[i] = pv[i];
+		JackMix::MidiControl::ControlSender::subscribe(this, midi_params[i]);
+	}
+}
+
+void Mono2StereoElement::controlEvent(int p, int v) {
+	if (p == midi_params[0] && _volume)
+		_volume->setMidiValue(v);
+	else if (p == midi_params[1] && _balance)
+		_balance->setMidiValue(v);
+}
 
 void Mono2StereoElement::balance( double n ) {
 	//qDebug( "Mono2StereoElement::balance( double %f )", n );

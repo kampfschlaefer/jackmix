@@ -84,7 +84,7 @@ MidiControlChannelAssigner::~MidiControlChannelAssigner() {
 }
 
 void MidiControlChannelAssigner::commit() {
-	qDebug( "MidiControlChannelAssigner::commit()" );
+	//qDebug( "MidiControlChannelAssigner::commit()" );
 	QVector<int> values(_num_controls);
 	for (int i=0; i<_num_controls; i++)
 		values[i] = _cchans[i]->value();
@@ -93,7 +93,7 @@ void MidiControlChannelAssigner::commit() {
 void MidiControlChannelAssigner::commitnquit() {
 	//qDebug( "MidiControlChannelAssigner::commitnquit()" );
 	commit();
-	qDebug( "Now quit..." );
+	//qDebug( "Now quit..." );
 	done( 0 );
 }
 

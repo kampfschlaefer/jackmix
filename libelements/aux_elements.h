@@ -56,8 +56,7 @@ public slots:
 	void emitvalue( double );
 
 protected:
-	int gain_param;
-	JackMix::GUI::MidiControlChannelAssigner *_cca;
+	int midi_params[1];
 
 protected slots:
 	void slot_assign_midi_parameters();
@@ -65,6 +64,7 @@ protected slots:
 private:
 	QString _inchannel, _outchannel;
 	JackMix::GUI::Knob *_poti;
+	JackMix::GUI::MidiControlChannelAssigner *_cca;
 };
 
 void init_aux_elements();

@@ -22,7 +22,7 @@
 #include "aux_elements.moc"
 
 #include "knob.h"
-
+#include "midicontrolchannelassigner.h"
 
 #include <QtGui/QLayout>
 #include <QtGui/QPushButton>
@@ -32,7 +32,6 @@
 
 #include <controlreceiver.h>
 #include <controlsender.h>
-#include <midicontrolchannelassigner.h>
 
 
 using namespace JackMix;
@@ -79,10 +78,11 @@ AuxElement::AuxElement( QStringList inchannel, QStringList outchannel, MixingMat
 	menu()->addAction( "Select", this, SLOT( slot_simple_select() ) );
 	menu()->addAction( "Replace", this, SLOT( slot_simple_replace() ) );
 	menu()->addAction( "Assign MIDI Parameter", this, SLOT( slot_assign_midi_parameters() ) );
+	midi_params[0] = 0;
 	_cca = new JackMix::GUI::MidiControlChannelAssigner(QString("Set MIDI control parameter"),
 	                                                     "<html>" + _inchannel + " &rarr; "  + _outchannel + "</html>",
 	                                                     QStringList() << "Gain",
-	                                                     &gain_param,
+	                                                     midi_params,
 		                                             this
 	                                                    );
 	connect( _cca, SIGNAL(assignParameters(QVector<int>)), this, SLOT(update_midi_parameters(QVector<int>)) );
@@ -110,10 +110,9 @@ void AuxElement::slot_assign_midi_parameters() {
 }
 
 void AuxElement::update_midi_parameters(QVector< int > pv) {
-	qDebug() << "Midi parameter" << pv[0];
-	JackMix::MidiControl::ControlSender::unsubscribe(this, gain_param);
-	gain_param = pv[0];
-	JackMix::MidiControl::ControlSender::subscribe(this, gain_param);
+	JackMix::MidiControl::ControlSender::unsubscribe(this, midi_params[0]);
+	midi_params[0] = pv[0];
+	JackMix::MidiControl::ControlSender::subscribe(this, midi_params[0]);
 }
 
 void AuxElement::controlEvent(int p, int v) {
