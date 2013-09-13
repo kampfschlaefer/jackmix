@@ -23,11 +23,15 @@
 
 #include <QtGui/QFrame>
 #include <QtCore/QList>
+#include <QtCore/QVector>
 #include <QtCore/QMap>
 #include <QtGui/QMenu>
 #include <QtGui/QAction>
 
 #include "backend_interface.h"
+#include "abstractslider.h"
+#include "midicontrolchannelassigner.h"
+#include "controlreceiver.h"
 
 #if ( QT_POINTER_SIZE == 8 )
 #define pint qint64
@@ -111,6 +115,7 @@ private:
 };
 
 class Element : public QFrame
+              , JackMix::MidiControl::ControlReceiver
 {
 Q_OBJECT
 Q_PROPERTY( bool selected READ isSelected WRITE select )
@@ -173,27 +178,49 @@ signals:
 protected:
 	// Internal pointer
 	const Widget* parent() { return _parent; }
-	// The contextmenu of the Element. Should be filled by the client...
+	/** The contextmenu of the Element. Should be filled by the client */
+	QMenu *_menu;
 	QMenu* menu() { return _menu; }
 	/**
 	 * @todo the overall layout is needed for hide/show buttons per channel/element...
 	 */
 	QLayout* layout();
+	/** The current parameter associated with each delegate */
+	QList<int> midi_params;
+	/** A list of sliders which have a setMidiValue(int) member
+	 *  function, ordered to correspond with the parameter array
+	 *  midi_params. Would typically be initialised in a derived
+	 *  class's constructor with:
+	 *
+	 *	midi_delegates << slider1 << slider2 etc. 
+	 */
+	QList<JackMix::GUI::AbstractSlider*> midi_delegates;
+	JackMix::GUI::MidiControlChannelAssigner* _cca;
+	void contextMenuEvent( QContextMenuEvent* );
 
 protected slots:
 	// Use this slot if you don't want to do something before replacement.
 	virtual void slot_simple_replace() { emit replace( this ); }
 	// Use this slot if you want a simple selection toggle
 	virtual void slot_simple_select() { select( !isSelected() ); }
+	/** Receive and forward midi events (parameter, value pairs) to
+	 *  their associated sliders.
+	 */
+	void controlEvent(int p, int v);
+	/** Show the midi parameter selection menu */
+	void slot_assign_midi_parameters() { _cca->show(); };
+	/** Receive a signal, typically from the MIDI parameter selection dialogue
+	 *  to change re-subscribe the sliders in this element to new MIDI
+	 *  parameters.
+	 */
+	void update_midi_parameters(QList< int > pv);
 
-	void contextMenuEvent( QContextMenuEvent* );
 private slots:
 	void lazyInit();
 private:
 	QStringList _in, _out;
 	bool _selected;
 	Widget* _parent;
-	QMenu *_menu;
 };
 
 

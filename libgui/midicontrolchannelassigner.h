@@ -22,6 +22,9 @@
 #define MIDICONTROLCHANNELASSIGNER_H
 
 #include <QtGui/QDialog>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
+#include <QtCore/QList>
 
 class QSpinBox;
 class QPushButton;
@@ -55,10 +58,10 @@ public:
 	 * @param init Initial values for the control channel numbers in the range 0-119 inclusive.
 	 *             
 	 */
-	MidiControlChannelAssigner( QString title, QString label, QStringList controls, const int *init, QWidget*  p = NULL );
+	MidiControlChannelAssigner( QString title, QString label, QStringList controls, const QList<int> &init, QWidget*  p = NULL );
 	~MidiControlChannelAssigner();
 signals:
-	void assignParameters( QVector<int> );
+	void assignParameters( QList<int> );
 private slots:
 	void commit();
 	void commitnquit();

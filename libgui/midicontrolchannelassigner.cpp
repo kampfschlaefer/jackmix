@@ -23,6 +23,7 @@
 
 #include <QtCore/QString>
 #include <QtCore/QStringList>
+#include <QtCore/QList>
 #include <QtGui/QLayout>
 #include <QtGui/QLabel>
 #include <QtGui/QPushButton>
@@ -31,7 +32,7 @@
 namespace JackMix {
 namespace GUI {
 
-MidiControlChannelAssigner::MidiControlChannelAssigner( QString title, QString label, QStringList controls, const int *init, QWidget* p )
+MidiControlChannelAssigner::MidiControlChannelAssigner( QString title, QString label, QStringList controls, const QList<int> &init, QWidget* p )
 	: QDialog( p ) {
 	this->setWindowTitle( title );
 
@@ -48,7 +49,7 @@ MidiControlChannelAssigner::MidiControlChannelAssigner( QString title, QString l
 		_cchans[i] = new QSpinBox(this);
 		_cchans[i]->setRange(0, 119);
 		int ival;
-		if (init[i] < 0)
+		if (i>= init.size() || init[i] < 0)
 			ival = 0;
 		else if (init[i] >= 119)
 			ival = 119;
@@ -85,9 +86,9 @@ MidiControlChannelAssigner::~MidiControlChannelAssigner() {
 
 void MidiControlChannelAssigner::commit() {
 	//qDebug( "MidiControlChannelAssigner::commit()" );
-	QVector<int> values(_num_controls);
+	QList<int> values;
 	for (int i=0; i<_num_controls; i++)
-		values[i] = _cchans[i]->value();
+		values.append(_cchans[i]->value());
 	emit assignParameters( values );
 }
 void MidiControlChannelAssigner::commitnquit() {

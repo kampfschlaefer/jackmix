@@ -23,6 +23,8 @@
 #include "mixingmatrix.moc"
 #include "mixingmatrix_privat.moc"
 
+#include "controlsender.h"
+
 #include <QtGui/QLayout>
 #include <QtGui/QListWidget>
 #include <QtGui/QPushButton>
@@ -33,6 +35,7 @@
 #include <QtGui/QContextMenuEvent>
 #include <QtCore/QMetaProperty>
 #include <QtCore/QDebug>
+#include <QtCore/QList>
 
 namespace JackMix {
 namespace MixingMatrix {
@@ -260,13 +263,13 @@ void Widget::debugPrint() {
 
 Element::Element( QStringList in, QStringList out, Widget* p, const char* n )
 	: QFrame( p )
+	, _menu( new QMenu( this ) )
 	, _in( in )
 	, _out( out )
 	, _selected( false )
 	, _parent( p )
-	, _menu( new QMenu( this ) )
 {
-	//qDebug( "MixingMatrix::Element::Element( QStringList '%s', QStringList '%s' )", qPrintable( in.join(",") ), qPrintable( out.join(",") ) );
+	qDebug( "MixingMatrix::Element::Element( QStringList '%s', QStringList '%s' )", qPrintable( in.join(",") ), qPrintable( out.join(",") ) );
 	setFrameStyle( QFrame::Raised|QFrame::Panel );
 	setLineWidth( 1 );
 	QTimer::singleShot( 1, this, SLOT( lazyInit() ) );
@@ -351,6 +354,32 @@ void Element::contextMenuEvent( QContextMenuEvent* ev ) {
 	ev->accept();
 }
 
+void Element::update_midi_parameters(QList< int > pv) {
+	// Update MIDI control parameters for all delegates
+	if (pv.size() != midi_params.size())
+		qDebug()<< "The update dialogue sent " << pv.size()
+		        << " MIDI parameters but I was expecting "
+			<< midi_params.size();
+	for (int i = 0; i < pv.size() && i < midi_params.size() ; i++) {
+		qDebug()<<"New MIDI parameter no "<<i<<": "<<pv[i]<<" (was "<<midi_params[i]<<")";
+		JackMix::MidiControl::ControlSender::unsubscribe(this, midi_params[i]);
+		midi_params[i] = pv[i];
+		JackMix::MidiControl::ControlSender::subscribe(this, midi_params[i]);
+	}
+}
+
+void Element::controlEvent(int p, int v) {
+	qDebug() << midi_delegates.size() << " delegates.";
+	for (int i = 0; i < midi_delegates.size(); i++) {
+		qDebug() << "Considering delegate " << i;
+		// Check this delegate isn't null for safety,
+		// and send it the parameter if it is subscribed
+		if (midi_delegates[i] && p == midi_params[i]) {
+			qDebug() << "Sending " << p << "," << v << " to delegate " << i;
+			midi_delegates[i]->setMidiValue(v);
+		}
+	}
+}
 
 ElementFactory::ElementFactory() {
 	Global::the()->registerFactory( this );

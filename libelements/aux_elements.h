@@ -40,7 +40,6 @@ namespace MixerElements {
  * Simpliest form of a control connecting one input with one output.
  */
 class AuxElement : public JackMix::MixingMatrix::Element
-                 , public JackMix::MidiControl::ControlReceiver
                  , public dB2VolCalc
 {
 Q_OBJECT
@@ -52,19 +51,11 @@ public:
 	int outchannels() const { return 1; }
 
 public slots:
-	void controlEvent(int p, int v);
 	void emitvalue( double );
 
-protected:
-	int midi_params[1];
-
-protected slots:
-	void slot_assign_midi_parameters();
-	void update_midi_parameters(QVector<int>);
 private:
 	QString _inchannel, _outchannel;
 	JackMix::GUI::Knob *_poti;
-	JackMix::GUI::MidiControlChannelAssigner *_cca;
 };
 
 void init_aux_elements();

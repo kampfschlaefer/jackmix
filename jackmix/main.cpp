@@ -31,7 +31,7 @@ int main( int argc, char** argv ) {
 
 	QApplication *qapp = new QApplication( argc, argv );
 	QStringList args = qapp->arguments();
-	JackMix::MidiControl::ControlSender midiControlSender("Control");
+	JackMix::MidiControl::ControlSender midiControlSender("JackMix Control");
 	QString file;
 	for( int i=1; i<args.size(); ++i ) {
 		qDebug() << QString( " arg %1: %2" ).arg( i ).arg( args[ i ] );

@@ -41,9 +41,7 @@ class Stereo2StereoElement;
 /**
  * A MonotoStereo control.
  */
-class Mono2StereoElement : public JackMix::MixingMatrix::Element
-                         , public JackMix::MidiControl::ControlReceiver
-                         , public dB2VolCalc
+class Mono2StereoElement : public JackMix::MixingMatrix::Element , public dB2VolCalc
 {
 Q_OBJECT
 Q_PROPERTY( double volume READ volume WRITE volume );
@@ -64,15 +62,6 @@ public slots:
 	void set_panorama( double n ) { balance( n ); }
 	void balance( double );
 	void volume( double );
-	void controlEvent(int, int);
-protected:
-	/** Midi paramaters controlling respectively
-	 *  the fader and pan controls
-	 */
-	int midi_params[2];
-protected slots:
-	void slot_assign_midi_parameters();
-	void update_midi_parameters(QVector<int>);
 private slots:
 	void calculateVolumes();
 private:
@@ -80,7 +69,6 @@ private:
 	JackMix::GUI::Knob *_balance;
 	JackMix::GUI::Slider *_volume;
 	double _balance_value, _volume_value;
-	JackMix::GUI::MidiControlChannelAssigner *_cca;
 };
 
 /**

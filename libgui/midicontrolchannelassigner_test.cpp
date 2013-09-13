@@ -28,13 +28,11 @@
 int main( int argc, char** argv ) {
 	QApplication *qapp = new QApplication( argc, argv );
 
-	int initvals[2] = {32, 33};
-	
 	JackMix::GUI::MidiControlChannelAssigner *mw
 		= new JackMix::GUI::MidiControlChannelAssigner( "Test",
 							        "Test Channel Allocation",
 							        QStringList()<<"Channel 1"<<"Channel 2",
-							        initvals
+							        QList<int>() << 32 << 33
 							      );
 	
 	ResultPrinter rp(mw);

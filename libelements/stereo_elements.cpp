@@ -96,16 +96,7 @@ Mono2StereoElement::Mono2StereoElement( QStringList inchannel, QStringList outch
 	menu()->addAction( "Select", this, SLOT( slot_simple_select() ) );
 	menu()->addAction( "Replace", this, SLOT( slot_simple_replace() ) );
 	menu()->addAction( "Assign MIDI Parameter", this, SLOT( slot_assign_midi_parameters() ) );
-	midi_params[0] = 0;
-	midi_params[1] = 0;
-	_cca = new JackMix::GUI::MidiControlChannelAssigner(QString("Set MIDI control parameter"),
-	                                                     "<html>" + _inchannel + " &rarr; ("  + _outchannel1 + "/" + _outchannel2 + ")</html>",
-	                                                     QStringList() << "Gain" << "Pan",
-	                                                     midi_params,
-		                                             this
-	                                                    );
-	connect( _cca, SIGNAL(assignParameters(QVector<int>)), this, SLOT(update_midi_parameters(QVector<int>)) );
-
+	
 	_balance = new JackMix::GUI::Knob( _balance_value, -1, 1, 2, 0.1, this, "%1" );
 	_layout->addWidget( _balance, 10 );
 	connect( _balance, SIGNAL( valueChanged( double ) ), this, SLOT( balance( double ) ) );
@@ -116,28 +107,27 @@ Mono2StereoElement::Mono2StereoElement( QStringList inchannel, QStringList outch
 	connect( _volume, SIGNAL( valueChanged( double ) ), this, SLOT( volume( double ) ) );
 	connect( _volume, SIGNAL( select() ), this, SLOT( slot_simple_select() ) );
 	connect( _volume, SIGNAL( replace() ), this, SLOT( slot_simple_replace() ) );
+
+	// WATCH OUT: Order of initialisation is really important!
+	// Make sure all the widgets are contructed before adding them to the delegates list
+
+	// Initial MIDI parameters and associated AbstractSliders
+	midi_params.append(0);
+	midi_delegates.append(_volume);
+	midi_params.append(0);
+	midi_delegates.append(_balance);
+
+	// Now construct the parameter setting menu
+	_cca = new JackMix::GUI::MidiControlChannelAssigner(QString("Set MIDI control parameter"),
+	                                                     "<html>" + _inchannel + " &rarr; ("  + _outchannel1 + "/" + _outchannel2 + ")</html>",
+	                                                     QStringList() << "Gain" << "Pan",
+	                                                     midi_params,
+	                                                     this
+	                                                    );
+	connect( _cca, SIGNAL(assignParameters(QList<int>)), this, SLOT(update_midi_parameters(QList<int>)) );
+
 }
 Mono2StereoElement::~Mono2StereoElement() {
-}
-
-void Mono2StereoElement::slot_assign_midi_parameters() {
-	_cca->show();
-}
-
-void Mono2StereoElement::update_midi_parameters(QVector< int > pv) {
-	// Update MIDI control parameters for both fader and pan pots
-	for (int i = 0; i < 2 ; i++) {
-		JackMix::MidiControl::ControlSender::unsubscribe(this, midi_params[i]);
-		midi_params[i] = pv[i];
-		JackMix::MidiControl::ControlSender::subscribe(this, midi_params[i]);
-	}
-}
-
-void Mono2StereoElement::controlEvent(int p, int v) {
-	if (p == midi_params[0] && _volume)
-		_volume->setMidiValue(v);
-	else if (p == midi_params[1] && _balance)
-		_balance->setMidiValue(v);
 }
 
 void Mono2StereoElement::balance( double n ) {
@@ -211,6 +201,30 @@ Stereo2StereoElement::Stereo2StereoElement( QStringList inchannels, QStringList 
 	QAction *replace = new QAction( "Replace", this );
 	connect( replace, SIGNAL( triggered() ), this, SLOT( slot_simple_replace() ) );
 	menu()->addAction( replace );
+	QAction *assign = new QAction( "Assign MIDI Parameter", this );
+	connect( assign, SIGNAL( triggered() ), this, SLOT( slot_assign_midi_parameters() ) );
+	menu()->addAction( assign );
+	
+	// WATCH OUT: Order of initialisation is really important!
+	// Make sure all the widgets are contructed before adding them to the delegates list
+
+	// Initial MIDI parameters and associated AbstractSliders
+	midi_params.append(0);
+	midi_delegates.append(_volume_widget);
+	midi_params.append(0);
+	midi_delegates.append(_balance_widget);
+
+	// Now construct the parameter setting menu
+	_cca = new JackMix::GUI::MidiControlChannelAssigner(QString("Set MIDI control parameter"),
+	                                                     "<html>(" + _inchannel1 + "/" + _inchannel2 +
+	                                                         ") &rarr; ("  + _outchannel1 + "/" + _outchannel2 + ")</html>",
+	                                                     QStringList() << "Gain" << "Cross-fade",
+	                                                     midi_params,
+	                                                     this
+	                                                    );
+	connect( _cca, SIGNAL(assignParameters(QList<int>)), this, SLOT(update_midi_parameters(QList<int>)) );
+
+
 }
 Stereo2StereoElement::~Stereo2StereoElement() {
 }

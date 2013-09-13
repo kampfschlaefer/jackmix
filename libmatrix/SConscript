@@ -4,6 +4,6 @@ Import( 'env' )
 
 env = env.Clone()
 
-env.MergeFlags( "-I#/libcore -I#/libgui" )
+env.MergeFlags( "-I#/libcore -I#/libgui -I#/libcontrol" )
 env.StaticLibrary( target="jackmix_mixingmatrix", source=["mixingmatrix.cpp"] )
 
