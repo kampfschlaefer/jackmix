@@ -42,6 +42,7 @@ namespace MixingMatrix {
 
 Widget::Widget( QStringList ins, QStringList outs, JackMix::BackendInterface* backend, QWidget* p, const char* n )
 	: QFrame( p )
+	, QMutex()
 	, _mode( Normal )
 	, _direction( None )
 	, _inchannels( ins )
@@ -149,16 +150,20 @@ void Widget::autoFill() {
 }
 
 void Widget::anotherControl() {
+	lock();
 	_controls_remaining++;
+	unlock();
 }
 
 void Widget::placeFilled() {
+	lock();
 	if (--_controls_remaining == 0) {
 		//qDebug() << "Signalling AutoFill completion...";
 		emit autoFillComplete(this);
 	} else {
 		//qDebug() << _controls_remaining << " controls left to initialise";
 	}
+	unlock();
 }
 
 void Widget::resizeEvent( QResizeEvent* ) {

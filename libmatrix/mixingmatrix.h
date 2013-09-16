@@ -25,6 +25,7 @@
 #include <QtCore/QList>
 #include <QtCore/QVector>
 #include <QtCore/QMap>
+#include <QtCore/QMutex>
 #include <QtGui/QMenu>
 #include <QtGui/QAction>
 
@@ -45,7 +46,7 @@ namespace MixingMatrix {
 
 class Element;
 
-class Widget : public QFrame
+class Widget : public QFrame, QMutex
 {
 Q_OBJECT
 Q_ENUMS( Mode )
