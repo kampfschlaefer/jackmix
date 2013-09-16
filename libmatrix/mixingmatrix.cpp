@@ -47,6 +47,7 @@ Widget::Widget( QStringList ins, QStringList outs, JackMix::BackendInterface* ba
 	, _inchannels( ins )
 	, _outchannels( outs )
 	, _backend( backend )
+	, _controls_remaining(0)
 {
 	if ( _inchannels.size()==0 ) {
 		_direction = Vertical;
@@ -120,11 +121,12 @@ void Widget::autoFill() {
 		//qDebug( "Doing the Autofill-boogie..." );
 		for ( QStringList::Iterator init=_inchannels.begin(); init!=_inchannels.end(); ++init )
 			for ( QStringList::Iterator outit=_outchannels.begin(); outit!=_outchannels.end(); ++outit ) {
-				if ( !getResponsible( *init, *outit ) )// {
+				if ( !getResponsible( *init, *outit ) ) // {
 					//qDebug( "...together with (%s|%s)", qPrintable( *init ), qPrintable( *outit ) );
 					createControl( QStringList()<<*init, QStringList()<<*outit );
-				//}
-				//else qDebug( "   (%s|%s) is allready occupied. :(", qPrintable( *init ), qPrintable( *outit ) );
+				// }
+				//else
+					//qDebug( "   (%s|%s) is allready occupied. :(", qPrintable( *init ), qPrintable( *outit ) );
 			}
 	} else if ( _direction == Vertical ) {
 		//qDebug() << "Available outputs are" << _outchannels.join( "," );
@@ -144,7 +146,19 @@ void Widget::autoFill() {
 		}
 	}
 	resizeEvent( 0 );
-	//qDebug() << "";
+}
+
+void Widget::anotherControl() {
+	_controls_remaining++;
+}
+
+void Widget::placeFilled() {
+	if (--_controls_remaining == 0) {
+		//qDebug() << "Signalling AutoFill completion...";
+		emit autoFillComplete(this);
+	} else {
+		//qDebug() << _controls_remaining << " controls left to initialise";
+	}
 }
 
 void Widget::resizeEvent( QResizeEvent* ) {
@@ -272,6 +286,7 @@ Element::Element( QStringList in, QStringList out, Widget* p, const char* n )
 	qDebug( "MixingMatrix::Element::Element( QStringList '%s', QStringList '%s' )", qPrintable( in.join(",") ), qPrintable( out.join(",") ) );
 	setFrameStyle( QFrame::Raised|QFrame::Panel );
 	setLineWidth( 1 );
+	if (p) p->anotherControl();
 	QTimer::singleShot( 1, this, SLOT( lazyInit() ) );
 	setAutoFillBackground( true );
 }
@@ -280,7 +295,10 @@ Element::~Element() {
 	_parent->removeElement( this );
 }
 void Element::lazyInit() {
+	//qDebug()<<"lazy, innit?";
 	_parent->addElement( this );
+	// Decrement the number of elements left to initialise in the parent widget
+	_parent->placeFilled();
 }
 
 bool Element::isResponsible( QString in, QString out ) {
@@ -354,12 +372,14 @@ void Element::contextMenuEvent( QContextMenuEvent* ev ) {
 	ev->accept();
 }
 
+const QList< int >& Element::midiParameters() const { return midi_params; }
+
 void Element::update_midi_parameters(QList< int > pv) {
 	// Update MIDI control parameters for all delegates
 	if (pv.size() != midi_params.size())
-		qDebug()<< "The update dialogue sent " << pv.size()
-		        << " MIDI parameters but I was expecting "
-			<< midi_params.size();
+		qWarning()<< "The update dialogue sent " << pv.size()
+		          << " MIDI parameters but I was expecting "
+			  << midi_params.size();
 	for (int i = 0; i < pv.size() && i < midi_params.size() ; i++) {
 		qDebug()<<"New MIDI parameter no "<<i<<": "<<pv[i]<<" (was "<<midi_params[i]<<")";
 		JackMix::MidiControl::ControlSender::unsubscribe(this, midi_params[i]);
@@ -371,7 +391,7 @@ void Element::update_midi_parameters(QList< int > pv) {
 void Element::controlEvent(int p, int v) {
 	qDebug() << midi_delegates.size() << " delegates.";
 	for (int i = 0; i < midi_delegates.size(); i++) {
-		qDebug() << "Considering delegate " << i;
+		//qDebug() << "Considering delegate " << i;
 		// Check this delegate isn't null for safety,
 		// and send it the parameter if it is subscribed
 		if (midi_delegates[i] && p == midi_params[i]) {

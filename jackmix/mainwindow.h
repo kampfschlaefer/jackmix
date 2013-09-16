@@ -21,6 +21,8 @@
 #ifndef JACKMIX_MAINWINDOW_H
 #define JACKMIX_MAINWINDOW_H
 
+#define JACKMIX_FILE_FORMAT_VERSION	"0.5"
+
 #include <QtGui/QMainWindow>
 #include <QtGui/QDockWidget>
 #include <QtCore/QList>
@@ -87,6 +89,9 @@ private slots:
 
 	void saveLash( QString dir );
 	void restoreLash( QString dir );
+	
+	/** Set all of the contained elements' MIDI parameters only after AutoFill is over */ 
+	void updateAutoFilledMidiParams(MixingMatrix::Widget *);
 
 private:
 	void init();

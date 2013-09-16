@@ -94,8 +94,15 @@ public:
 	void addElement( Element* );
 	void removeElement( Element* );
 	Element* getResponsible( QString in, QString out ) const;
-	int elements() const { return _elements.size(); }
+	int elements() const { return _elements.size(); };
+	/** Called when another (not yet initialised) element is created */
+	void anotherControl();
+	/** Called when a lazy initialisation completes */
+	void placeFilled();
 
+signals:
+	/** AutoFill pass complete: safe to getResponsible() etc now */
+	void autoFillComplete(MixingMatrix::Widget *);
 
 public slots:
 	void replace( Element* );
@@ -112,6 +119,9 @@ private:
 	QList <Element*> _elements;
 	QStringList _inchannels, _outchannels;
 	JackMix::BackendInterface* _backend;
+	/** Controls have lazy initialisation: this counts how many are left to go
+	 *  before the whole widget is initialised. */
+	int _controls_remaining;
 };
 
 class Element : public QFrame
@@ -156,14 +166,16 @@ public:
 	 */
 	virtual void isSelected( bool ) {};
 
-	// returns the number of selected neighbors
+	/** returns the number of selected neighbors */
 	int neighbors() const;
-	// The inchannels of the neighbors
+	/** The inchannels of the neighbors */
 	QStringList neighborsList() const;
-	// returns the number of following rows with the given number
-	// of selected items.
+	/** returns the number of following rows with the given number
+	 * of selected items. */
 	int followers( int ) const;
 	QStringList followersList() const;
+	/** Allow others to see our controlling midi parameters (but not change them) */
+	const QList<int>& midiParameters() const;
 
 public slots:
 	void select( bool );
@@ -174,7 +186,9 @@ signals:
 
 	// Informs, that Element* n, Property s has changed.
 	void valueChanged( Element* n, QString s );
-
+	/** Indicates completion of lazy initialisation */
+	void initComplete();
+	
 protected:
 	// Internal pointer
 	const Widget* parent() { return _parent; }
@@ -195,6 +209,7 @@ protected:
 	 *	midi_delegates << slider1 << slider2 etc. 
 	 */
 	QList<JackMix::GUI::AbstractSlider*> midi_delegates;
+	/** Dialogue to allow midi parameters to be associated with each delegate */
 	JackMix::GUI::MidiControlChannelAssigner* _cca;
 	void contextMenuEvent( QContextMenuEvent* );
 

@@ -53,7 +53,7 @@ using namespace JackMix;
 using namespace JackMix::MixingMatrix;
 
 MainWindow::MainWindow( QWidget* p ) : QMainWindow( p ), _backend( new JackBackend( new GUI::GraphicalGuiServer( this ) ) ), _autofillscheduled( true ) {
-	qDebug() << "MainWindow::MainWindow(" << p << ")";
+	//qDebug() << "MainWindow::MainWindow(" << p << ")";
 	init();
 
 	QStringList ins;
@@ -83,10 +83,10 @@ MainWindow::MainWindow( QWidget* p ) : QMainWindow( p ), _backend( new JackBacke
 	_autofillscheduled = false;
 	scheduleAutoFill();
 
-	qDebug() << "MainWindow::MainWindow() finished...";
+	//qDebug() << "MainWindow::MainWindow() finished...";
 }
 MainWindow::MainWindow( QString filename, QWidget* p ) : QMainWindow( p ), _backend( new JackBackend( new GUI::GraphicalGuiServer( this ) ) ), _autofillscheduled( true ) {
-	qDebug() << "MainWindow::MainWindow(" << filename << "," << p << ")";
+	//qDebug() << "MainWindow::MainWindow(" << filename << "," << p << ")";
 	init();
 
 	openFile( filename );
@@ -101,7 +101,7 @@ MainWindow::MainWindow( QString filename, QWidget* p ) : QMainWindow( p ), _back
 
 	//_lashclient->setJackName( "JackMix" );
 
-	qDebug() << "MainWindow::MainWindow() finished...";
+	//qDebug() << "MainWindow::MainWindow() finished...";
 }
 
 void MainWindow::init() {
@@ -162,6 +162,17 @@ void MainWindow::init() {
 	_outputswidget->removeoutchannel( "o1" );
 	_mw->layout->addWidget( _outputswidget, 1,1 );
 
+	// When the widgets have finished laying themselves out, we need to set up
+	// their Midi parameters. This can't happen before layout's complete because
+	// elements may change (e.g. several auxes be replaced by a stereo element
+	// on loading a layout file)
+	connect (_mixerwidget, SIGNAL(autoFillComplete(MixingMatrix::Widget *)),
+		 this, SLOT(updateAutoFilledMidiParams(MixingMatrix::Widget *)) );
+	connect (_inputswidget, SIGNAL(autoFillComplete(MixingMatrix::Widget *)),
+		 this, SLOT(updateAutoFilledMidiParams(MixingMatrix::Widget *)) );
+	connect (_outputswidget, SIGNAL(autoFillComplete(MixingMatrix::Widget *)),
+		 this, SLOT(updateAutoFilledMidiParams(MixingMatrix::Widget *)) );
+
 	_mw->layout->setRowStretch( 0, 1 );
 	_mw->layout->setRowStretch( 1, int( 1E2 ) );
 	_mw->layout->setColumnStretch( 1, 1 );
@@ -216,9 +227,9 @@ void MainWindow::openFile( QString path ) {
 		doc.setContent( &file );
 
 		QDomElement jackmix = doc.documentElement();
-		QString version = jackmix.attribute( "version", "0.3" );
+		QString version = jackmix.attribute( "version", JACKMIX_FILE_FORMAT_VERSION );
 
-		if ( version == "0.3" ) {
+		if ( version == JACKMIX_FILE_FORMAT_VERSION ) {
 
 			QDomElement ins = jackmix.firstChildElement( "ins" );
 			for ( QDomElement in = ins.firstChildElement( "channel" ); !in.isNull(); in = in.nextSiblingElement( "channel" ) ) {
@@ -263,6 +274,16 @@ void MainWindow::openFile( QString path ) {
 	scheduleAutoFill();
 	//qDebug() << "MainWindow::openFile() finished";
 }
+
+void MainWindow::updateAutoFilledMidiParams(MixingMatrix::Widget *w) {
+	qDebug() << "Autofill is complete. for widget" << w;
+	if (w == _inputswidget) qDebug("(inputs widget)");
+	else if (w == _outputswidget) qDebug("(outputs widget)");
+	else if (w == _mixerwidget) qDebug("(mixer widget)");
+	else qDebug("(UNKNOWN widget)");
+	qDebug("Setting MIDI control parameters.");
+}
+	
 void MainWindow::saveFile( QString path ) {
 	if ( path.isEmpty() )
 		path = QFileDialog::getSaveFileName( this, 0, 0, "JackMix-XML (*.jm-xml)" );
@@ -275,17 +296,40 @@ void MainWindow::saveFile( QString path ) {
 	QStringList ins = _backend->inchannels();
 	QStringList outs = _backend->outchannels();
 
-	QString xml = "<jackmix version=\"0.3\"><ins>";
+	QString xml = "<jackmix version=\"" JACKMIX_FILE_FORMAT_VERSION "\"><ins>";
 	foreach( QString in, ins ) {
-		xml += QString( "<channel name=\"%1\" volume=\"%2\" />" ).arg( in ).arg( _backend->getVolume( in,in ) );
+		xml += QString( "<channel name=\"%1\" volume=\"%2\" midiparameters=\"" )
+			.arg( in ).arg( _backend->getVolume( in,in ) );
+		//qDebug()<<" Responsible element: " << _inputswidget->getResponsible(in, in);
+		const QList<int> &mp = _inputswidget->getResponsible(in,in)->midiParameters();
+		// I'm going to use a loop to make it clear ordering is important
+		// (actually, foreach maitains ordering of a QList in Qt 4.8, but this might change
+		QStringList mpl;
+		for (int i = 0 ; i < mp.size() ; i++ )
+			mpl << QString("%1").arg(mp.at(i));
+		xml += mpl.join(",") + "\" />";
 	}
 	xml += "</ins><outs>";
-	foreach( QString out, outs )
-		xml += QString( "<channel name=\"%1\" volume=\"%2\" />" ).arg( out ).arg( _backend->getVolume( out,out ) );
+	foreach( QString out, outs ) {
+		xml += QString( "<channel name=\"%1\" volume=\"%2\" midiparameters=\"" )
+			.arg( out ).arg( _backend->getVolume( out,out ) );
+		const QList<int> &mp = _outputswidget->getResponsible(out,out)->midiParameters();
+		QStringList mpl;
+		for (int i = 0 ; i < mp.size() ; i++ )
+			mpl << QString("%1").arg(mp.at(i));
+		xml += mpl.join(",") + "\" />";
+	}
 	xml += "</outs><matrix>";
 	foreach( QString in, ins )
-		foreach( QString out, outs )
-			xml += QString( "<volume in=\"%1\" out=\"%2\" value=\"%3\" />" ).arg( in ).arg( out ).arg( _backend->getVolume( in, out ) );
+		foreach( QString out, outs ) {
+			xml += QString( "<volume in=\"%1\" out=\"%2\" value=\"%3\" midiparameters=\"" )
+				.arg( in ).arg( out ).arg( _backend->getVolume( in, out ) );
+			const QList<int> &mp = _mixerwidget->getResponsible(in,out)->midiParameters();
+			QStringList mpl;
+			for (int i = 0 ; i < mp.size() ; i++ )
+				mpl << QString("%1").arg(mp.at(i));
+			xml += mpl.join(",") + "\" />";
+		}
 	xml += "</matrix>";
 
 	xml += "<elements>";
