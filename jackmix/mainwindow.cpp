@@ -45,6 +45,8 @@
 #include <QtGui/QCloseEvent>
 #include <QtGui/QStatusBar>
 #include <QtGui/QApplication>
+#include <QtCore/QString>
+#include <QtCore/QHash>
 
 #include <QtXml/QDomDocument>
 
@@ -235,16 +237,23 @@ void MainWindow::openFile( QString path ) {
 			for ( QDomElement in = ins.firstChildElement( "channel" ); !in.isNull(); in = in.nextSiblingElement( "channel" ) ) {
 				QString name = in.attribute( "name" );
 				QString volume = in.attribute( "volume" );
+				QString midi = in.attribute( "midi" );
 				addInput( name );
 				_backend->setVolume( name, name, volume.toDouble() );
+				// Input gain elements have the same name for input and output
+				_inputmps[QString("%1,%1").arg(name)] = midi;
+				
 			}
 
 			QDomElement outs = jackmix.firstChildElement( "outs" );
 			for ( QDomElement out = outs.firstChildElement( "channel" ); !out.isNull(); out = out.nextSiblingElement( "channel" ) ) {
 				QString name = out.attribute( "name" );
 				QString volume = out.attribute( "volume" );
+				QString midi = out.attribute("midi");
 				addOutput( name );
 				_backend->setVolume( name, name, volume.toDouble() );
+				// Output gain elements have the same name for input and output
+				_outputmps[QString("%1,%1").arg(name)] = midi;
 			}
 
 			QDomElement matrix = jackmix.firstChildElement( "matrix" );
@@ -252,7 +261,9 @@ void MainWindow::openFile( QString path ) {
 				QString in = volume.attribute( "in" );
 				QString out = volume.attribute( "out" );
 				QString value = volume.attribute( "value" );
+				QString midi = volume.attribute( "midi" );
 				_backend->setVolume( in, out, value.toDouble() );
+				if (!midi.isEmpty()) _mixermps[QString("%1,%2").arg(in, out)] = midi;
 			}
 
 			QDomElement elements = jackmix.firstChildElement( "elements" );
@@ -264,6 +275,9 @@ void MainWindow::openFile( QString path ) {
 				for ( QDomElement out = element.firstChildElement( "out" ); !out.isNull(); out = out.nextSiblingElement( "out" ) )
 					outs << out.attribute( "name" );
 				_mixerwidget->createControl( ins, outs );
+				// Just one set of midi control parameters for the whole saved element
+				_mixermps[QString("%1,%2").arg(ins[0], outs[0])] = element.attribute("midi");
+	
 			}
 		}
 
@@ -276,12 +290,41 @@ void MainWindow::openFile( QString path ) {
 }
 
 void MainWindow::updateAutoFilledMidiParams(MixingMatrix::Widget *w) {
+	QHash<QString,QString> *mphash(0);           // Iterate over the right midi parameter set
 	qDebug() << "Autofill is complete. for widget" << w;
-	if (w == _inputswidget) qDebug("(inputs widget)");
-	else if (w == _outputswidget) qDebug("(outputs widget)");
-	else if (w == _mixerwidget) qDebug("(mixer widget)");
-	else qDebug("(UNKNOWN widget)");
-	qDebug("Setting MIDI control parameters.");
+	if (w == _inputswidget) {
+		qDebug("(inputs widget)");
+		mphash = &_inputmps;
+	} else if (w == _outputswidget) {
+		qDebug("(outputs widget)");
+		mphash = &_outputmps;
+	} else if (w == _mixerwidget) {
+		qDebug("(mixer widget)");
+		mphash = &_mixermps;
+	} else qDebug("(UNKNOWN widget)");
+
+	qDebug("Setting %d MIDI control paramters.", mphash->size());
+	QMutableHashIterator<QString,QString> mpiter(*mphash);
+	while (mpiter.hasNext()) {
+		mpiter.next();
+		QString name = mpiter.key();
+		const QStringList posn(name.split(","));
+		qDebug() << "posn=" << posn;
+		Element *el(w->getResponsible(posn[0], posn[1]));
+		if (el) {
+			const QStringList params( (mpiter.value()).split(",") );
+			QList<int> pv;
+			qDebug()<<name<<" has parameters "<<params;
+			for (int p = 0; p < params.size(); p++)
+				pv.append(params[p].toInt());
+			el->update_midi_parameters(pv);
+			mpiter.remove();
+		} else {
+			qWarning() << name
+			           << "has null responsible element but has assigned midi parameters "
+			           << mpiter.value();
+		}
+	}
 }
 	
 void MainWindow::saveFile( QString path ) {
@@ -298,7 +341,7 @@ void MainWindow::saveFile( QString path ) {
 
 	QString xml = "<jackmix version=\"" JACKMIX_FILE_FORMAT_VERSION "\"><ins>";
 	foreach( QString in, ins ) {
-		xml += QString( "<channel name=\"%1\" volume=\"%2\" midiparameters=\"" )
+		xml += QString( "<channel name=\"%1\" volume=\"%2\" midi=\"" )
 			.arg( in ).arg( _backend->getVolume( in,in ) );
 		//qDebug()<<" Responsible element: " << _inputswidget->getResponsible(in, in);
 		const QList<int> &mp = _inputswidget->getResponsible(in,in)->midiParameters();
@@ -311,7 +354,7 @@ void MainWindow::saveFile( QString path ) {
 	}
 	xml += "</ins><outs>";
 	foreach( QString out, outs ) {
-		xml += QString( "<channel name=\"%1\" volume=\"%2\" midiparameters=\"" )
+		xml += QString( "<channel name=\"%1\" volume=\"%2\" midi=\"" )
 			.arg( out ).arg( _backend->getVolume( out,out ) );
 		const QList<int> &mp = _outputswidget->getResponsible(out,out)->midiParameters();
 		QStringList mpl;
@@ -322,13 +365,18 @@ void MainWindow::saveFile( QString path ) {
 	xml += "</outs><matrix>";
 	foreach( QString in, ins )
 		foreach( QString out, outs ) {
-			xml += QString( "<volume in=\"%1\" out=\"%2\" value=\"%3\" midiparameters=\"" )
+			xml += QString( "<volume in=\"%1\" out=\"%2\" value=\"%3\"" )
 				.arg( in ).arg( out ).arg( _backend->getVolume( in, out ) );
-			const QList<int> &mp = _mixerwidget->getResponsible(in,out)->midiParameters();
-			QStringList mpl;
-			for (int i = 0 ; i < mp.size() ; i++ )
-				mpl << QString("%1").arg(mp.at(i));
-			xml += mpl.join(",") + "\" />";
+			const Element *el = _mixerwidget->getResponsible(in,out);
+			// Don't bother writing out midi parameter numbers for compound elements here
+			if (el->in().size() == 1 && el->out().size() == 1) {
+				const QList<int> &mp = el->midiParameters();
+				QStringList mpl;
+				for (int i = 0 ; i < mp.size() ; i++ )
+					mpl << QString("%1").arg(mp.at(i));
+				xml += " midi=\"" + mpl.join(",") + "\"";
+			}
+			xml += " />";
 		}
 	xml += "</matrix>";
 
@@ -339,7 +387,13 @@ void MainWindow::saveFile( QString path ) {
 		foreach( QString out, outs ) {
 			Element* tmp = _mixerwidget->getResponsible( in, out );
 			if ( !savedelements.contains( tmp ) && ( tmp->in().size() > 1 || tmp->out().size() > 1 ) ) {
-				xml += "<element>";
+				// Save all the midi conotrol parameters for this compound element
+				xml += "<element midi=\"";
+				const QList<int> &mp = tmp->midiParameters();
+				QStringList mpl;
+				for (int i = 0 ; i < mp.size() ; i++ )
+					mpl << QString("%1").arg(mp.at(i));
+				xml += mpl.join(",") + "\">";
 				foreach( QString input, tmp->in() )
 					xml += QString( "<in name=\"%1\" />" ).arg( input );
 				foreach( QString output, tmp->out() )

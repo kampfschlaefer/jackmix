@@ -26,6 +26,7 @@
 #include <QtGui/QMainWindow>
 #include <QtGui/QDockWidget>
 #include <QtCore/QList>
+#include <QtCore/QHash>
 #include <QtGui/QGridLayout>
 
 class QHBox;
@@ -65,6 +66,7 @@ public slots:
 	void openFile();
 	void openFile( QString path );
 	void saveFile( QString path="" );
+
 private slots:
 	void toggleselectmode();
 	void togglein();
@@ -90,7 +92,10 @@ private slots:
 	void saveLash( QString dir );
 	void restoreLash( QString dir );
 	
-	/** Set all of the contained elements' MIDI parameters only after AutoFill is over */ 
+	/** Set all of the contained elements' MIDI parameters only after AutoFill is over
+	 *  This needs to be a friend of Element, so is public. The lists it uses to perform
+	 *  the one-shot updates are private, so there's not much harm if abused.
+	 */ 
 	void updateAutoFilledMidiParams(MixingMatrix::Widget *);
 
 private:
@@ -98,6 +103,12 @@ private:
 	int config_restore_id;
 	QMenu *_filemenu, *_editmenu, *_viewmenu, *_settingsmenu, *_helpmenu;
 	MixingMatrix::Widget *_mixerwidget, *_inputswidget, *_outputswidget;
+	/** Elements in the main window's widgets should be allowed to complete their
+	 *  initialisation before their MIDI parameters are set. The following lists of
+	 *  midi parameters are applied to its respective widget after initialisation
+	 *  is complete.
+	 */
+	QHash<QString,QString> _mixermps, _inputmps, _outputmps;
 	MainWindowHelperWidget* _mw;
 	QAction *_select_action, *_togglein_action, *_toggleout_action, *_add_inchannel_action, *_add_outchannel_action, *_remove_inchannel_action, *_remove_outchannel_action;
 	QAction *_debugPrint;

@@ -4,7 +4,7 @@ Import( 'env' )
 
 env = env.Clone()
 
-env.MergeFlags( "-I." )
+env.MergeFlags( "-I. -I#/libmatrix" )
 
 env.AppendUnique( CPPPATH = ["#/libcore"] )
 env.StaticLibrary( target="jackmix_gui", source =["channelselector.cpp",
@@ -15,7 +15,7 @@ env.StaticLibrary( target="jackmix_gui", source =["channelselector.cpp",
 						  "midicontrolchannelassigner.cpp"] )
 
 e = env.Clone()
-e.MergeFlags( "-L./  -ljackmix_gui" )
+e.MergeFlags( "-L./ -ljackmix_gui" )
 e.MergeFlags( env['QTGUI_FLAGS'] )
 e.Program( target="slider_test", source=["slider_test.cpp"] )
 e.Program( target="channelselector_test", source=["channelselector_test.cpp"] )

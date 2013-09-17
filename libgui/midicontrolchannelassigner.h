@@ -30,6 +30,7 @@ class QSpinBox;
 class QPushButton;
 
 namespace JackMix {
+
 namespace GUI {
 
 /**
@@ -62,6 +63,8 @@ public:
 	~MidiControlChannelAssigner();
 signals:
 	void assignParameters( QList<int> );
+public slots:
+	void updateParameters( QList<int> );
 private slots:
 	void commit();
 	void commitnquit();

@@ -102,7 +102,7 @@ AuxElement::AuxElement( QStringList inchannel, QStringList outchannel, MixingMat
 
 	// Now construct the parameter setting menu
 	_cca = new JackMix::GUI::MidiControlChannelAssigner(QString("Set MIDI control parameter"),
-	                                                     "<html>" + _inchannel + " &rarr; "  + _outchannel + "</html>",
+	                                                     "<qt>" + _inchannel + " &rarr; "  + _outchannel + "</qt>",
 	                                                     QStringList() << "Gain",
 	                                                     midi_params,
 		                                             this

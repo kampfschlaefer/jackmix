@@ -119,7 +119,7 @@ Mono2StereoElement::Mono2StereoElement( QStringList inchannel, QStringList outch
 
 	// Now construct the parameter setting menu
 	_cca = new JackMix::GUI::MidiControlChannelAssigner(QString("Set MIDI control parameter"),
-	                                                     "<html>" + _inchannel + " &rarr; ("  + _outchannel1 + "/" + _outchannel2 + ")</html>",
+	                                                     "<qt>" + _inchannel + " &rarr; ("  + _outchannel1 + "/" + _outchannel2 + ")</qt>",
 	                                                     QStringList() << "Gain" << "Pan",
 	                                                     midi_params,
 	                                                     this
@@ -216,8 +216,8 @@ Stereo2StereoElement::Stereo2StereoElement( QStringList inchannels, QStringList 
 
 	// Now construct the parameter setting menu
 	_cca = new JackMix::GUI::MidiControlChannelAssigner(QString("Set MIDI control parameter"),
-	                                                     "<html>(" + _inchannel1 + "/" + _inchannel2 +
-	                                                         ") &rarr; ("  + _outchannel1 + "/" + _outchannel2 + ")</html>",
+	                                                     "<qt>(" + _inchannel1 + "/" + _inchannel2 +
+	                                                         ") &rarr; ("  + _outchannel1 + "/" + _outchannel2 + ")</qt>",
 	                                                     QStringList() << "Gain" << "Cross-fade",
 	                                                     midi_params,
 	                                                     this

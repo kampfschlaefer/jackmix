@@ -175,12 +175,19 @@ public:
 	 * of selected items. */
 	int followers( int ) const;
 	QStringList followersList() const;
-	/** Allow others to see our controlling midi parameters (but not change them) */
+	/** Allow others to see our controlling midi parameters (but not change them)
+	 *  Only the mainwindow is allowed to update these */
 	const QList<int>& midiParameters() const;
 
 public slots:
 	void select( bool );
 	void showMenu();
+	/** Receive a signal, typically from the MIDI parameter selection dialogue
+	 *  to change re-subscribe the sliders in this element to new MIDI
+	 *  parameters. Also called directly to update the parameters after loading
+	 *  a saved control layout.
+	 */
+	void update_midi_parameters(QList< int > pv);
 
 signals:
 	void replace( Element* );
@@ -200,14 +207,18 @@ protected:
 	 * @todo the overall layout is needed for hide/show buttons per channel/element...
 	 */
 	QLayout* layout();
-	/** The current parameter associated with each delegate */
+	/** The current parameter associated with each delegate.
+	 *  MainWindow::updateAutoFilledMidiParams is a friend of this class, so these
+	 *  parameters can be set on loading a file. Because of lazy initialisation of
+	 *  widgets, this has to happen after the elements are created.
+	 */
 	QList<int> midi_params;
 	/** A list of sliders which have a setMidiValue(int) member
 	 *  function, ordered to correspond with the parameter array
 	 *  midi_params. Would typically be initialised in a derived
 	 *  class's constructor with:
 	 *
-	 *	midi_delegates << slider1 << slider2 etc. 
+	 *	midi_delegates << slider1 << slider2 etc.
 	 */
 	QList<JackMix::GUI::AbstractSlider*> midi_delegates;
 	/** Dialogue to allow midi parameters to be associated with each delegate */
@@ -224,12 +235,7 @@ protected slots:
 	 */
 	void controlEvent(int p, int v);
 	/** Show the midi parameter selection menu */
-	void slot_assign_midi_parameters() { _cca->show(); };
-	/** Receive a signal, typically from the MIDI parameter selection dialogue
-	 *  to change re-subscribe the sliders in this element to new MIDI
-	 *  parameters.
-	 */
-	void update_midi_parameters(QList< int > pv);
+	virtual void slot_assign_midi_parameters() { _cca->updateParameters(midi_params); _cca->show(); };
 
 private slots:
 	void lazyInit();

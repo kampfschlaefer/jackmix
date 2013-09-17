@@ -28,12 +28,18 @@
 #include <QtGui/QLabel>
 #include <QtGui/QPushButton>
 #include <QtGui/QSpinBox>
+#include <QtCore/QDebug>
 
 namespace JackMix {
 namespace GUI {
 
-MidiControlChannelAssigner::MidiControlChannelAssigner( QString title, QString label, QStringList controls, const QList<int> &init, QWidget* p )
+MidiControlChannelAssigner::MidiControlChannelAssigner( QString title
+                                                      , QString label
+                                                      , QStringList controls
+                                                      , const QList< int >& init
+                                                      , QWidget *p )
 	: QDialog( p ) {
+	
 	this->setWindowTitle( title );
 
 	QGridLayout *_layout = new QGridLayout( this );
@@ -48,15 +54,6 @@ MidiControlChannelAssigner::MidiControlChannelAssigner( QString title, QString l
 	for (int i = 0; i < _num_controls; i++ ) {
 		_cchans[i] = new QSpinBox(this);
 		_cchans[i]->setRange(0, 119);
-		int ival;
-		if (i>= init.size() || init[i] < 0)
-			ival = 0;
-		else if (init[i] >= 119)
-			ival = 119;
-		else
-			ival = init[i];
-		
-		_cchans[i]->setValue(ival);
 	}
 	
 	int layout_row = 1;
@@ -79,6 +76,9 @@ MidiControlChannelAssigner::MidiControlChannelAssigner( QString title, QString l
 	_cancel = new QPushButton( "Cancel", this );
 	connect( _cancel, SIGNAL( clicked() ), this, SLOT( reject() ) );
 	_layout->addWidget( _cancel, layout_row,1 );
+	
+	// Might as well...
+	updateParameters(init);
 }
 
 MidiControlChannelAssigner::~MidiControlChannelAssigner() {
@@ -96,6 +96,25 @@ void MidiControlChannelAssigner::commitnquit() {
 	commit();
 	//qDebug( "Now quit..." );
 	done( 0 );
+}
+
+void MidiControlChannelAssigner::updateParameters(QList<int> p) {
+	// The MIDI parameters of the parent widget might have changed since construction
+	if (p.size() != _num_controls)
+		qDebug() << "Update of MIDI dialogue data from wrong-size vector!";
+	
+	for (int i = 0; i < _num_controls; i++ ) {
+		int ival;
+		
+		if (i>= p.size() || p[i] < 0)
+			ival = 0;
+		else if (p[i] >= 119)
+			ival = 119;
+		else
+			ival = p[i];
+		
+		_cchans[i]->setValue(ival);
+	}
 }
 
 };
