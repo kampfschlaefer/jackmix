@@ -1,6 +1,9 @@
 /*
     Copyright 2004 - 2007 Arnold Krille <arnold@arnoldarts.de>
 
+    Modified to permit control via MIDI by Nick Bailey <nick@n-ism.org>
+    Released as version 0.5.0 (et seq.) copyright 2013.
+    
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation;
@@ -288,7 +291,7 @@ Element::Element( QStringList in, QStringList out, Widget* p, const char* n )
 	, _selected( false )
 	, _parent( p )
 {
-	qDebug( "MixingMatrix::Element::Element( QStringList '%s', QStringList '%s' )", qPrintable( in.join(",") ), qPrintable( out.join(",") ) );
+	//qDebug( "MixingMatrix::Element::Element( QStringList '%s', QStringList '%s' )", qPrintable( in.join(",") ), qPrintable( out.join(",") ) );
 	setFrameStyle( QFrame::Raised|QFrame::Panel );
 	setLineWidth( 1 );
 	if (p) p->anotherControl();
@@ -394,13 +397,13 @@ void Element::update_midi_parameters(QList< int > pv) {
 }
 
 void Element::controlEvent(int p, int v) {
-	qDebug() << midi_delegates.size() << " delegates.";
+	//qDebug() << midi_delegates.size() << " delegates.";
 	for (int i = 0; i < midi_delegates.size(); i++) {
 		//qDebug() << "Considering delegate " << i;
 		// Check this delegate isn't null for safety,
 		// and send it the parameter if it is subscribed
 		if (midi_delegates[i] && p == midi_params[i]) {
-			qDebug() << "Sending " << p << "," << v << " to delegate " << i;
+			//qDebug() << "Sending " << p << "," << v << " to delegate " << i;
 			midi_delegates[i]->setMidiValue(v);
 		}
 	}

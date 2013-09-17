@@ -1,6 +1,9 @@
 /*
     Copyright 2004 - 2007 Arnold Krille <arnold@arnoldarts.de>
 
+    Modified to permit control via MIDI by Nick Bailey <nick@n-ism.org>
+    Released as version 0.5.0 (et seq.) copyright 2013.
+    
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation;
@@ -175,8 +178,7 @@ public:
 	 * of selected items. */
 	int followers( int ) const;
 	QStringList followersList() const;
-	/** Allow others to see our controlling midi parameters (but not change them)
-	 *  Only the mainwindow is allowed to update these */
+	/** Allow others to see our controlling midi parameters (but not change them) */
 	const QList<int>& midiParameters() const;
 
 public slots:

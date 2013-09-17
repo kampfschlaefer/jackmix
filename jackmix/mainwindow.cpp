@@ -1,6 +1,9 @@
 /*
     Copyright 2004 - 2007 Arnold Krille <arnold@arnoldarts.de>
 
+    Modified to permit control via MIDI by Nick Bailey <nick@n-ism.org>
+    Released as version 0.5.0 (et seq.) copyright 2013.
+    
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation;
@@ -318,9 +321,16 @@ void MainWindow::updateAutoFilledMidiParams(MixingMatrix::Widget *w) {
 			for (int p = 0; p < params.size(); p++)
 				pv.append(params[p].toInt());
 			el->update_midi_parameters(pv);
+			// We're going to remove elements from the hash one at a time because
+			// there might be some awaiting initialisation. If we clear them all
+			// at the end, we'll stand a good chance of never setting the MIDI
+			// parameters on some of them.
 			mpiter.remove();
 		} else {
-			qWarning() << name
+			// This behaviour is actually quite normal; it happens for example after the saved
+			// compound elements are regenerated and autoFill'd, but before the simple
+			// aux_elements have got going.
+			qDebug() << name
 			           << "has null responsible element but has assigned midi parameters "
 			           << mpiter.value();
 		}

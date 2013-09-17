@@ -4,7 +4,7 @@ Import( 'env' )
 
 env = env.Clone()
 
-env.MergeFlags( "-I. -I#/libmatrix" )
+env.MergeFlags( "-I." )
 
 env.AppendUnique( CPPPATH = ["#/libcore"] )
 env.StaticLibrary( target="jackmix_gui", source =["channelselector.cpp",

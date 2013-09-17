@@ -5,9 +5,16 @@ Installation
 To install JackMix you basicly need to do:
  scons
 
-JackMix requires Qt4.2 or higher, the jack-audio-connection-kit version 0.100.0 or higher and lash-1 version 0.5.1 or higher.
+JackMix requires Qt4.2 or higher, the jack-audio-connection-kit
+version 0.100.0 or higher and lash-1 version 0.5.1 or higher.
+As of v 0.5.0 it also requires libasound (the alsa library) version 2
+for MIDI signal routing.
 
-Currently the buildsystem doesn't install the binary to some extra place. If you want it to be installed, just copy jackmix/jackmix to your destination of choice.
+Currently the buildsystem doesn't install the binary to some
+extra place. If you want it to be installed, just copy jackmix/jackmix
+to your destination of choice.
 
-If you run into any other problems don't hesitate to contact me at arnold@arnoldarts.de or on linux-audio-user@lists.linuxaudio.org.
-
+If you run into any other problems don't hesitate to contact me at
+arnold@arnoldarts.de or on linux-audio-user@lists.linuxaudio.org.
+Problems involving the MIDI control of the mixer are almost certainly
+Nick Bailey's fault: nick@n-ism.org is the place to contact him.

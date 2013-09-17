@@ -1,7 +1,10 @@
 JackMix
 Arnold Krille <arnold@arnoldarts.de>
+Nick Bailey <nick@n-ism.org> -- MIDI control extensions.
 
-See INSTALL for installation instructions.
+See INSTALL for installation instructions;
+    AUTHORS for contact information;
+    NEWS    for new features in this version.
 
 JackMix is a matrix mixer allowing p input channels to be mixed into
 q output channles by a matrix of faders. It relys on the Jack framework

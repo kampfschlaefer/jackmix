@@ -1,1 +1,9 @@
 Arnold Krille <arnold@arnoldarts.de>
+
+-- Original conception and implementation and the vast
+   majority of the code
+
+Nick Bailey <nick@n-ism.oig>
+
+-- Modifications to permit the use of a MIDI controller to
+   operate the mixer
