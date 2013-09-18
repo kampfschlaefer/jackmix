@@ -64,6 +64,9 @@ Widget::Widget( QStringList ins, QStringList outs, JackMix::BackendInterface* ba
 	setSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding );
 }
 Widget::~Widget() {
+	// Time to depart this application.
+	// Don't go calling me, kids!
+	foreach (Element *e, _elements) e->invalidateRegistry();
 }
 
 
@@ -73,6 +76,7 @@ void Widget::addElement( Element* n ) {
 	resizeEvent( 0 );
 }
 void Widget::removeElement( Element* n ) {
+	qDebug("Removing element");
 	_elements.removeAll( n );
 }
 
@@ -299,8 +303,8 @@ Element::Element( QStringList in, QStringList out, Widget* p, const char* n )
 	setAutoFillBackground( true );
 }
 Element::~Element() {
-	//qDebug( "MixingMatrix::Element::~Element()" );
-	_parent->removeElement( this );
+	//qDebug() << "MixingMatrix::Element::~Element() for " << _in << _out;
+	if (_parent) _parent->removeElement( this );
 }
 void Element::lazyInit() {
 	//qDebug()<<"lazy, innit?";
@@ -389,7 +393,7 @@ void Element::update_midi_parameters(QList< int > pv) {
 		          << " MIDI parameters but I was expecting "
 			  << midi_params.size();
 	for (int i = 0; i < pv.size() && i < midi_params.size() ; i++) {
-		qDebug()<<"New MIDI parameter no "<<i<<": "<<pv[i]<<" (was "<<midi_params[i]<<")";
+		//qDebug()<<"New MIDI parameter no "<<i<<": "<<pv[i]<<" (was "<<midi_params[i]<<")";
 		JackMix::MidiControl::ControlSender::unsubscribe(this, midi_params[i]);
 		midi_params[i] = pv[i];
 		JackMix::MidiControl::ControlSender::subscribe(this, midi_params[i]);

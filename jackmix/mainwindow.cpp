@@ -312,12 +312,12 @@ void MainWindow::updateAutoFilledMidiParams(MixingMatrix::Widget *w) {
 		mpiter.next();
 		QString name = mpiter.key();
 		const QStringList posn(name.split(","));
-		qDebug() << "posn=" << posn;
+		//qDebug() << "posn=" << posn;
 		Element *el(w->getResponsible(posn[0], posn[1]));
 		if (el) {
 			const QStringList params( (mpiter.value()).split(",") );
 			QList<int> pv;
-			qDebug()<<name<<" has parameters "<<params;
+			//qDebug()<<name<<" has parameters "<<params;
 			for (int p = 0; p < params.size(); p++)
 				pv.append(params[p].toInt());
 			el->update_midi_parameters(pv);
