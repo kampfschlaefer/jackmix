@@ -1,1 +1,13 @@
+* Check validity under the following circumstances:
 
+  - Removing all inputs and/or outputs (may segfault?)
+
+* When a configuration is loaded, channels are sorted in
+  alphabetical order. This can be different from the order
+  in which they were added, resulting in saved elements
+  obscuring or being partly obscured by others. Layout order
+  of inputs and outputs should be preserved.
+
+* Renaming of inputs and outputs (because deleting and recreating
+  them causes elements to disappear and be replaced by simple
+  knobs)
