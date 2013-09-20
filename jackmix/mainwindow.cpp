@@ -428,6 +428,7 @@ void MainWindow::saveFile( QString path ) {
 void MainWindow::about() {
 	QMessageBox::about( this, "JackMix: About JackMix", "<qt> \
 		<p><b>&copy;2004-2007 by Arnold Krille</b> &lt;arnold@arnoldarts.de&gt;</p> \
+		<p><b>&copy;2013 Nick Bailey</b> &lt;nick@n-ism.org&gt;</p> \
 		<p>JackMix is the ultimative mixer application for Jack (<a href=\"http://www.jackaudio.org/\">www.jackaudio.org</a>). Check out <a href=\"http://www.arnoldarts.de/drupal/?q=JackMix\">http://www.arnoldarts.de/drupal/?q=JackMix</a> for more information and new versions of JackMix.</p> \
 		<p>This application and all its components are licensed under the GPL.</p> \
 		</qt>" );
