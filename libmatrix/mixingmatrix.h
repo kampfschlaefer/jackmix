@@ -214,11 +214,7 @@ protected:
 	 * @todo the overall layout is needed for hide/show buttons per channel/element...
 	 */
 	QLayout* layout();
-	/** The current parameter associated with each delegate.
-	 *  MainWindow::updateAutoFilledMidiParams is a friend of this class, so these
-	 *  parameters can be set on loading a file. Because of lazy initialisation of
-	 *  widgets, this has to happen after the elements are created.
-	 */
+	/** The current parameter associated with each delegate. */
 	QList<int> midi_params;
 	/** A list of sliders which have a setMidiValue(int) member
 	 *  function, ordered to correspond with the parameter array
