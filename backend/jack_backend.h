@@ -1,5 +1,7 @@
 /*
     Copyright 2004 - 2007 Arnold Krille <arnold@arnoldarts.de>
+    
+    Copyright 2013 Nick Bailey <nick@n-ism.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -65,13 +67,21 @@ private:
 
 public:
 	/// returns a QStringList with the names of the out-channels
-	QStringList outchannels();
+	const QStringList &outchannels() const { return out_ports_list; };
 	/// returns a QStringList with the names of the in-channels
-	QStringList inchannels();
+	const QStringList &inchannels() const { return in_ports_list; };
 
 private:
+	/// As their name suggests, the following are QMaps of the input
+	/// and output ports onto a jack_client_t*...
 	portsmap in_ports;
 	portsmap out_ports;
+	/// ...but we must also keep a list of names of the channels, so
+	/// the order is preserved. This is vitally important when saving
+	/// the layout in a file, for example.
+	QStringList in_ports_list;
+	QStringList out_ports_list;
+	
 	::jack_client_t *client;
 	/// First dimension is input-channels, second is output-channels
 	QMap<QString,QMap<QString,float> > volumes;

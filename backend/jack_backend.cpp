@@ -1,5 +1,7 @@
 /*
     Copyright 2004 - 2007 Arnold Krille <arnold@arnoldarts.de>
+    
+    Copyright 2013 Nick Bailey <nick@n-ism.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -51,6 +53,7 @@ bool JackBackend::addOutput( QString name ) {
 	if ( client ) {
 		qDebug() << "JackBackend::addOutput(" << name << ")";
 		out_ports.insert( name, jack_port_register ( client, name.toStdString().c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0 ) );
+		out_ports_list << name;
 		return true;
 	}
 	return false;
@@ -59,6 +62,7 @@ bool JackBackend::addInput( QString name ) {
 	if ( client ) {
 		qDebug() << "JackBackend::addInput(" << name << ")";
 		in_ports.insert( name, jack_port_register ( client, name.toStdString().c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0 ) );
+		in_ports_list << name;
 		return true;
 	}
 	return false;
@@ -69,6 +73,7 @@ bool JackBackend::removeOutput( QString name ) {
 	if ( client && out_ports.find( name ) != out_ports.end() )
 		jack_port_unregister( client, out_ports[ name ] );
 	out_ports.remove( name );
+	out_ports_list.removeOne( name );
 	return true;
 }
 bool JackBackend::removeInput( QString name ) {
@@ -76,6 +81,7 @@ bool JackBackend::removeInput( QString name ) {
 	if ( client && in_ports.find( name ) != in_ports.end() )
 		jack_port_unregister( client, in_ports[ name ] );
 	in_ports.remove( name );
+	in_ports_list.removeOne( name );
 	return true;
 }
 
@@ -128,21 +134,6 @@ float JackBackend::getInVolume( QString ch ) {
 	if ( !involumes.contains( ch ) )
 		involumes.insert( ch, 1 );
 	return involumes[ ch ];
-}
-
-QStringList JackBackend::outchannels() {
-	QStringList tmp;
-	JackMix::ports_it it;
-	for ( it = out_ports.begin(); it != out_ports.end(); ++it )
-		tmp << it.key();
-	return tmp;
-}
-QStringList JackBackend::inchannels() {
-	QStringList tmp;
-	JackMix::ports_it it;
-	for ( it = in_ports.begin(); it != in_ports.end(); ++it )
-		tmp << it.key();
-	return tmp;
 }
 
 
