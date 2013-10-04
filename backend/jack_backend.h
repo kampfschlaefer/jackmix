@@ -1,7 +1,5 @@
 /*
     Copyright 2004 - 2007 Arnold Krille <arnold@arnoldarts.de>
-    
-    Copyright 2013 Nick Bailey <nick@n-ism.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -40,6 +38,7 @@ int process( ::jack_nframes_t, void* );
 
 typedef QMap<QString,jack_port_t*> portsmap;
 typedef portsmap::Iterator ports_it;
+typedef portsmap::ConstIterator ports_cit;
 
 class JackBackend : public JackMix::BackendInterface {
 	friend int process( ::jack_nframes_t, void* );
@@ -53,7 +52,16 @@ public:
 	bool removeInput( QString );
 	bool addInput( QString );
 	bool removeOutput( QString );
-
+	/**
+	 * Rename a jack port
+	 * 
+	 * \param old_name current port name
+	 * \param new_name new port name
+	 * \returns whether a port was renamed
+	 */
+	bool rename(const QString old_name, const QString new_name);
+	bool rename(const QString old_name, const char *new_name);
+	
 	/// sets the volume of channel,output
 	void setVolume( QString,QString,float );
 	/// returns the volume of channel,output
@@ -64,24 +72,16 @@ private:
 	float getOutVolume( QString );
 	void setInVolume( QString, float );
 	float getInVolume( QString );
-
+	bool rename(portsmap &map, const QString old_name, const char *new_name);
 public:
 	/// returns a QStringList with the names of the out-channels
-	const QStringList &outchannels() const { return out_ports_list; };
+	QStringList outchannels();
 	/// returns a QStringList with the names of the in-channels
-	const QStringList &inchannels() const { return in_ports_list; };
+	QStringList inchannels();
 
 private:
-	/// As their name suggests, the following are QMaps of the input
-	/// and output ports onto a jack_client_t*...
 	portsmap in_ports;
 	portsmap out_ports;
-	/// ...but we must also keep a list of names of the channels, so
-	/// the order is preserved. This is vitally important when saving
-	/// the layout in a file, for example.
-	QStringList in_ports_list;
-	QStringList out_ports_list;
-	
 	::jack_client_t *client;
 	/// First dimension is input-channels, second is output-channels
 	QMap<QString,QMap<QString,float> > volumes;

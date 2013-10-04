@@ -472,9 +472,7 @@ void MainWindow::addInput() {
 		addInput( tmp );
 }
 void MainWindow::addInput( QString name ) {
-	if ( !_backend->inchannels().contains(name) &&
-	     !_backend->outchannels().contains(name) && 
-	     _backend->addInput( name ) ) {
+	if ( _backend->addInput( name ) ) {
 		_mixerwidget->addinchannel( name );
 		_inputswidget->addinchannel( name );
 		scheduleAutoFill();
@@ -486,9 +484,7 @@ void MainWindow::addOutput() {
 		addOutput( tmp );
 }
 void MainWindow::addOutput( QString name ) {
-	if ( !_backend->outchannels().contains(name) &&
-	     !_backend->inchannels().contains(name) &&
-	     _backend->addOutput( name ) ) {
+	if ( _backend->addOutput( name ) ) {
 		_mixerwidget->addoutchannel( name );
 		_outputswidget->addoutchannel( name );
 		scheduleAutoFill();

@@ -43,11 +43,11 @@ namespace JackMix {
 		/**
 		 * @brief Return the current list of output channels.
 		 */
-		virtual const QStringList &outchannels() const =0;
+		virtual QStringList outchannels() =0;
 		/**
 		 * @brief Return the current list of input channels.
 		 */
-		virtual const QStringList &inchannels() const =0;
+		virtual QStringList inchannels() =0;
 
 		/**
 		 * @brief Set the volume of the named node.
