@@ -8,6 +8,7 @@ env.MergeFlags( "-I." )
 
 env.AppendUnique( CPPPATH = ["#/libcore"] )
 env.StaticLibrary( target="jackmix_gui", source =["channelselector.cpp",
+						  "editablechannelselector.cpp",
 						  "graphicalguiserver.cpp",
 						  "abstractslider.cpp",
 						  "slider.cpp",

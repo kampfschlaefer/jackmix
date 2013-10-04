@@ -27,6 +27,7 @@
 #include "jack_backend.h"
 #include "mixingmatrix.h"
 #include "channelselector.h"
+#include "editablechannelselector.h"
 #include "graphicalguiserver.h"
 
 #include "aux_elements.h"
@@ -134,6 +135,12 @@ void MainWindow::init() {
 	_add_outchannel_action = new QAction( "Add &Output...", this );
 	connect( _add_outchannel_action, SIGNAL( triggered() ), this, SLOT( addOutput() ) );
 	_editmenu->addAction( _add_outchannel_action );
+	_rename_input_action = new QAction( "Re&name Inputs...", this);
+	connect( _rename_input_action, SIGNAL( triggered() ), this, SLOT(renameInput()) );
+	_editmenu->addAction( _rename_input_action );
+	_rename_output_action = new QAction( "Ren&ame Outputs...", this);
+	connect( _rename_output_action, SIGNAL( triggered() ), this, SLOT(renameOutput()) );
+	_editmenu->addAction( _rename_output_action );
 	_remove_inchannel_action = new QAction( "&Remove Input...", this );
 	connect( _remove_inchannel_action, SIGNAL( triggered() ), this, SLOT( removeInput() ) );
 	_editmenu->addAction( _remove_inchannel_action );
@@ -467,8 +474,8 @@ void MainWindow::toggleout() {
 }
 
 void MainWindow::addInput() {
-	QString tmp = QInputDialog::getText( this, "Inchannel name", "Channel name", QLineEdit::Normal, "(empty)" );
-	if ( tmp != "(empty)" )
+	QString tmp = QInputDialog::getText( this, "Input Channel Name", "Channel name", QLineEdit::Normal, "(empty)" );
+	if ( tmp != "(empty)" && tmp != "" )
 		addInput( tmp );
 }
 void MainWindow::addInput( QString name ) {
@@ -479,8 +486,8 @@ void MainWindow::addInput( QString name ) {
 	}
 }
 void MainWindow::addOutput() {
-	QString tmp = QInputDialog::getText( this, "Outchannel name", "Channel name", QLineEdit::Normal, "(empty)" );
-	if ( tmp != "(empty)" )
+	QString tmp = QInputDialog::getText( this, "Output Channel Name", "Channel name", QLineEdit::Normal, "(empty)" );
+	if ( tmp != "(empty)" && tmp != "" )
 		addOutput( tmp );
 }
 void MainWindow::addOutput( QString name ) {
@@ -491,9 +498,34 @@ void MainWindow::addOutput( QString name ) {
 	}
 }
 
+void MainWindow::renameInput() {
+	JackMix::GUI::EditableChannelSelector *tmp =
+		new JackMix::GUI::EditableChannelSelector("Rename Input Channels",
+							  "Edit the channel names",
+							  _backend->inchannels(),
+							  this);
+	connect( tmp, SIGNAL(editedChannels(QStringList)), this, SLOT(renameInput(QStringList)) );
+	tmp->show();
+}
+void MainWindow::renameInput( QStringList names ) {
+	qDebug()<<"Change input channel names: "<<names;
+}
+void MainWindow::renameOutput() {
+	JackMix::GUI::EditableChannelSelector *tmp =
+		new JackMix::GUI::EditableChannelSelector("Rename Output Channels",
+							  "Edit the channel names",
+							  _backend->outchannels(),
+							  this);
+	connect( tmp, SIGNAL(editedChannels(QStringList)), this, SLOT(renameOutput(QStringList)) );
+	tmp->show();
+}
+void MainWindow::renameOutput( QStringList names ) {
+	qDebug()<<"Change input channel names: "<<names;
+}
+
 void MainWindow::removeInput() {
 	//qDebug( "MainWindow::removeInput()" );
-	JackMix::GUI::ChannelSelector *tmp = new JackMix::GUI::ChannelSelector( "Delete Inputchannels", "Select the inputchannels for deletion:", _backend->inchannels(), this );
+	JackMix::GUI::ChannelSelector *tmp = new JackMix::GUI::ChannelSelector( "Delete Input channels", "Select the inputchannels for deletion:", _backend->inchannels(), this );
 	connect( tmp, SIGNAL( selectedChannel( QString ) ), this, SLOT( removeInput( QString ) ) );
 	tmp->show();
 }

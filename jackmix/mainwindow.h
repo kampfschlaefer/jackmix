@@ -81,6 +81,11 @@ private slots:
 	void addOutput();
 	void addOutput( QString );
 
+	void renameInput();
+	void renameInput( QStringList );
+	void renameOutput();
+	void renameOutput( QStringList );
+
 	void removeInput();
 	void removeInput( QString );
 	void removeOutput();
@@ -110,7 +115,11 @@ private:
 	 */
 	QHash<QString,QString> _mixermps, _inputmps, _outputmps;
 	MainWindowHelperWidget* _mw;
-	QAction *_select_action, *_togglein_action, *_toggleout_action, *_add_inchannel_action, *_add_outchannel_action, *_remove_inchannel_action, *_remove_outchannel_action;
+	QAction *_select_action
+	      , *_togglein_action, *_toggleout_action
+	      , *_add_inchannel_action, *_add_outchannel_action
+	      , *_rename_input_action, *_rename_output_action
+	      ,*_remove_inchannel_action, *_remove_outchannel_action;
 	QAction *_debugPrint;
 	BackendInterface* _backend;
 	bool _autofillscheduled;

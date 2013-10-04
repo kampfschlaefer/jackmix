@@ -41,9 +41,9 @@ public slots:
 	void addChannel( QString );
 	void removeChannel( QString );
 private slots:
-	void commit();
-	void commitnquit();
-private:
+	virtual void commit();
+	virtual void commitnquit();
+protected:
 	QListWidget *_list;
 	QPushButton *_commit, *_commit_n_quit, *_cancel;
 };
