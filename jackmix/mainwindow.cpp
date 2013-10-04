@@ -360,7 +360,7 @@ void MainWindow::saveFile( QString path ) {
 	foreach( QString in, ins ) {
 		xml += QString( "<channel name=\"%1\" volume=\"%2\" midi=\"" )
 			.arg( in ).arg( _backend->getVolume( in,in ) );
-		//qDebug()<<" Responsible element: " << _inputswidget->getResponsible(in, in);
+		qDebug()<<" Responsible element for " << in << ": " << _inputswidget->getResponsible(in, in);
 		const QList<int> &mp = _inputswidget->getResponsible(in,in)->midiParameters();
 		// I'm going to use a loop to make it clear ordering is important
 		// (actually, foreach maitains ordering of a QList in Qt 4.8, but this might change
@@ -479,7 +479,9 @@ void MainWindow::addInput() {
 		addInput( tmp );
 }
 void MainWindow::addInput( QString name ) {
-	if ( _backend->addInput( name ) ) {
+	if ( !_backend->inchannels().contains(name) &&
+	     !_backend->outchannels().contains(name) && 
+	     _backend->addInput( name ) ) {
 		_mixerwidget->addinchannel( name );
 		_inputswidget->addinchannel( name );
 		scheduleAutoFill();
@@ -491,7 +493,9 @@ void MainWindow::addOutput() {
 		addOutput( tmp );
 }
 void MainWindow::addOutput( QString name ) {
-	if ( _backend->addOutput( name ) ) {
+	if ( !_backend->inchannels().contains(name) &&
+	     !_backend->outchannels().contains(name) && 
+	     _backend->addOutput( name ) ) {
 		_mixerwidget->addoutchannel( name );
 		_outputswidget->addoutchannel( name );
 		scheduleAutoFill();
@@ -508,7 +512,7 @@ void MainWindow::renameInput() {
 	tmp->show();
 }
 void MainWindow::renameInput( QStringList names ) {
-	qDebug()<<"Change input channel names: "<<names;
+	qDebug() << "Change input channel names: " << names;
 }
 void MainWindow::renameOutput() {
 	JackMix::GUI::EditableChannelSelector *tmp =
@@ -520,7 +524,27 @@ void MainWindow::renameOutput() {
 	tmp->show();
 }
 void MainWindow::renameOutput( QStringList names ) {
-	qDebug()<<"Change input channel names: "<<names;
+	qDebug() << "Change input channel names: " << names;
+	while (names.length() > 0) {
+		QString old_name(names.takeFirst());
+		QString new_name(names.takeFirst());
+		// Just check there isn't an output with that name already
+		if (_outputswidget->getResponsible(new_name, new_name)) {
+			// There is, so generate an alternative
+			int variant(1);
+			QString candidate;
+			do {
+				candidate = new_name.remove(QRegExp("_[0-9]+$")).append("_%1").arg(variant++);
+			} while ( _outputswidget->getResponsible(candidate, candidate) );
+			new_name = candidate;
+		}
+		// Final sanity check: do the rename if the old name exists already
+		if (_outputswidget->getResponsible(old_name, old_name)) {
+			_backend->renameOutput(old_name, new_name);
+			_outputswidget->renameoutchannel(old_name, new_name);
+			_mixerwidget->renameoutchannel(old_name, new_name);
+		}
+	}
 }
 
 void MainWindow::removeInput() {

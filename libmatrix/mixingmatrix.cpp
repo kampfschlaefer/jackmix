@@ -281,6 +281,24 @@ void Widget::removeoutchannel( QString name ) {
 	}
 	_outchannels.removeAll( name );
 }
+void Widget::renameoutchannel(QString old_name, QString new_name) {
+	if (_direction == Horizontal ) // No output channels
+		return;
+	
+	if (_direction == Vertical) { // Output sliders will have same string in and out
+		Element *tmp = getResponsible(old_name, old_name);
+		if (tmp)
+			qDebug() << "Found the output element for " << old_name;
+		return;
+	}
+	
+	for (QStringList::Iterator it = _inchannels.begin(); it != _inchannels.end(); it++) {
+		qDebug() << "Matrix mixer: renaming (" << *it << ", " << old_name << ")";
+		Element *tmp = getResponsible( *it, old_name );
+		if ( tmp )
+			qDebug("Yep!");
+	}
+}
 
 void Widget::debugPrint() {
         qDebug( "\nWidget::debugPrint()" );
