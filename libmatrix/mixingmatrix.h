@@ -31,6 +31,7 @@
 #include <QtCore/QMutex>
 #include <QtGui/QMenu>
 #include <QtGui/QAction>
+#include <QtGui/QLabel>
 
 #include "backend_interface.h"
 #include "abstractslider.h"
@@ -187,6 +188,10 @@ public:
 	 *  on destruction (otherwise there may be a segfault at closedown)
 	 */
 	void invalidateRegistry() { _parent = 0; };
+	/** Replace all occurances of the old channel name with the new one in both the
+	 *  input and output channel lists
+	 */
+	void renamechannels(QString old_name, QString new_name);
 
 public slots:
 	void select( bool );
@@ -215,8 +220,13 @@ protected:
 	/**
 	 * @todo the overall layout is needed for hide/show buttons per channel/element...
 	 */
-	QLayout* layout();
 	/** The current parameter associated with each delegate. */
+	QLayout* layout();
+	/** If the derrived class has a label, this is it.
+	 *  Used to change text if an input or output channel is renamed
+	 */
+	QLabel* disp_name;
+
 	QList<int> midi_params;
 	/** A list of sliders which have a setMidiValue(int) member
 	 *  function, ordered to correspond with the parameter array

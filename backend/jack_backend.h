@@ -78,7 +78,7 @@ private:
 	float getOutVolume( QString );
 	void setInVolume( QString, float );
 	float getInVolume( QString );
-	bool rename(portsmap &map, const QString old_name, const char *new_name);
+	bool rename(portsmap &map, QStringList &lst, const QString old_name, const char *new_name);
 public:
 	/// returns a QStringList with the names of the out-channels
 	const QStringList &outchannels() const { return out_ports_list; };
@@ -94,7 +94,9 @@ private:
 	/// the order is preserved. This is vitally important when saving
 	/// the layout in a file, for example.
 	QStringList in_ports_list;
-	QStringList out_ports_list;::jack_client_t *client;
+	QStringList out_ports_list;
+	
+	::jack_client_t *client;
 	/// First dimension is input-channels, second is output-channels
 	QMap<QString,QMap<QString,float> > volumes;
 	QHash<QString,float> outvolumes;

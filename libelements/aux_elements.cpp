@@ -85,11 +85,11 @@ AuxElement::AuxElement( QStringList inchannel, QStringList outchannel, MixingMat
 
 	QVBoxLayout* _layout = new QVBoxLayout( this );
 
-	if ( _inchannel == _outchannel )
-		_layout->addWidget(
-			new QLabel( QString( "<qt><center>%1</center></qt>" ).arg( _inchannel ), this ),
-			0 );
-
+	if ( _inchannel == _outchannel ) {
+		disp_name = new QLabel( QString( "<qt><center>%1</center></qt>" ).arg( _inchannel ), this );
+		_layout->addWidget(disp_name, 0);
+	}
+	
 	_poti = new JackMix::GUI::Knob(
 		amptodb( backend()->getVolume( _inchannel, _outchannel ) ),
 		dbmin, dbmax, 2, 3, this );

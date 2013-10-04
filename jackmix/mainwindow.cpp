@@ -360,7 +360,7 @@ void MainWindow::saveFile( QString path ) {
 	foreach( QString in, ins ) {
 		xml += QString( "<channel name=\"%1\" volume=\"%2\" midi=\"" )
 			.arg( in ).arg( _backend->getVolume( in,in ) );
-		qDebug()<<" Responsible element for " << in << ": " << _inputswidget->getResponsible(in, in);
+		//qDebug()<<" Responsible element for " << in << ": " << _inputswidget->getResponsible(in, in);
 		const QList<int> &mp = _inputswidget->getResponsible(in,in)->midiParameters();
 		// I'm going to use a loop to make it clear ordering is important
 		// (actually, foreach maitains ordering of a QList in Qt 4.8, but this might change

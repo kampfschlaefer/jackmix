@@ -94,15 +94,15 @@ bool JackBackend::renameInput(const QString old_name, const QString new_name) {
 	return renameInput(old_name, new_name.toStdString().c_str());
 }
 bool JackBackend::renameInput(const QString old_name, const char *new_name) {
-	return rename(in_ports, old_name, new_name);
+	return rename(in_ports, in_ports_list, old_name, new_name);
 }
 bool JackBackend::renameOutput(const QString old_name, const QString new_name) {
 	return renameOutput(old_name, new_name.toStdString().c_str());
 }
 bool JackBackend::renameOutput(const QString old_name, const char *new_name) {
-	return rename(out_ports, old_name, new_name);
+	return rename(out_ports, out_ports_list, old_name, new_name);
 }
-bool JackBackend::rename(portsmap &map, const QString old_name, const char *new_name) {
+bool JackBackend::rename(portsmap &map, QStringList &lst, const QString old_name, const char *new_name) {
 	bool done_it = false;
 	
 	if (client) {
@@ -117,6 +117,11 @@ bool JackBackend::rename(portsmap &map, const QString old_name, const char *new_
 				map.insert(new_name, port);
 				map.remove(old_name);
 			}
+			
+			// We also have to maintain the port lists as well as the maps
+			int pos;
+			if ((pos = lst.indexOf(old_name)) >= 0)
+				lst[pos] = new_name;
 		}
 	}
 	

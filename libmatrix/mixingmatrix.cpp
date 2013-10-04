@@ -287,8 +287,10 @@ void Widget::renameoutchannel(QString old_name, QString new_name) {
 	
 	if (_direction == Vertical) { // Output sliders will have same string in and out
 		Element *tmp = getResponsible(old_name, old_name);
-		if (tmp)
-			qDebug() << "Found the output element for " << old_name;
+		if (tmp) {
+			tmp->renamechannels(old_name, new_name);
+			tmp->repaint();
+		}
 		return;
 	}
 	
@@ -296,7 +298,7 @@ void Widget::renameoutchannel(QString old_name, QString new_name) {
 		qDebug() << "Matrix mixer: renaming (" << *it << ", " << old_name << ")";
 		Element *tmp = getResponsible( *it, old_name );
 		if ( tmp )
-			qDebug("Yep!");
+			tmp->renamechannels(old_name, new_name);
 	}
 }
 
@@ -314,6 +316,7 @@ Element::Element( QStringList in, QStringList out, Widget* p, const char* n )
 	, _parent( p )
 {
 	//qDebug( "MixingMatrix::Element::Element( QStringList '%s', QStringList '%s' )", qPrintable( in.join(",") ), qPrintable( out.join(",") ) );
+	disp_name = 0; // Assumme no label for this element for now
 	setFrameStyle( QFrame::Raised|QFrame::Panel );
 	setLineWidth( 1 );
 	if (p) p->anotherControl();
@@ -429,6 +432,15 @@ void Element::controlEvent(int p, int v) {
 			midi_delegates[i]->setMidiValue(v);
 		}
 	}
+}
+
+void Element::renamechannels(QString old_name, QString new_name)
+{
+	int pos;
+	if ((pos = _in.indexOf(old_name)) >= 0)  _in[pos]  = new_name;
+	if ((pos = _out.indexOf(old_name)) >= 0) _out[pos] = new_name;
+	// Update the displayed name if necessary
+	if (disp_name) disp_name->setText( QString("<qt><center>%1</center></qt>").arg(new_name) );
 }
 
 ElementFactory::ElementFactory() {
