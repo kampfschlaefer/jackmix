@@ -74,15 +74,12 @@ void MixerElements::init_stereo_elements() {
 Mono2StereoElement::Mono2StereoElement( QStringList inchannel, QStringList outchannels, MixingMatrix::Widget* p, const char* n )
 	: Element( inchannel, outchannels, p, n )
 	, dB2VolCalc( -42, 6 )
-	, _inchannel( inchannel[ 0 ] )
-	, _outchannel1( outchannels[ 0 ] )
-	, _outchannel2( outchannels[ 1 ] )
 	, _balance_value( 0 )
 	, _volume_value( 0 )
 {
 	//qDebug( "Mono2StereoElement::Mono2StereoElement()" );
-	double left = backend()->getVolume( _inchannel, _outchannel1 );
-	double right = backend()->getVolume( _inchannel, _outchannel2 );
+	double left = backend()->getVolume( _in[0], _out[0] );
+	double right = backend()->getVolume( _in[0], _out[1] );
 	//qDebug( " volumes: %f, %f", left, right );
 	if ( left>right ) {
 		_volume_value = left;
@@ -122,7 +119,7 @@ Mono2StereoElement::Mono2StereoElement( QStringList inchannel, QStringList outch
 
 	// Now construct the parameter setting menu
 	_cca = new JackMix::GUI::MidiControlChannelAssigner(QString("Set MIDI control parameter"),
-	                                                     "<qt>" + _inchannel + " &rarr; ("  + _outchannel1 + "/" + _outchannel2 + ")</qt>",
+	                                                     "<qt>" + _in[0] + " &rarr; ("  + _out[0] + "/" + _out[1] + ")</qt>",
 	                                                     QStringList() << "Gain" << "Pan",
 	                                                     midi_params,
 	                                                     this
@@ -156,8 +153,8 @@ void Mono2StereoElement::calculateVolumes() {
 		left = dbtoamp( _volume_value )*( 1-_balance_value );
 	if ( _balance_value < 0 )
 		right = dbtoamp( _volume_value )*( 1+_balance_value );
-	backend()->setVolume( _inchannel, _outchannel1, left );
-	backend()->setVolume( _inchannel, _outchannel2, right );
+	backend()->setVolume( _in[0], _out[0], left );
+	backend()->setVolume( _in[0], _out[1], right );
 }
 
 
@@ -166,17 +163,13 @@ void Mono2StereoElement::calculateVolumes() {
 Stereo2StereoElement::Stereo2StereoElement( QStringList inchannels, QStringList outchannels, MixingMatrix::Widget* p, const char* n )
 	: Element( inchannels, outchannels, p, n )
 	, dB2VolCalc( -42, 6 )
-	, _inchannel1( inchannels[ 0 ] )
-	, _inchannel2( inchannels[ 1 ] )
-	, _outchannel1( outchannels[ 0 ] )
-	, _outchannel2( outchannels[ 1 ] )
 	, _balance_value( 0 )
 	, _volume_value( 0 )
 {
-	backend()->setVolume( _inchannel1, _outchannel2, 0 );
-	backend()->setVolume( _inchannel2, _outchannel1, 0 );
-	double left = backend()->getVolume( _inchannel1, _outchannel1 );
-	double right = backend()->getVolume( _inchannel2, _outchannel2 );
+	backend()->setVolume( _in[0], _out[1], 0 );
+	backend()->setVolume( _in[1], _out[0], 0 );
+	double left = backend()->getVolume( _in[0], _out[0] );
+	double right = backend()->getVolume( _in[1], _out[1] );
 	if ( left>right )
 		_volume_value = left;
 	else
@@ -219,8 +212,8 @@ Stereo2StereoElement::Stereo2StereoElement( QStringList inchannels, QStringList 
 
 	// Now construct the parameter setting menu
 	_cca = new JackMix::GUI::MidiControlChannelAssigner(QString("Set MIDI control parameter"),
-	                                                     "<qt>(" + _inchannel1 + "/" + _inchannel2 +
-	                                                         ") &rarr; ("  + _outchannel1 + "/" + _outchannel2 + ")</qt>",
+	                                                     "<qt>(" + _in[0] + "/" + _in[1] +
+	                                                         ") &rarr; ("  + _out[0] + "/" + _out[1] + ")</qt>",
 	                                                     QStringList() << "Gain" << "Cross-fade",
 	                                                     midi_params,
 	                                                     this
@@ -255,6 +248,6 @@ void Stereo2StereoElement::calculateVolumes() {
 		left = dbtoamp( _volume_value )*( 1-_balance_value );
 	if ( _balance_value < 0 )
 		right = dbtoamp( _volume_value )*( 1+_balance_value );
-	backend()->setVolume( _inchannel1, _outchannel1, left );
-	backend()->setVolume( _inchannel2, _outchannel2, right );
+	backend()->setVolume( _in[0], _out[0], left );
+	backend()->setVolume( _in[1], _out[1], right );
 }

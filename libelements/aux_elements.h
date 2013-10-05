@@ -57,7 +57,6 @@ public slots:
 	void emitvalue( double );
 
 private:
-	QString _inchannel, _outchannel;
 	JackMix::GUI::Knob *_poti;
 };
 

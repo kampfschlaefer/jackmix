@@ -121,6 +121,7 @@ public slots:
 
 	// For testing of the properties
 	void debugPrint();
+	
 
 private:
 	enum Mode _mode;
@@ -242,6 +243,8 @@ protected:
 	JackMix::GUI::MidiControlChannelAssigner* _cca;
 	void contextMenuEvent( QContextMenuEvent* );
 
+	QStringList _in, _out;
+
 protected slots:
 	// Use this slot if you don't want to do something before replacement.
 	virtual void slot_simple_replace() { emit replace( this ); }
@@ -257,7 +260,6 @@ protected slots:
 private slots:
 	void lazyInit();
 private:
-	QStringList _in, _out;
 	bool _selected;
 	Widget* _parent;
 };

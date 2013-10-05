@@ -76,8 +76,6 @@ void MixerElements::init_aux_elements() {
 AuxElement::AuxElement( QStringList inchannel, QStringList outchannel, MixingMatrix::Widget* p, const char* n )
 	: Element( inchannel, outchannel, p, n )
 	, dB2VolCalc( -42, 6 )
-	, _inchannel( inchannel[ 0 ] )
-	, _outchannel( outchannel[ 0 ] )
 {
 	menu()->addAction( "Select", this, SLOT( slot_simple_select() ) );
 	menu()->addAction( "Replace", this, SLOT( slot_simple_replace() ) );
@@ -85,13 +83,13 @@ AuxElement::AuxElement( QStringList inchannel, QStringList outchannel, MixingMat
 
 	QVBoxLayout* _layout = new QVBoxLayout( this );
 
-	if ( _inchannel == _outchannel ) {
-		disp_name = new QLabel( QString( "<qt><center>%1</center></qt>" ).arg( _inchannel ), this );
+	if ( _in[0] == _out[0] ) {
+		disp_name = new QLabel( QString( "<qt><center>%1</center></qt>" ).arg( _in[0] ), this );
 		_layout->addWidget(disp_name, 0);
 	}
 	
 	_poti = new JackMix::GUI::Knob(
-		amptodb( backend()->getVolume( _inchannel, _outchannel ) ),
+		amptodb( backend()->getVolume( _in[0], _out[0] ) ),
 		dbmin, dbmax, 2, 3, this );
 	_layout->addWidget( _poti, 100 );
 
@@ -105,7 +103,7 @@ AuxElement::AuxElement( QStringList inchannel, QStringList outchannel, MixingMat
 
 	// Now construct the parameter setting menu
 	_cca = new JackMix::GUI::MidiControlChannelAssigner(QString("Set MIDI control parameter"),
-	                                                     "<qt>" + _inchannel + " &rarr; "  + _outchannel + "</qt>",
+	                                                     "<qt>" + _in[0] + " &rarr; "  + _out[0] + "</qt>",
 	                                                     QStringList() << "Gain",
 	                                                     midi_params,
 		                                             this
@@ -116,6 +114,6 @@ AuxElement::~AuxElement() {
 }
 
 void AuxElement::emitvalue( double n ) {
-	backend()->setVolume( _inchannel, _outchannel, dbtoamp( n ) );
+	backend()->setVolume( _in[0], _out[0], dbtoamp( n ) );
 }
 

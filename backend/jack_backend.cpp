@@ -91,13 +91,45 @@ bool JackBackend::rename(const QString old_name, const char *new_name) {
 	return renameInput(old_name, new_name) || renameOutput(old_name, new_name);
 }
 bool JackBackend::renameInput(const QString old_name, const QString new_name) {
-	return renameInput(old_name, new_name.toStdString().c_str());
+
+	// Rename the port
+	bool done_it = renameInput(old_name, new_name.toStdString().c_str());
+	
+	if (done_it) { // Maintain the volume maps
+		if (involumes.contains(old_name)) {
+			involumes.insert(new_name, involumes[old_name]);
+			involumes.remove(old_name);
+		}
+		if (volumes.contains(old_name)) {
+			volumes.insert(new_name, volumes[old_name]);
+			volumes.remove(old_name);
+		}
+	}
+	
+	return done_it;
 }
 bool JackBackend::renameInput(const QString old_name, const char *new_name) {
 	return rename(in_ports, in_ports_list, old_name, new_name);
 }
 bool JackBackend::renameOutput(const QString old_name, const QString new_name) {
-	return renameOutput(old_name, new_name.toStdString().c_str());
+	bool done_it = renameOutput(old_name, new_name.toStdString().c_str());
+	
+	if (done_it) {
+		if (outvolumes.contains(old_name)) {
+			outvolumes.insert(new_name, outvolumes[old_name]);
+			outvolumes.remove(old_name);
+		}
+		QStringListIterator ipi(in_ports_list);
+		while(ipi.hasNext()) {
+			QString input(ipi.next());
+			if (volumes[input].contains(old_name)) {
+				volumes[input].insert(new_name, volumes[input][old_name]);
+				volumes[input].remove(old_name);
+			}
+		}
+	}
+	
+	return done_it;
 }
 bool JackBackend::renameOutput(const QString old_name, const char *new_name) {
 	return rename(out_ports, out_ports_list, old_name, new_name);
