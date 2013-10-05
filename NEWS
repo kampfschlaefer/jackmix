@@ -1,3 +1,15 @@
+VERSION 0.5.1
+-------------
+
+Added File->Rename Inputs... and File->Rename Outputs... which
+changes the labels on the GUI, the channel's position and Jack
+connection name while preserving volume levels etc.
+
+There is a video describing the use and motivation behind
+developing JackMix on Vimeo. See
+
+	https://vimeo.com/75655401
+
 VERSION 0.5.0
 -------------
 

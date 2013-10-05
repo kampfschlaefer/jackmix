@@ -3,6 +3,3 @@
   - Removing all inputs and/or outputs (may segfault?)
   - (Seems OK now?)
 
-* Renaming of inputs and outputs (because deleting and recreating
-  them causes elements to disappear and be replaced by simple
-  knobs)
