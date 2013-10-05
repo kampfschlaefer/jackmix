@@ -78,6 +78,13 @@ namespace JackMix {
 		 * The output channel is renamed, checking first that the give name
 		 * is not already associated with another output.
 		 */
+		virtual bool renameInput( const QString, const QString ) =0;
+		/**
+		 * @brief Rename the output.
+		 * 
+		 * The output channel is renamed, checking first that the give name
+		 * is not already associated with another output.
+		 */
 		virtual bool renameOutput( const QString, const QString ) =0;
 		/**
 		 * @brief Remove a channel and return true on success.

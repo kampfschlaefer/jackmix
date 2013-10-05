@@ -75,9 +75,11 @@ public:
 	/// Remove input/output channels
 	void removeinchannel( QString );
 	void removeoutchannel( QString );
-	/** For an input or output element, allow the user to rename the channel */
-	void renameoutchannel( QString, QString );
-
+	/** For an input or output element, allow the user to rename the channel
+	 *  It is assumed that the supplied new name is unique 
+	 */
+	void renamechannels( QString, QString );
+	
 	/// Create Controls
 	// Create controls. return true on success
 	bool createControl( QStringList inchannels, QStringList outchannels );

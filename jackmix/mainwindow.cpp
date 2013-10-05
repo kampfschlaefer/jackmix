@@ -356,6 +356,7 @@ void MainWindow::saveFile( QString path ) {
 	QStringList ins = _backend->inchannels();
 	QStringList outs = _backend->outchannels();
 
+	//qDebug() << "Saving file. Using ins/outs lists: " << ins << outs;
 	QString xml = "<jackmix version=\"" JACKMIX_FILE_FORMAT_VERSION "\"><ins>";
 	foreach( QString in, ins ) {
 		xml += QString( "<channel name=\"%1\" volume=\"%2\" midi=\"" )
@@ -509,10 +510,40 @@ void MainWindow::renameInput() {
 							  _backend->inchannels(),
 							  this);
 	connect( tmp, SIGNAL(editedChannels(QStringList)), this, SLOT(renameInput(QStringList)) );
+	connect( this, SIGNAL(modify_channel_name(int, QString)),
+		 tmp, SLOT(update_channel_name(int, QString)) );
 	tmp->show();
 }
 void MainWindow::renameInput( QStringList names ) {
-	qDebug() << "Change input channel names: " << names;
+	//qDebug() << "Change input channel names: " << names;
+	while (names.length() > 0) {
+		QString old_name(names.takeFirst());
+		QString new_name(names.takeFirst());
+		// Just check there isn't a channel with that name already
+		if ( _inputswidget->getResponsible(new_name, new_name) ||
+		     _outputswidget->getResponsible(new_name, new_name) ) {
+			// There is, so generate an alternative
+			int variant(1);
+			QString candidate;
+			do {
+				candidate = QString(new_name).remove(QRegExp("_[0-9]+$"))
+				                             .append("_%1")
+				                             .arg(variant++);
+			} while ( _inputswidget->getResponsible(candidate, candidate) ||
+				  _outputswidget->getResponsible(candidate, candidate) );
+			emit modify_channel_name(_backend->inchannels().indexOf(old_name),
+			                         candidate);
+			new_name = candidate;
+		}
+		// Final sanity check: do the rename if the old name exists already
+		if (_inputswidget->getResponsible(old_name, old_name)) {
+			//qDebug() << "Now changing " << old_name << " to " << new_name
+			//         << " in " << _backend->inchannels();
+			_backend->renameInput(old_name, new_name);
+			_inputswidget->renamechannels(old_name, new_name);
+			_mixerwidget->renamechannels(old_name, new_name);
+		}
+	}
 }
 void MainWindow::renameOutput() {
 	JackMix::GUI::EditableChannelSelector *tmp =
@@ -521,28 +552,38 @@ void MainWindow::renameOutput() {
 							  _backend->outchannels(),
 							  this);
 	connect( tmp, SIGNAL(editedChannels(QStringList)), this, SLOT(renameOutput(QStringList)) );
+	connect( this, SIGNAL(modify_channel_name(int, QString)),
+		 tmp, SLOT(update_channel_name(int, QString)) );
 	tmp->show();
 }
 void MainWindow::renameOutput( QStringList names ) {
-	qDebug() << "Change input channel names: " << names;
+	//qDebug() << "Change output channel names: " << names;
 	while (names.length() > 0) {
 		QString old_name(names.takeFirst());
 		QString new_name(names.takeFirst());
-		// Just check there isn't an output with that name already
-		if (_outputswidget->getResponsible(new_name, new_name)) {
+		// Just check there isn't a channel with that name already
+		if ( _outputswidget->getResponsible(new_name, new_name) ||
+		     _inputswidget->getResponsible(new_name, new_name) ) {
 			// There is, so generate an alternative
 			int variant(1);
 			QString candidate;
 			do {
-				candidate = new_name.remove(QRegExp("_[0-9]+$")).append("_%1").arg(variant++);
-			} while ( _outputswidget->getResponsible(candidate, candidate) );
+				candidate = QString(new_name).remove(QRegExp("_[0-9]+$"))
+				                             .append("_%1")
+				                             .arg(variant++);
+			} while ( _outputswidget->getResponsible(candidate, candidate) ||
+				  _inputswidget->getResponsible(candidate, candidate) );
+			emit modify_channel_name(_backend->outchannels().indexOf(old_name),
+			                         candidate);
 			new_name = candidate;
 		}
 		// Final sanity check: do the rename if the old name exists already
 		if (_outputswidget->getResponsible(old_name, old_name)) {
+			//qDebug() << "Now changing " << old_name << " to " << new_name
+			//         << " in" << _backend->outchannels();
 			_backend->renameOutput(old_name, new_name);
-			_outputswidget->renameoutchannel(old_name, new_name);
-			_mixerwidget->renameoutchannel(old_name, new_name);
+			_outputswidget->renamechannels(old_name, new_name);
+			_mixerwidget->renamechannels(old_name, new_name);
 		}
 	}
 }

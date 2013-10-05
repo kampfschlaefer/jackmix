@@ -116,12 +116,12 @@ bool JackBackend::rename(portsmap &map, QStringList &lst, const QString old_name
 			if (done_it) {
 				map.insert(new_name, port);
 				map.remove(old_name);
-			}
-			
-			// We also have to maintain the port lists as well as the maps
-			int pos;
-			if ((pos = lst.indexOf(old_name)) >= 0)
-				lst[pos] = new_name;
+				// We have to maintain the port lists as well as the maps
+				int pos;
+				if ((pos = lst.indexOf(old_name)) >= 0)
+					lst[pos] = new_name;
+				//qDebug()<<"JackBackend::rename -- list now"<<lst;
+			}			
 		}
 	}
 	

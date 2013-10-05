@@ -281,25 +281,44 @@ void Widget::removeoutchannel( QString name ) {
 	}
 	_outchannels.removeAll( name );
 }
-void Widget::renameoutchannel(QString old_name, QString new_name) {
-	if (_direction == Horizontal ) // No output channels
-		return;
-	
-	if (_direction == Vertical) { // Output sliders will have same string in and out
+void Widget::renamechannels(QString old_name, QString new_name) {
+
+	if (_direction == Vertical || _direction == Horizontal) {
+		// Input and output sliders will have same string in and out
 		Element *tmp = getResponsible(old_name, old_name);
 		if (tmp) {
 			tmp->renamechannels(old_name, new_name);
-			tmp->repaint();
+			//tmp->repaint();
 		}
-		return;
+		
+	} else {
+		if (_outchannels.indexOf(old_name) >= 0) {  // it's an output we're changing
+			for (QStringList::Iterator it = _inchannels.begin();
+			it != _inchannels.end();
+			it++) {
+				//qDebug() << "Matrix mixer: renaming (" << *it << ", " << old_name << ")";
+				Element *tmp = getResponsible( *it, old_name );
+				if ( tmp )
+					tmp->renamechannels(old_name, new_name);
+			}
+		} else { // an input name is changing: iterate over all outputs
+			for (QStringList::Iterator it = _outchannels.begin();
+			it != _outchannels.end();
+			it++) {
+				//qDebug() << "Matrix mixer: renaming (" << old_name << ", " << *it << ")";
+				Element *tmp = getResponsible( old_name, *it );
+				if ( tmp )
+					tmp->renamechannels(old_name, new_name);
+			}
+		}
 	}
 	
-	for (QStringList::Iterator it = _inchannels.begin(); it != _inchannels.end(); it++) {
-		qDebug() << "Matrix mixer: renaming (" << *it << ", " << old_name << ")";
-		Element *tmp = getResponsible( *it, old_name );
-		if ( tmp )
-			tmp->renamechannels(old_name, new_name);
-	}
+	// Now maintain the private channel lists
+	
+	int pos;
+	if ( (pos = _inchannels.indexOf(old_name)) >= 0 ) _inchannels[pos] = new_name;
+	if ( (pos = _outchannels.indexOf(old_name)) >= 0 ) _outchannels[pos] = new_name;
+	
 }
 
 void Widget::debugPrint() {

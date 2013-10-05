@@ -65,6 +65,13 @@ public:
 	MainWindow( QWidget* =0 );
 	MainWindow( QString filename, QWidget* =0 );
 	~MainWindow();
+	
+signals:
+	/** If the user requests a channel name already in use,
+	 *  an alternative is chosen and this signal is fired
+	 */
+	void modify_channel_name(int index, QString replacement);
+
 public slots:
 	void openFile();
 	void openFile( QString path );
