@@ -329,6 +329,7 @@ void Widget::debugPrint() {
 Element::Element( QStringList in, QStringList out, Widget* p, const char* n )
 	: QFrame( p )
 	, _menu( new QMenu( this ) )
+	, _cca( 0 )
 	, _in( in )
 	, _out( out )
 	, _selected( false )
@@ -345,6 +346,7 @@ Element::Element( QStringList in, QStringList out, Widget* p, const char* n )
 Element::~Element() {
 	//qDebug() << "MixingMatrix::Element::~Element() for " << _in << _out;
 	if (_parent) _parent->removeElement( this );
+	if (_cca) delete _cca;
 }
 void Element::lazyInit() {
 	//qDebug()<<"lazy, innit?";

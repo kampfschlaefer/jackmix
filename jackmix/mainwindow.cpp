@@ -512,6 +512,7 @@ void MainWindow::renameInput() {
 	connect( tmp, SIGNAL(editedChannels(QStringList)), this, SLOT(renameInput(QStringList)) );
 	connect( this, SIGNAL(modify_channel_name(int, QString)),
 		 tmp, SLOT(update_channel_name(int, QString)) );
+	connect( tmp, SIGNAL(finished(int)), tmp, SLOT(deleteLater()) );
 	tmp->show();
 }
 void MainWindow::renameInput( QStringList names ) {
@@ -554,6 +555,7 @@ void MainWindow::renameOutput() {
 	connect( tmp, SIGNAL(editedChannels(QStringList)), this, SLOT(renameOutput(QStringList)) );
 	connect( this, SIGNAL(modify_channel_name(int, QString)),
 		 tmp, SLOT(update_channel_name(int, QString)) );
+	connect( tmp, SIGNAL(finished(int)), tmp, SLOT(deleteLater()) );
 	tmp->show();
 }
 void MainWindow::renameOutput( QStringList names ) {
@@ -592,6 +594,7 @@ void MainWindow::removeInput() {
 	//qDebug( "MainWindow::removeInput()" );
 	JackMix::GUI::ChannelSelector *tmp = new JackMix::GUI::ChannelSelector( "Delete Input channels", "Select the inputchannels for deletion:", _backend->inchannels(), this );
 	connect( tmp, SIGNAL( selectedChannel( QString ) ), this, SLOT( removeInput( QString ) ) );
+	connect( tmp, SIGNAL(finished(int)), tmp, SLOT(deleteLater()) );
 	tmp->show();
 }
 void MainWindow::removeInput( QString n ) {
@@ -606,6 +609,7 @@ void MainWindow::removeOutput() {
 	//qDebug( "MainWindow::removeOutput()" );
 	JackMix::GUI::ChannelSelector *tmp = new JackMix::GUI::ChannelSelector( "Delete Outputchannels", "Select the outputchannels for deletion:", _backend->outchannels(), this );
 	connect( tmp, SIGNAL( selectedChannel( QString ) ), this, SLOT( removeOutput( QString ) ) );
+	connect( tmp, SIGNAL(finished(int)), tmp, SLOT(deleteLater()) );
 	tmp->show();
 }
 void MainWindow::removeOutput( QString n ) {
