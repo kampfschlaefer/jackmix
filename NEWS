@@ -1,5 +1,12 @@
+VERSION 0.6.0
+-------------
+
+= 0.5.1 with a few minor memory leaks plugged.
+
 VERSION 0.5.1
 -------------
+More new features from Nick. This is also a 0.6.0 release
+candidate.
 
 Added File->Rename Inputs... and File->Rename Outputs... which
 changes the labels on the GUI, the channel's position and Jack
