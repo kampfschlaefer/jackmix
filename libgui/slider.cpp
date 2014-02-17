@@ -103,7 +103,7 @@ void Slider::paintEvent( QPaintEvent* ) {
 	p.save();
 	p.setPen( palette().color( QPalette::ButtonText ) );
 	QFont small = font();
-	small.setPointSizeF( qMax( 5.0, font().pointSizeF()/2 ) );
+	small.setPointSizeF( qMax( qreal(5.0), font().pointSizeF()/2.0 ) );
 	p.setFont( small );
 	if ( _show_value ) {
 		for ( double a=_pagestep; a<dbmax; a+=_pagestep )
