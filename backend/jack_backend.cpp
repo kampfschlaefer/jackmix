@@ -28,21 +28,21 @@
 using namespace JackMix;
 
 JackBackend::JackBackend( GuiServer_Interface* g ) : BackendInterface( g ) {
-	qDebug() << "JackBackend::JackBackend()";
+	//qDebug() << "JackBackend::JackBackend()";
 	client = ::jack_client_open( "JackMix", JackNoStartServer, NULL );
 	if ( client ) {
 		::jack_set_process_callback( client, JackMix::process, this );
-		qDebug() << "JackBackend::JackBackend() activate";
+		//qDebug() << "JackBackend::JackBackend() activate";
 		::jack_activate( client );
 	}
 	else {
 		qWarning() << "\n No jack-connection! :(\n\n";
 		gui->message( "No Jack-connection :-(", "<qt><p>Sorry, I couldn't connect to Jack. This probably means that <b>no jackd is running</b>. Please start it and try JackMix again.</p><p>If you don't know what I am talking about, than JackMix might not be the program you want...</p></qt>" );
 	}
-	qDebug() << "JackBackend::JackBackend() finished";
+	//qDebug() << "JackBackend::JackBackend() finished";
 }
 JackBackend::~JackBackend() {
-	qDebug() << "JackBackend::~JackBackend()";
+	//qDebug() << "JackBackend::~JackBackend()";
 	if ( client ) {
 		/*qDebug() << " return code" <<*/ ::jack_deactivate( client );
 		/*qDebug() << " return code" <<*/ ::jack_client_close( client );
@@ -51,7 +51,7 @@ JackBackend::~JackBackend() {
 
 bool JackBackend::addOutput( QString name ) {
 	if ( client ) {
-		qDebug() << "JackBackend::addOutput(" << name << ")";
+		//qDebug() << "JackBackend::addOutput(" << name << ")";
 		out_ports.insert( name, jack_port_register ( client, name.toStdString().c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0 ) );
 		out_ports_list << name;
 		return true;
@@ -60,7 +60,7 @@ bool JackBackend::addOutput( QString name ) {
 }
 bool JackBackend::addInput( QString name ) {
 	if ( client ) {
-		qDebug() << "JackBackend::addInput(" << name << ")";
+		//qDebug() << "JackBackend::addInput(" << name << ")";
 		in_ports.insert( name, jack_port_register ( client, name.toStdString().c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0 ) );
 		in_ports_list << name;
 		return true;
@@ -69,7 +69,7 @@ bool JackBackend::addInput( QString name ) {
 }
 
 bool JackBackend::removeOutput( QString name ) {
-	qDebug() << "JackBackend::removeOutput(" << name << ")";
+	//qDebug() << "JackBackend::removeOutput(" << name << ")";
 	if ( client && out_ports.find( name ) != out_ports.end() )
 		jack_port_unregister( client, out_ports[ name ] );
 	out_ports.remove( name );
@@ -77,7 +77,7 @@ bool JackBackend::removeOutput( QString name ) {
 	return true;
 }
 bool JackBackend::removeInput( QString name ) {
-	qDebug() << "JackBackend::removeInput(" << name << ")";
+	//qDebug() << "JackBackend::removeInput(" << name << ")";
 	if ( client && in_ports.find( name ) != in_ports.end() )
 		jack_port_unregister( client, in_ports[ name ] );
 	in_ports.remove( name );

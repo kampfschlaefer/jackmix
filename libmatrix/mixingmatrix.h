@@ -33,6 +33,8 @@
 #include <QtGui/QAction>
 #include <QtGui/QLabel>
 
+//#include <QtCore/QDebug>
+
 #include "backend_interface.h"
 #include "abstractslider.h"
 #include "midicontrolchannelassigner.h"
@@ -247,7 +249,7 @@ protected:
 
 protected slots:
 	// Use this slot if you don't want to do something before replacement.
-	virtual void slot_simple_replace() { emit replace( this ); }
+	virtual void slot_simple_replace() { replace( this ); }
 	// Use this slot if you want a simple selection toggle
 	virtual void slot_simple_select() { select( !isSelected() ); }
 	/** Receive and forward midi events (parameter, value pairs) to

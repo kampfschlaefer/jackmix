@@ -32,7 +32,7 @@
 #include <QtGui/QLabel>
 #include <QtCore/QList>
 #include <QtCore/QStringList>
-#include <QtCore/QDebug>
+//#include <QtCore/QDebug>
 
 #include <controlreceiver.h>
 #include <controlsender.h>
@@ -48,8 +48,8 @@ class AuxFactory : public JackMix::MixingMatrix::ElementFactory
 {
 public:
 	AuxFactory() : ElementFactory() {
-		qDebug() << "AuxFactory::AuxFactory()";
-		globaldebug();
+		//qDebug() << "AuxFactory::AuxFactory()";
+		//globaldebug();
 	}
 	~AuxFactory() {}
 

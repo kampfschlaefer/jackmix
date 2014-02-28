@@ -76,7 +76,7 @@ void Widget::addElement( Element* n ) {
 	resizeEvent( 0 );
 }
 void Widget::removeElement( Element* n ) {
-	qDebug("Removing element");
+	//qDebug("Removing element");
 	_elements.removeAll( n );
 }
 
@@ -94,12 +94,11 @@ void Widget::replace( Element* n ) {
 			Element* tmp = getResponsible( ( *jt ),( *it ) );
 			//qDebug( "About to delete %p", tmp );
 			if ( tmp )
-				delete tmp;
+				tmp->deleteLater();
 		}
 	}
 	createControl( in, out );
-	//autoFill();
-	QTimer::singleShot( 100, this, SLOT( autoFill() ) );
+	QTimer::singleShot( 1, this, SLOT( autoFill() ) );
 }
 
 Element* Widget::getResponsible( QString in, QString out ) const {
@@ -502,14 +501,17 @@ QStringList Global::canCreate( int in, int out ) {
 }
 
 bool Global::create( QString type, QStringList ins, QStringList outs, Widget* parent, const char* name ) {
-	//qDebug( "Global::create( QString %s, QStringList '%s', QStringList '%s', Widget* %p, const char* %s )", qPrintable( type ), qPrintable( ins.join( "," ) ), qPrintable( outs.join( "," ) ), parent, name );
+	//qDebug( "Global::create( type = %s, ins = [%s], outs = [%s], parent = %p, name = %s )",
+        //        qPrintable( type ), qPrintable( ins.join( "," ) ), qPrintable( outs.join( "," ) ), parent, name );
 	Element* elem=0;
-
-	for ( int i=0; i<_factories.size() && elem==0; i++ )
+        int i;
+	for ( i=0; i<_factories.size() && elem==0; i++ ) {
 		elem = _factories[ i ]->create( type, ins, outs, parent, name );
+        }
+        //qDebug("Used factory %d to create elem %p", i-1, elem);
 	//qDebug( "Will show and return %p", elem );
-	if ( elem )
-		elem->show();
+	//if ( elem )
+	//	elem->show();
 	return elem;
 }
 

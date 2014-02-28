@@ -205,12 +205,12 @@ void MainWindow::init() {
 }
 
 MainWindow::~MainWindow() {
-	qDebug() << "MainWindow::~MainWindow()";
+	//qDebug() << "MainWindow::~MainWindow()";
 	delete _backend;
 }
 
 void MainWindow::closeEvent( QCloseEvent* e ) {
-	qDebug() << "MainWindow::closeEvent( QCloseEvent " << e << " )";
+	//qDebug() << "MainWindow::closeEvent( QCloseEvent " << e << " )";
 	e->accept();
 }
 
@@ -301,19 +301,20 @@ void MainWindow::openFile( QString path ) {
 
 void MainWindow::updateAutoFilledMidiParams(MixingMatrix::Widget *w) {
 	QHash<QString,QString> *mphash(0);           // Iterate over the right midi parameter set
-	qDebug() << "Autofill is complete. for widget" << w;
+	//qDebug() << "Autofill is complete. for widget" << w;
 	if (w == _inputswidget) {
-		qDebug("(inputs widget)");
+		//qDebug("(inputs widget)");
 		mphash = &_inputmps;
 	} else if (w == _outputswidget) {
-		qDebug("(outputs widget)");
+		//qDebug("(outputs widget)");
 		mphash = &_outputmps;
 	} else if (w == _mixerwidget) {
-		qDebug("(mixer widget)");
+		//qDebug("(mixer widget)");
 		mphash = &_mixermps;
-	} else qDebug("(UNKNOWN widget)");
+	} else { //qDebug("(UNKNOWN widget)");
+        }
 
-	qDebug("Setting %d MIDI control paramters.", mphash->size());
+	//qDebug("Setting %d MIDI control parameters.", mphash->size());
 	QMutableHashIterator<QString,QString> mpiter(*mphash);
 	while (mpiter.hasNext()) {
 		mpiter.next();
