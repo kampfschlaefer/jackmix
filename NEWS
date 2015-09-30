@@ -1,7 +1,8 @@
-VERSION 0.6.0
+VERSION 0.5.2
 -------------
 
 = 0.5.1 with a few minor memory leaks plugged.
+- added import of os.environ to make nix-packaging possible
 
 VERSION 0.5.1
 -------------
