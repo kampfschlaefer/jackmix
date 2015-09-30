@@ -1,11 +1,17 @@
 #! /usr/bin/env python
 
+import os
+
 ###################################################################
 # LOAD THE ENVIRONMENT AND SET UP THE TOOLS
 ###################################################################
 
 ## Load the builders in config
-env = Environment( tools=['default', 'pkgconfig', 'qt4muc' ], toolpath=['admin'] )
+env = Environment(
+	ENV=os.environ,
+	tools=['default', 'pkgconfig', 'qt4muc' ],
+	toolpath=['admin']
+)
 
 env.Replace( LIBS="" )
 env.Replace( LIBPATH="" )
