@@ -89,7 +89,7 @@ def GetAppVersion( context, app, version ):
 	return ret
 
 def generate( env ):
-	print "Configuring qt4muc..."
+	print "Configuring qt5muc..."
 
 	conf = env.Configure( custom_tests = { 'GetAppVersion' : GetAppVersion } )
 
@@ -101,15 +101,15 @@ def generate( env ):
 					ret = command
 		return ret
 
-	moc = CommandFromList( ( "moc", "moc4", "moc-qt4" ), "Qt 4." )
+	moc = CommandFromList( ( "moc", "moc5", "moc-qt5" ), "moc 5." )
 	if len( moc ) < 3:
 		env.Exit( 1 )
 
-	uic = CommandFromList( ( "uic", "uic4", "uic-qt4" ), "4." )
+	uic = CommandFromList( ( "uic", "uic5", "uic-qt5" ), "5." )
 	if len( uic ) < 3:
 		env.Exit( 1 )
 
-	rcc = CommandFromList( ( "rcc", "rcc4", "rcc-qt4" ), "4." )
+	rcc = CommandFromList( ( "rcc", "rcc5", "rcc-qt5" ), "5." )
 	if len( rcc ) < 3:
 		env.Exit( 1 )
 

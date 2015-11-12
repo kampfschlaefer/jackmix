@@ -35,9 +35,9 @@ allpresent &= conf.CheckForPKGConfig()
 pkgs = {
 	'jack' : '0.100.0',
 	'lash-1.0' : '0.5.1',
-	'QtCore' : '4.2',
-	'QtGui' : '4.2',
-	'QtXml' : '4.2',
+	'Qt5Core' : '5.3',
+	'Qt5Gui' : '5.3',
+	'Qt5Xml' : '5.3',
 	'alsa' : '1.0'
 	}
 for pkg in pkgs:
@@ -54,7 +54,7 @@ env = conf.Finish()
 
 env.MergeFlags( "-I#" )
 
-env.MergeFlags( env["QTCORE_FLAGS"] )
+env.MergeFlags( env["QT5CORE_FLAGS"] )
 
 ## target processing is done in the subdirectory
 env.SConscript( dirs=['libcore','libqlash','libgui','backend','libmatrix','libelements','libcontrol','jackmix'], exports="env" )

@@ -9,7 +9,7 @@ env.MergeFlags( "-I#/libcore -I#/libgui -I#/backend -I#/libmatrix -I#libelements
 env.MergeFlags( "-ljackmix_backend -ljackmix_mixingelements -ljackmix_core -ljackmix_gui -ljackmix_mixingmatrix -lqlash -ljackmix_control -lasound" )
 env.MergeFlags( env['JACK_FLAGS'] )
 env.MergeFlags( env['LASH10_FLAGS'] )
-env.MergeFlags( env['QTGUI_FLAGS'] )
-env.MergeFlags( env['QTXML_FLAGS'] )
+env.MergeFlags( env['QT5GUI_FLAGS'] )
+env.MergeFlags( env['QT5XML_FLAGS'] )
 env.Program( target="jackmix", source=["main.cpp","mainwindow.cpp"] )
 
