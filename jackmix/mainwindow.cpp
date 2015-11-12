@@ -36,19 +36,19 @@
 #include "qlash.h"
 
 #include <QtCore/QDebug>
-#include <QtGui/QMenu>
-#include <QtGui/QMenuBar>
-#include <QtGui/QLayout>
-#include <QtGui/QInputDialog>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QMenuBar>
+#include <QtWidgets/QLayout>
+#include <QtWidgets/QInputDialog>
 #include <QtCore/QSettings>
-#include <QtGui/QFileDialog>
+#include <QtWidgets/QFileDialog>
 #include <QtCore/QFile>
-#include <QtGui/QMessageBox>
-#include <QtGui/QAction>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QAction>
 #include <QtCore/QTimer>
 #include <QtGui/QCloseEvent>
-#include <QtGui/QStatusBar>
-#include <QtGui/QApplication>
+#include <QtWidgets/QStatusBar>
+#include <QtWidgets/QApplication>
 #include <QtCore/QString>
 #include <QtCore/QHash>
 

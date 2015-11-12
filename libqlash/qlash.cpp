@@ -16,7 +16,7 @@ qLashClient::qLashClient( QString clientname, int argc, char** argv, QObject* p 
 		argc = args.size();
 		QByteArray* arrays[ args.size() ];
 		for ( int i=0; i<args.size(); ++i )
-			arrays[ i ] = new QByteArray( args[ i ].toAscii() );
+			arrays[ i ] = new QByteArray( args[ i ].toLatin1() );
 		argv = new char*[ args.size() ];
 		for ( int i=0; i<args.size(); ++i )
 			argv[ i ] = arrays[ i ]->data();

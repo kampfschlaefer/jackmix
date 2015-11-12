@@ -27,9 +27,9 @@
 #include "knob.h"
 #include "midicontrolchannelassigner.h"
 
-#include <QtGui/QLayout>
-#include <QtGui/QPushButton>
-#include <QtGui/QLabel>
+#include <QtWidgets/QLayout>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QLabel>
 #include <QtCore/QList>
 #include <QtCore/QStringList>
 //#include <QtCore/QDebug>

@@ -21,7 +21,7 @@
 #ifndef CHANNELSELECTOR_H
 #define CHANNELSELECTOR_H
 
-#include <QtGui/QDialog>
+#include <QtWidgets/QDialog>
 
 class QListWidget;
 class QPushButton;

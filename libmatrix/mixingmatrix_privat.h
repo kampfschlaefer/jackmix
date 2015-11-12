@@ -21,7 +21,7 @@
 #ifndef MIXINGMATRIX_PRIVAT_H
 #define MIXINGMATRIX_PRIVAT_H
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <QtCore/QList>
 
 class QGridLayout;

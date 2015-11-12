@@ -28,12 +28,12 @@
 #include "slider.h"
 #include "midicontrolchannelassigner.h"
 
-#include <QtGui/QLayout>
-#include <QtGui/QPushButton>
+#include <QtWidgets/QLayout>
+#include <QtWidgets/QPushButton>
 #include <QtCore/QList>
-#include <QtGui/QLabel>
+#include <QtWidgets/QLabel>
 #include <QtCore/QVariant>
-#include <QtGui/QAction>
+#include <QtWidgets/QAction>
 
 #include <controlsender.h>
 

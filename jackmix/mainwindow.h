@@ -26,11 +26,11 @@
 
 #define JACKMIX_FILE_FORMAT_VERSION	"0.5"
 
-#include <QtGui/QMainWindow>
-#include <QtGui/QDockWidget>
+#include <QtWidgets/QMainWindow>
+#include <QtWidgets/QDockWidget>
 #include <QtCore/QList>
 #include <QtCore/QHash>
-#include <QtGui/QGridLayout>
+#include <QtWidgets/QGridLayout>
 
 class QHBox;
 class QSettings;

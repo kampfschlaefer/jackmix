@@ -25,7 +25,7 @@
 
 #include <QtCore/QDebug>
 #include <QtGui/QMouseEvent>
-#include <QtGui/QDoubleSpinBox>
+#include <QtWidgets/QDoubleSpinBox>
 
 namespace JackMix {
 namespace GUI {

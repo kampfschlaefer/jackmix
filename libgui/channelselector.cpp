@@ -22,10 +22,10 @@
 #include "channelselector.moc"
 
 #include <QtCore/QString>
-#include <QtGui/QLayout>
-#include <QtGui/QLabel>
-#include <QtGui/QListWidget>
-#include <QtGui/QPushButton>
+#include <QtWidgets/QLayout>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QListWidget>
+#include <QtWidgets/QPushButton>
 
 namespace JackMix {
 namespace GUI {

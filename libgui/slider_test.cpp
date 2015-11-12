@@ -19,8 +19,8 @@
 */
 
 #include <iostream>
-#include <QtGui/QApplication>
-#include <QtGui/QWidget>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QWidget>
 
 #include "slider.h"
 

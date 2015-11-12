@@ -28,11 +28,11 @@
 
 #include "controlsender.h"
 
-#include <QtGui/QLayout>
-#include <QtGui/QListWidget>
-#include <QtGui/QPushButton>
-#include <QtGui/QMenu>
-#include <QtGui/QAction>
+#include <QtWidgets/QLayout>
+#include <QtWidgets/QListWidget>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QAction>
 #include <QtGui/QCursor>
 #include <QtCore/QTimer>
 #include <QtGui/QContextMenuEvent>

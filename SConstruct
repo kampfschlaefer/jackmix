@@ -9,7 +9,7 @@ import os
 ## Load the builders in config
 env = Environment(
 	ENV=os.environ,
-	tools=['default', 'pkgconfig', 'qt4muc' ],
+	tools=['default', 'pkgconfig', 'qt5muc' ],
 	toolpath=['admin']
 )
 
@@ -36,9 +36,10 @@ pkgs = {
 	'jack' : '0.100.0',
 	'lash-1.0' : '0.5.1',
 	'Qt5Core' : '5.3',
+	'Qt5Widgets' : '5.3',
 	'Qt5Gui' : '5.3',
 	'Qt5Xml' : '5.3',
-	'alsa' : '1.0'
+	'alsa' : '0.20'
 	}
 for pkg in pkgs:
 	name2 = pkg.replace("+","").replace(".","").replace("-","").upper()
@@ -54,7 +55,8 @@ env = conf.Finish()
 
 env.MergeFlags( "-I#" )
 
-env.MergeFlags( env["QT5CORE_FLAGS"] )
+print "Merging " + env["QT5WIDGETS_FLAGS"]
+env.MergeFlags( env["QT5WIDGETS_FLAGS"] )
 
 ## target processing is done in the subdirectory
 env.SConscript( dirs=['libcore','libqlash','libgui','backend','libmatrix','libelements','libcontrol','jackmix'], exports="env" )

@@ -22,7 +22,7 @@
 #ifndef MIDICONTROLCHANNELASSIGNER_TEST_H
 #define MIDICONTROLCHANNELASSIGNER_TEST_H
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <QtCore/QList>
 #include <QtCore/QtDebug>
 

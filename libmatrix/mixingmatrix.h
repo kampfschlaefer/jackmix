@@ -24,14 +24,14 @@
 #ifndef MIXINGMATRIX_H
 #define MIXINGMATRIX_H
 
-#include <QtGui/QFrame>
 #include <QtCore/QList>
 #include <QtCore/QVector>
 #include <QtCore/QMap>
 #include <QtCore/QMutex>
-#include <QtGui/QMenu>
-#include <QtGui/QAction>
-#include <QtGui/QLabel>
+#include <QtWidgets/QFrame>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QAction>
+#include <QtWidgets/QLabel>
 
 //#include <QtCore/QDebug>
 

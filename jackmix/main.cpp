@@ -20,7 +20,7 @@
 
 #include <QtCore/QDebug>
 #include <QtCore/QFile>
-#include <QtGui/QApplication>
+#include <QtWidgets/QApplication>
 
 #include "jack_backend.h"
 #include "mainwindow.h"

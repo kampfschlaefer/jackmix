@@ -25,8 +25,8 @@
 #include "slider.moc"
 
 #include <QtGui/QPainter>
-#include <QtGui/QStyleOption>
-#include <QtGui/QStyle>
+#include <QtWidgets/QStyleOption>
+#include <QtWidgets/QStyle>
 #include <QtGui/QMouseEvent>
 #include <QtCore/QDebug>
 #include <QtCore/QTimer>

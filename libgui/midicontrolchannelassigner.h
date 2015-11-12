@@ -22,7 +22,7 @@
 #ifndef MIDICONTROLCHANNELASSIGNER_H
 #define MIDICONTROLCHANNELASSIGNER_H
 
-#include <QtGui/QDialog>
+#include <QtWidgets/QDialog>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtCore/QList>
