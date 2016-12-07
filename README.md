@@ -1,8 +1,11 @@
-JackMix
-Arnold Krille <arnold@arnoldarts.de>
-Nick Bailey <nick@n-ism.org> -- MIDI control extensions.
-                             -- qt5 port attempt.
+= JackMix =
 
+== Authors ==
+| Arnold Krille <arnold@arnoldarts.de> | Almost everything.       |
+| Nick Bailey <nick@n-ism.org>         | MIDI control extensions. |
+|                                      | Qt5 port attempt.        |
+
+---
 See INSTALL for installation instructions;
     AUTHORS for contact information;
     NEWS    for new features in this version.
@@ -13,5 +16,8 @@ to route these inputs and outputs.
 
 This version of jackmix is enhanced for compatibility with an external
 MIDI control surface and compiles for qt5.
+
+To build the qt5 version, say `git clone -b qt5` or if you've already
+cloned the project, `git checkout qt5`
 
 Nick Bailey <nick@n-ism.org>
