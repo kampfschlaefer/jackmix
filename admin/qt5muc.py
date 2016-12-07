@@ -45,7 +45,10 @@ def uic_scanner( node, env, path ):
 		#print "uic_scanner returning" + str(ret)
 		return ret
 
-	if str(node).split(".")[-1] == "h":
+	node_parts = str(node).split(".")
+	node_extn = node_parts[-1] if len(node_parts) > 1 else ""
+
+	if node_extn in [ "h", "" ]:
 		#print "uic_scanner processing a h-file " + str(node)
 		ret = []
 		for inc in includes:
@@ -64,11 +67,9 @@ def uic_scanner( node, env, path ):
 				#print [ header_to_check.split("/")[-1] ]
 				ret.append( header_to_check.split("/")[-1] )
 
-		#if ret != []:
-		#	print "uic_scanner returning " + str(ret)
 		return ret
 
-	print "\nWarning! was called with an unhandled suffix: " + str(node).split(".")[-1] + " !\n"
+	print("\nWarning! was called with an unhandled suffix: [{}]\\n".format(node_extn))
 	return []
 
 def GetAppVersion( context, app, version ):
