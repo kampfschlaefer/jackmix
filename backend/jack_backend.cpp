@@ -143,7 +143,7 @@ bool JackBackend::rename(portsmap &map, QStringList &lst, const QString old_name
 		if ((port_i=map.constFind(old_name)) != map.constEnd()) {
 			// Found it... try to rename the jack port
 			jack_port_t *port = port_i.value();
-			done_it = (jack_port_set_name(port, new_name) == 0);
+			done_it = (jack_port_rename(client, port, new_name) == 0);
 			// If that works, go on to update our port map
 			if (done_it) {
 				map.insert(new_name, port);

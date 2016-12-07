@@ -6,6 +6,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QStringList>
+#include <QDataStream>
 
 namespace qLash {
 
