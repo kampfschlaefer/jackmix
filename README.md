@@ -15,6 +15,7 @@ See:
  * AUTHORS for contact information;
  * NEWS    for new features in this version.
 
+
 JackMix is a matrix mixer allowing p input channels to be mixed into
 q output channles by a matrix of faders. It relies on the Jack framework
 to route these inputs and outputs.
