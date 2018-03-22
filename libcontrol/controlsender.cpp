@@ -74,7 +74,7 @@ void PortListener::run()
 	exit(0);
 }
 
-ControlSender::ControlSender(const char* port_name) throw (MidiControlException) {
+ControlSender::ControlSender(const char* port_name) {
 	if (snd_seq_open(&seq_handle, "hw", SND_SEQ_OPEN_DUPLEX, 0) < 0)
 		throw new MidiControlException("Can't connect to MIDI subsystem");
 	

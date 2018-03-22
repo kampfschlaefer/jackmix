@@ -63,7 +63,7 @@ private:
 	const char* message;
 public:
 	MidiControlException(const char* msg = "General MIDI failure") { message = msg; }; 
-	virtual const char* what() const throw() { return message; };
+	virtual const char* what() noexcept { return message; };
 };
 
 /** ControlSender: Open a MIDI port and route control messages to zero or more recipients */
@@ -71,7 +71,7 @@ class ControlSender : public QObject {
 Q_OBJECT
 public:
 	/** Listen on a new virtual port with the given port name */
-	ControlSender(const char* port_name) throw (MidiControlException);
+	ControlSender(const char* port_name);
 	~ControlSender();
 	/** Have certain controls signals sent to a particular receiver (but only once!) */
 	static void subscribe(ControlReceiver *receiver, int parameter);
