@@ -73,6 +73,7 @@ Widget::~Widget() {
 void Widget::addElement( Element* n ) {
 	_elements.push_back( n );
 	connect( n, SIGNAL( replace( Element* ) ), this, SLOT( replace( Element* ) ) );
+	connect( n, SIGNAL( explode( Element* ) ), this, SLOT( explode( Element* ) ) );
 	resizeEvent( 0 );
 }
 void Widget::removeElement( Element* n ) {
@@ -100,6 +101,8 @@ void Widget::replace( Element* n ) {
 	createControl( in, out );
 	QTimer::singleShot( 1, this, SLOT( autoFill() ) );
 }
+
+void Widget::explode( Element* n )  {qDebug()<<"Widget::explode slot\n";}
 
 Element* Widget::getResponsible( QString in, QString out ) const {
 	//qDebug() << "Widget::getResponsible(" << in << "," << out << ") size =" << _elements.size();

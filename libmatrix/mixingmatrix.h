@@ -116,7 +116,11 @@ signals:
 	void autoFillComplete(MixingMatrix::Widget *);
 
 public slots:
+        // Combine many elements to form a multichannel one
 	void replace( Element* );
+        
+        // Split a multichannel element into its constituents
+        void explode( Element* );
 
 	// Fills the empty nodes with 1to1-controls
 	void autoFill();
@@ -210,7 +214,7 @@ public slots:
 
 signals:
 	void replace( Element* );
-
+        void explode( Element* );
 	// Informs, that Element* n, Property s has changed.
 	void valueChanged( Element* n, QString s );
 	/** Indicates completion of lazy initialisation */
@@ -250,6 +254,8 @@ protected:
 protected slots:
 	// Use this slot if you don't want to do something before replacement.
 	virtual void slot_simple_replace() { replace( this ); }
+	// Use this slot if you don't want to do something before explosion.
+	virtual void slot_simple_explode() { explode( this ); }
 	// Use this slot if you want a simple selection toggle
 	virtual void slot_simple_select() { select( !isSelected() ); }
 	/** Receive and forward midi events (parameter, value pairs) to

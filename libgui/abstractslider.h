@@ -63,6 +63,12 @@ signals:
 	 *  slot_simple_replace
 	 */
 	void replace(void);
+	/** Propagate explode requests
+	 *  This signal would normally be connected to the responsible element's
+	 *  slot_simple_explode
+	 */
+        void explode(void);
+        
 
 private slots:
 	void hideInput();
