@@ -103,7 +103,7 @@ void Widget::replace( Element* n ) {
 }
 
 void Widget::explode( Element* n )  {
-	qDebug()<<"Widget::explode slot\n";
+	//qDebug()<<"Widget::explode slot\n";
 	
 	n->deleteLater();
 	QTimer::singleShot( 1, this, SLOT( autoFill() ) );
@@ -118,7 +118,7 @@ Element* Widget::getResponsible( QString in, QString out ) const {
 }
 
 bool Widget::createControl( QStringList inchannels, QStringList outchannels ) {
-	//qDebug( "Widget::createControl( QStringList '%s', QStringList '%s')", qPrintable( inchannels.join( "," ) ), qPrintable( outchannels.join( "," ) ) );
+	//qDebug( "Widget::createControl( QStringList '%s', QStringList '%s', %s)", qPrintable( inchannels.join( "," ) ), qPrintable( outchannels.join( "," ) ) );
 
 	QStringList controls = Global::the()->canCreate( inchannels.size(), outchannels.size() );
 	if ( ! controls.isEmpty() ) {
@@ -428,7 +428,7 @@ void Element::showMenu() {
 	_menu->exec( QCursor::pos() );
 }
 void Element::contextMenuEvent( QContextMenuEvent* ev ) {
-	qDebug() << "Element::contextMenuEvent(" << ev << ") is accepted?" <<ev->isAccepted();
+	//qDebug() << "Element::contextMenuEvent(" << ev << ") is accepted?" <<ev->isAccepted();
 	showMenu();
 	ev->accept();
 }
@@ -511,6 +511,7 @@ QStringList Global::canCreate( int in, int out ) {
 bool Global::create( QString type, QStringList ins, QStringList outs, Widget* parent, const char* name ) {
 	//qDebug( "Global::create( type = %s, ins = [%s], outs = [%s], parent = %p, name = %s )",
         //        qPrintable( type ), qPrintable( ins.join( "," ) ), qPrintable( outs.join( "," ) ), parent, name );
+	// Only AuxElements can be non-selectable (input and output pots).
 	Element* elem=0;
         int i;
 	for ( i=0; i<_factories.size() && elem==0; i++ ) {

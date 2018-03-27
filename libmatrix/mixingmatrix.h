@@ -84,7 +84,7 @@ public:
 	
 	/// Create Controls
 	// Create controls. return true on success
-	bool createControl( QStringList inchannels, QStringList outchannels );
+	bool createControl( QStringList inchannels, QStringList outchannels);
 
 	/// Layout
 	QSize smallestElement() const;

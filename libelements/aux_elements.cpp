@@ -77,8 +77,10 @@ AuxElement::AuxElement( QStringList inchannel, QStringList outchannel, MixingMat
 	: Element( inchannel, outchannel, p, n )
 	, dB2VolCalc( -42, 6 )
 {
-	menu()->addAction( "Select", this, SLOT( slot_simple_select() ) );
-	menu()->addAction( "Replace", this, SLOT( slot_simple_replace() ) );
+	if (p->mode() == Widget::Select) {
+		menu()->addAction( "Select", this, SLOT( slot_simple_select() ) );
+		menu()->addAction( "Replace", this, SLOT( slot_simple_replace() ) );
+	}
 	menu()->addAction( "Assign MIDI Parameter", this, SLOT( slot_assign_midi_parameters() ) );
 
 	QVBoxLayout* _layout = new QVBoxLayout( this );
