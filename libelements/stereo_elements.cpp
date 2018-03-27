@@ -198,6 +198,10 @@ Stereo2StereoElement::Stereo2StereoElement( QStringList inchannels, QStringList 
 	QAction *replace = new QAction( "Replace", this );
 	connect( replace, SIGNAL( triggered() ), this, SLOT( slot_simple_replace() ) );
 	menu()->addAction( replace );
+	QAction *explode = new QAction( "Explode", this );
+	connect( explode, SIGNAL( triggered() ), this, SLOT( slot_simple_explode() ) );
+	menu()->addAction( explode );
+
 	QAction *assign = new QAction( "Assign MIDI Parameter", this );
 	connect( assign, SIGNAL( triggered() ), this, SLOT( slot_assign_midi_parameters() ) );
 	menu()->addAction( assign );

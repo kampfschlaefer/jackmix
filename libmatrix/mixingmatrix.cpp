@@ -102,7 +102,12 @@ void Widget::replace( Element* n ) {
 	QTimer::singleShot( 1, this, SLOT( autoFill() ) );
 }
 
-void Widget::explode( Element* n )  {qDebug()<<"Widget::explode slot\n";}
+void Widget::explode( Element* n )  {
+	qDebug()<<"Widget::explode slot\n";
+	
+	n->deleteLater();
+	QTimer::singleShot( 1, this, SLOT( autoFill() ) );
+}
 
 Element* Widget::getResponsible( QString in, QString out ) const {
 	//qDebug() << "Widget::getResponsible(" << in << "," << out << ") size =" << _elements.size();

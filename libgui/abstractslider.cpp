@@ -96,7 +96,8 @@ void AbstractSlider::showInput() {
 }
 
 void AbstractSlider::contextMenuEvent( QContextMenuEvent* ev ) {
-	//qDebug() << "AbstractSlider::contextMenuEvent(" << ev << ") is accepted?" << ev->isAccepted();
+	qDebug() << "AbstractSlider ContextMenuEvent at " << ev->x() << " " << ev->y();
+	qDebug() << "AbstractSlider::contextMenuEvent(" << ev << ") is accepted?" << ev->isAccepted();
 	if ( _spinbox.isNull() )
 		showInput();
 	else
