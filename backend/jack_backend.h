@@ -30,6 +30,7 @@
 #include <jack/jack.h>
 
 #include "backend_interface.h"
+#include "peak_tracker.h"
 
 class QDomElement;
 class QDomDocument;
@@ -101,6 +102,7 @@ private:
 	QMap<QString,QMap<QString,float> > volumes;
 	QHash<QString,float> outvolumes;
 	QHash<QString,float> involumes;
+        PeakTracker pt;
 };
 
 };

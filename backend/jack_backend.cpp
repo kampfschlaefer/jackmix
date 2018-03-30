@@ -22,6 +22,8 @@
 
 #include "jack_backend.h"
 //#include "jack_backend.moc"
+#include "peak_tracker.h"
+#include "peak_tracker.moc"
 
 #include <QtCore/QDebug>
 
