@@ -43,7 +43,9 @@ typedef QMap<QString,jack_port_t*> portsmap;
 typedef portsmap::Iterator ports_it;
 typedef portsmap::ConstIterator ports_cit;
 
-class JackBackend : public JackMix::BackendInterface {
+class JackBackend : public JackMix::BackendInterface
+                  , public JackMix::PeakTracker {
+
 	friend int process( ::jack_nframes_t, void* );
 public:
 	/// Initializes the connection
@@ -102,7 +104,6 @@ private:
 	QMap<QString,QMap<QString,float> > volumes;
 	QHash<QString,float> outvolumes;
 	QHash<QString,float> involumes;
-        PeakTracker pt;
 };
 
 };
