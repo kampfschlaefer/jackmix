@@ -25,6 +25,9 @@
 #define PEAK_TRACKER_H
 
 #include <QtCore/QObject>
+#include <QtCore/QString>
+#include <QtCore/QList>
+#include <QtCore/QMap>
 
 namespace JackMix {
         
@@ -46,25 +49,42 @@ namespace JackMix {
  */
 class PeakTracker : public QObject {
 Q_OBJECT
-Q_PROPERTY(Level current_level READ level NOTIFY levelChanged)
-
 public:
         enum Level {none, nominal, high, too_high};
         Q_ENUM(Level)
+        typedef QMap<QString,Level> levels_t;
         
+public:
         PeakTracker(QObject* parent = 0);
-        Level level() const;
-        void  new_current_level(float max_signal);
+        void newInputLevel(QString which, float maxSignal);
+        Level signalToLevel(float sig);
+        void report();
         
 signals:
-        void levelChanged(Level newLevel);
+        void inputLevelsChanged(levels_t);
+        void sendsize(int);
 
 private:
-        Level current_level {none};
-        float current_max;
+        typedef struct {
+                Level level;
+                float max;
+                bool  changed;
+        } Stats;
+
+        QMap<QString, Stats> stats[2];
+
+        void newLevel(Stats& s, float maxSignal); 
+        void report_group(int which, levels_t& result);
+        
         static const float threshold[];
+        
+private slots:
+        void testSlot(levels_t);
+
 };
         
 }
+
+Q_DECLARE_METATYPE(JackMix::PeakTracker::levels_t);
 
 #endif

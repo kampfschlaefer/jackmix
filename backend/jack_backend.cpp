@@ -23,7 +23,6 @@
 #include "jack_backend.h"
 //#include "jack_backend.moc"
 #include "peak_tracker.h"
-#include "peak_tracker.moc"
 
 #include <QtCore/QDebug>
 
@@ -234,9 +233,15 @@ int JackMix::process( jack_nframes_t nframes, void* arg ) {
 	}
 	/// Adjust inlevels.
 	for ( in_it = backend->in_ports.begin(); in_it != backend->in_ports.end(); ++in_it ) {
-		jack_default_audio_sample_t* tmp = ins[ in_it.key() ];
-		float volume = backend->getInVolume( in_it.key() );
-		for ( jack_nframes_t n=0; n<nframes; n++ ) tmp[ n ] *= volume;
+                QString key {in_it.key()};
+		jack_default_audio_sample_t* tmp = ins[key];
+		float volume = backend->getInVolume(key);
+                float max {0};
+		for ( jack_nframes_t n=0; n<nframes; n++ ) {
+                        tmp[ n ] *= volume;
+                        max = qMax(max, static_cast<float>(tmp[n]));
+                }
+                backend->newInputLevel(key, max);
 	}
 	/// The actual mixing.
 	for ( in_it = backend->in_ports.begin(); in_it != backend->in_ports.end(); ++in_it ) {
@@ -255,6 +260,10 @@ int JackMix::process( jack_nframes_t nframes, void* arg ) {
 		float volume = backend->getOutVolume( out_it.key() );
 		for ( jack_nframes_t n=0; n<nframes; n++ ) tmp[ n ] *= volume;
 	}
+	
+	// Send any information about channel levels
+	backend->report();
+        
 	return 0;
 }
 
