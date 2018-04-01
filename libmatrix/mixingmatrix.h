@@ -33,7 +33,7 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QLabel>
 
-//#include <QtCore/QDebug>
+#include <QtCore/QDebug>
 
 #include "backend_interface.h"
 #include "peak_tracker.h"
@@ -111,6 +111,9 @@ public:
 	void anotherControl();
 	/** Called when a lazy initialisation completes */
 	void placeFilled();
+        
+        /** These are the colours used for different levels defined in peak_tracker.h */
+        static const QColor indicatorColors[];
 
 signals:
 	/** AutoFill pass complete: safe to getResponsible() etc now */
@@ -143,6 +146,7 @@ private:
 	/** Controls have lazy initialisation: this counts how many are left to go
 	 *  before the whole widget is initialised. */
 	int _controls_remaining;
+                
 };
 
 class Element : public QFrame

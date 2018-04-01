@@ -42,9 +42,12 @@
 #include <QtCore/QMetaProperty>
 #include <QtCore/QDebug>
 #include <QtCore/QList>
+#include <QtGui/QColor>
 
 namespace JackMix {
 namespace MixingMatrix {
+        
+const QColor Widget::indicatorColors[] { QColor("dimgrey"), QColor("lawngreen"), QColor("orange"), QColor("red") };
 
 Widget::Widget( QStringList ins, QStringList outs, JackMix::BackendInterface* backend, QWidget* p, const char* n )
 	: QFrame( p )
@@ -168,7 +171,23 @@ void Widget::autoFill() {
 }
 
 void Widget::update_peak_inidicators(JackMix::PeakTracker::levels_t newLevels) {
-        if (!newLevels.empty()) qDebug() << "update_peak_inidicators slot: " << newLevels;
+        
+        //qDebug() << "update_peak_inidicators slot: " << newLevels;
+        JackMix::PeakTracker::levels_t::const_iterator it = newLevels.constBegin();
+
+        while (it != newLevels.constEnd()) {
+                QString n { it.key() };
+                JackMix::PeakTracker::Level l { it.value() };
+                
+                Element* e { getResponsible(n, n) };
+                if (e) {
+                        (static_cast<MixerElements::AuxElement*>(e))->setIndicator(indicatorColors[l]);
+                 } else {
+                        qDebug() << "getResponsible(" << n << ", " << n << "] returned null";
+                }
+                
+                ++it;
+        }
 }
 
 void Widget::anotherControl() {
@@ -527,7 +546,8 @@ bool Global::create( QString type, QStringList ins, QStringList outs, Widget* pa
                 // If the element now exists, make it ready to display peaks
                 // All input mixers are AuxElements
                 if (elem && parent->direction() == Widget::Horizontal) {
-                        static_cast<JackMix::MixerElements::AuxElement*>(elem)->setIndicator(QColor(255,0,0));
+                        static_cast<JackMix::MixerElements::AuxElement*>(elem)->
+                          setIndicator(Widget::indicatorColors[JackMix::PeakTracker::Level::none]);
                 }
         }
         //qDebug("Used factory %d to create elem %p", i-1, elem);

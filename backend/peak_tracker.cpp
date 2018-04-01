@@ -30,8 +30,13 @@ PeakTracker::Level PeakTracker::signalToLevel(float sig)
 void PeakTracker::newLevel(Stats& s, float maxSignal)
 {
         Level levelNow = signalToLevel(maxSignal);
-        s.changed = (s.level != levelNow);
-        s.level = levelNow;
+        if (levelNow == too_high) s.timeout.start();
+        if (s.level == too_high && s.timeout.elapsed() < 1000) 
+                s.changed = (s.level != too_high);
+        else {
+                s.changed = (s.level != levelNow);
+                s.level = levelNow;
+        }
 }
 
 void PeakTracker::newInputLevel(QString which, float maxSignal)
@@ -58,7 +63,9 @@ void PeakTracker::report() {
         // Report input levels
         report_group(0, updated);
         
-        emit(inputLevelsChanged(updated));
+        if (!updated.empty()) {
+                emit(inputLevelsChanged(updated));
+        }
 }
 
 void PeakTracker::testSlot(levels_t changed) {

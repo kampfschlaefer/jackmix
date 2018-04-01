@@ -28,6 +28,7 @@
 #include <QtCore/QString>
 #include <QtCore/QList>
 #include <QtCore/QMap>
+#include <QtCore/QTime>
 
 namespace JackMix {
         
@@ -68,6 +69,7 @@ private:
                 Level level;
                 float max;
                 bool  changed;
+                QTime timeout;
         } Stats;
 
         QMap<QString, Stats> stats[2];
