@@ -53,15 +53,14 @@ public:
         enum Level {none, nominal, high, too_high};
         Q_ENUM(Level)
         typedef QMap<QString,Level> levels_t;
-        
-public:
+
         PeakTracker(QObject* parent = 0);
         void newInputLevel(QString which, float maxSignal);
         Level signalToLevel(float sig);
         void report();
         
 signals:
-        void inputLevelsChanged(levels_t);
+        void inputLevelsChanged(JackMix::PeakTracker::levels_t);
         void sendsize(int);
 
 private:
@@ -79,7 +78,7 @@ private:
         static const float threshold[];
         
 private slots:
-        void testSlot(levels_t);
+        void testSlot(JackMix::PeakTracker::levels_t);
 
 };
         

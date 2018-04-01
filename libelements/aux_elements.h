@@ -51,7 +51,9 @@ public:
 
 	int inchannels() const { return 1; }
 	int outchannels() const { return 1; }
-
+	
+	void setIndicator(const QColor& c);
+ 
 public slots:
 	void emitvalue( double );
 

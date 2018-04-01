@@ -25,6 +25,8 @@
 #include "mainwindow.moc"
 
 #include "jack_backend.h"
+#include "peak_tracker.h"
+
 #include "mixingmatrix.h"
 #include "channelselector.h"
 #include "editablechannelselector.h"
@@ -184,7 +186,7 @@ void MainWindow::init() {
 		 this, SLOT(updateAutoFilledMidiParams(MixingMatrix::Widget *)) );
 	connect (_outputswidget, SIGNAL(autoFillComplete(MixingMatrix::Widget *)),
 		 this, SLOT(updateAutoFilledMidiParams(MixingMatrix::Widget *)) );
-
+        
 	_mw->layout->setRowStretch( 0, 1 );
 	_mw->layout->setRowStretch( 1, int( 1E2 ) );
 	_mw->layout->setColumnStretch( 1, 1 );
@@ -202,6 +204,10 @@ void MainWindow::init() {
 	connect( _lashclient, SIGNAL( saveToDir( QString ) ), this, SLOT( saveLash( QString ) ) );
 	connect( _lashclient, SIGNAL( restoreFromDir( QString ) ), this, SLOT( restoreLash( QString ) ) );
 	//_lashclient->setJackName( "JackMix" );
+
+        connect (reinterpret_cast<JackBackend*>(_backend), SIGNAL(inputLevelsChanged(JackMix::PeakTracker::levels_t)),
+                _inputswidget, SLOT(update_peak_inidicators(JackMix::PeakTracker::levels_t)), Qt::DirectConnection );
+
 }
 
 MainWindow::~MainWindow() {

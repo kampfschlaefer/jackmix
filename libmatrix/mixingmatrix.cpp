@@ -25,7 +25,10 @@
 #include "mixingmatrix_privat.h"
 #include "mixingmatrix.moc"
 #include "mixingmatrix_privat.moc"
+#include "peak_tracker.h"
 
+
+#include "aux_elements.h"
 #include "controlsender.h"
 
 #include <QtWidgets/QLayout>
@@ -154,13 +157,18 @@ void Widget::autoFill() {
 		//qDebug() << "Available inputs are" << _inchannels.join( "," );
 		for ( QStringList::Iterator init=_inchannels.begin(); init!=_inchannels.end(); ++init ) {
 			//qDebug() << "Setting element for" << *init;
-			if ( !getResponsible( *init, *init ) )// {
+			if ( !getResponsible( *init, *init ) ) {
 				//qDebug() << " No responsible element found, creating a new one";
 				createControl( QStringList()<<*init, QStringList()<<*init );
-			//}
+			}
+			
 		}
 	}
 	resizeEvent( 0 );
+}
+
+void Widget::update_peak_inidicators(JackMix::PeakTracker::levels_t newLevels) {
+        if (!newLevels.empty()) qDebug() << "update_peak_inidicators slot: " << newLevels;
 }
 
 void Widget::anotherControl() {
@@ -515,7 +523,12 @@ bool Global::create( QString type, QStringList ins, QStringList outs, Widget* pa
 	Element* elem=0;
         int i;
 	for ( i=0; i<_factories.size() && elem==0; i++ ) {
-		elem = _factories[ i ]->create( type, ins, outs, parent, name );
+                elem = _factories[ i ]->create( type, ins, outs, parent, name );
+                // If the element now exists, make it ready to display peaks
+                // All input mixers are AuxElements
+                if (elem && parent->direction() == Widget::Horizontal) {
+                        static_cast<JackMix::MixerElements::AuxElement*>(elem)->setIndicator(QColor(255,0,0));
+                }
         }
         //qDebug("Used factory %d to create elem %p", i-1, elem);
 	//qDebug( "Will show and return %p", elem );

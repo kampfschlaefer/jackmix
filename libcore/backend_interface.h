@@ -28,7 +28,6 @@ class QDomElement;
 class QDomDocument;
 
 namespace JackMix {
-
 	/**
 	 * @brief Abstract interface for backends
 	 *

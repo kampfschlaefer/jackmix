@@ -46,10 +46,12 @@ double degree( const double n ) {
 	return n;
 }
 
-Knob::Knob( double v, double min, double max, int precision, double pagestep, QWidget*p, QString valuestring )
+Knob::Knob( double v, double min, double max, int precision, double pagestep,
+            QWidget* p, QString valuestring, QColor indicator )
 	: AbstractSlider( v, min, max, precision, pagestep, p, valuestring )
 	, _timer( new QTimer( this ) )
 	, _show_value( false )
+        , _indicator(indicator)
 {
 	int m = fontMetrics().width( _valuestring ) + ( _precision+2 )* QFontMetrics( font() ).width( " " );
 	int h = fontMetrics().height();
@@ -73,6 +75,12 @@ void Knob::value( double n, bool show_numeric ) {
 			_timer->start();
 		}
 	}
+}
+
+void Knob::setIndicatorColor(const QColor& c) {
+        qDebug()<<c;
+        _indicator = c;
+        update();
 }
 
 void Knob::timeOut() {
@@ -100,10 +108,8 @@ void Knob::paintEvent( QPaintEvent* ) {
 	p.setPen( Qt::NoPen );
 	{
 		QRadialGradient grad( QPointF( 0,0 ), radius, QPointF( 0, radius*0.7 ) );
-//		grad.setColorAt( 0, palette().color( QPalette::Highlight ) );
-//		grad.setColorAt( 1, palette().color( QPalette::Highlight ).dark() );
-		grad.setColorAt( 0, QColor(255,0,0).dark() );
-		grad.setColorAt( 1, QColor(255,0,0) );
+		grad.setColorAt( 0, _indicator );
+		grad.setColorAt( 1, _indicator.dark() );
 		grad.setSpread( QGradient::PadSpread );
 		p.setBrush( grad );
 		p.drawEllipse( QRectF( -radius*0.8, -radius*0.8, radius*1.6, radius*1.6 ) );

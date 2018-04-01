@@ -15,7 +15,8 @@ const float PeakTracker::threshold[] = {0, 0.01, 0.25, 0.5};
         
 PeakTracker::PeakTracker(QObject* parent)
 {
-        connect( this, SIGNAL( inputLevelsChanged(levels_t) ), this, SLOT( testSlot(levels_t) ), Qt::DirectConnection );
+//         connect( this, SIGNAL( inputLevelsChanged(JackMix::PeakTracker::levels_t) ),
+//                  this, SLOT( testSlot(JackMix::PeakTracker::levels_t) ), Qt::DirectConnection );
 }
         
 PeakTracker::Level PeakTracker::signalToLevel(float sig)
@@ -62,7 +63,7 @@ void PeakTracker::report() {
 
 void PeakTracker::testSlot(levels_t changed) {
         if (!changed.empty())
-                qDebug() << changed;
+                qDebug() << "PeakTracker Test Slot " << changed;
 }
 
 }
