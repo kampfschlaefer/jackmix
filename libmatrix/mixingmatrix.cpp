@@ -545,7 +545,7 @@ bool Global::create( QString type, QStringList ins, QStringList outs, Widget* pa
                 elem = _factories[ i ]->create( type, ins, outs, parent, name );
                 // If the element now exists, make it ready to display peaks
                 // All input mixers are AuxElements
-                if (elem && parent->direction() == Widget::Horizontal) {
+                if (elem && parent->direction() != Widget::None) {
                         static_cast<JackMix::MixerElements::AuxElement*>(elem)->
                           setIndicator(Widget::indicatorColors[JackMix::PeakTracker::Level::none]);
                 }

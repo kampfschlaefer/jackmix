@@ -256,9 +256,15 @@ int JackMix::process( jack_nframes_t nframes, void* arg ) {
 	}
 	/// Adjust outlevels.
 	for ( out_it = backend->out_ports.begin(); out_it != backend->out_ports.end(); ++out_it ) {
-		jack_default_audio_sample_t* tmp = outs[ out_it.key() ];
-		float volume = backend->getOutVolume( out_it.key() );
-		for ( jack_nframes_t n=0; n<nframes; n++ ) tmp[ n ] *= volume;
+                QString key {out_it.key()};
+		jack_default_audio_sample_t* tmp = outs[ key ];
+		float volume = backend->getOutVolume( key );
+                float max {0};
+		for ( jack_nframes_t n=0; n<nframes; n++ ) {
+                        tmp[ n ] *= volume;
+                        max = qMax(max, static_cast<float>(tmp[n]));
+                }
+                backend->newOutputLevel(key, max);
 	}
 	
 	// Send any information about channel levels

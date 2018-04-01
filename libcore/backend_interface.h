@@ -99,6 +99,13 @@ namespace JackMix {
 		 * okay. Just return false..
 		 */
 		virtual bool removeInput( QString ) =0;
+                
+                // ToDo: The PeakTracker interface is assumed present in all backends,
+                //       this might not be appropriate. It might be better to have a
+                //       virtual method to test for the interface's availability here
+                //       which (e.g.) jackbackend can override. The main issue is with
+                //       the direct calls to newInputLevel(), newOutputLevel(), and report()
+                //       which are direct calls, not local slots.
 
 	protected:
 		GuiServer_Interface* gui;

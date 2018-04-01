@@ -207,6 +207,8 @@ void MainWindow::init() {
 
         connect (static_cast<JackBackend*>(_backend), SIGNAL(inputLevelsChanged(JackMix::PeakTracker::levels_t)),
                 _inputswidget, SLOT(update_peak_inidicators(JackMix::PeakTracker::levels_t)), Qt::DirectConnection );
+        connect (static_cast<JackBackend*>(_backend), SIGNAL(outputLevelsChanged(JackMix::PeakTracker::levels_t)),
+                _outputswidget, SLOT(update_peak_inidicators(JackMix::PeakTracker::levels_t)), Qt::DirectConnection );
 
 }
 

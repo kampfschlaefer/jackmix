@@ -15,7 +15,7 @@ const float PeakTracker::threshold[] = {0, 0.01, 0.25, 0.5};
         
 PeakTracker::PeakTracker(QObject* parent)
 {
-//         connect( this, SIGNAL( inputLevelsChanged(JackMix::PeakTracker::levels_t) ),
+//         connect( this, SIGNAL( outputLevelsChanged(JackMix::PeakTracker::levels_t) ),
 //                  this, SLOT( testSlot(JackMix::PeakTracker::levels_t) ), Qt::DirectConnection );
 }
         
@@ -41,8 +41,12 @@ void PeakTracker::newLevel(Stats& s, float maxSignal)
 
 void PeakTracker::newInputLevel(QString which, float maxSignal)
 {
-        //if (which == "in_1") qDebug() << maxSignal;
         newLevel(stats[0][which], maxSignal);
+}
+
+void PeakTracker::newOutputLevel(QString which, float maxSignal)
+{
+        newLevel(stats[1][which], maxSignal);
 }
 
 void PeakTracker::report_group(int which, levels_t& result)
@@ -62,10 +66,18 @@ void PeakTracker::report() {
         
         // Report input levels
         report_group(0, updated);
-        
         if (!updated.empty()) {
                 emit(inputLevelsChanged(updated));
         }
+        
+        updated.clear();
+        
+        // Report output levels
+        report_group(1, updated);
+        if (!updated.empty()) {
+                emit(outputLevelsChanged(updated));
+        }
+
 }
 
 void PeakTracker::testSlot(levels_t changed) {
