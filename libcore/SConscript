@@ -4,6 +4,6 @@ Import( 'env' )
 
 env = env.Clone()
 
-env.AppendUnique( CPPPATH=["#/libcore"] )
+env.AppendUnique( CPPPATH=["#/libcore", "#/backend"] )
 env.StaticLibrary( target="jackmix_core", source= ['backend_interface.cpp'] )
 

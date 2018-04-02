@@ -25,11 +25,13 @@
 #include "jack_backend.h"
 #include "mainwindow.h"
 #include "controlsender.h"
+#include "peak_tracker.h"
 
 int main( int argc, char** argv ) {
 	qDebug() << "JackMix starting";
 
 	QApplication *qapp = new QApplication( argc, argv );
+        qRegisterMetaType<JackMix::PeakTracker::levels_t>("JackMix::PeakTracker::levels_t");
 	QStringList args = qapp->arguments();
 	JackMix::MidiControl::ControlSender midiControlSender("JackMix Control");
 	QString file;

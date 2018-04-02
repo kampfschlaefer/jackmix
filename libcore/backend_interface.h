@@ -22,7 +22,9 @@
 #define BACKEND_INTERFACE_H
 
 #include <QtCore/QStringList>
-#include <guiserver_interface.h>
+
+#include "guiserver_interface.h"
+#include "peak_tracker.h"
 
 class QDomElement;
 class QDomDocument;
@@ -33,7 +35,7 @@ namespace JackMix {
 	 *
 	 * A backend has to implement this functions...
 	 */
-	class BackendInterface
+	class BackendInterface : public PeakTracker
 	{
 	public:
 		BackendInterface( GuiServer_Interface* );
@@ -100,13 +102,21 @@ namespace JackMix {
 		 */
 		virtual bool removeInput( QString ) =0;
                 
-                // ToDo: The PeakTracker interface is assumed present in all backends,
-                //       this might not be appropriate. It might be better to have a
-                //       virtual method to test for the interface's availability here
-                //       which (e.g.) jackbackend can override. The main issue is with
-                //       the direct calls to newInputLevel(), newOutputLevel(), and report()
-                //       which are direct calls, not local slots.
-
+                // The PeakTracker interface is assumed present in all backends.
+                // This is responsible for making the flashy lights on the input
+                // and output pots change colour. If you don't want to implement
+                // that you can ignore it, and no signals will be sent; the input
+                // and output potentiometers remain dark
+                //
+                // If you would like to impelment it, the idea is to record the
+                // abs maximum level of each buffer (as floats in the range 0..1)
+                // newInputLevel(QString key, float max) and newOutputLevel will
+                // do that for you. When the levels for each input and output have
+                // been recorded, call report() to signal the Widget to change the
+                // colours of the input and output elements
+                //
+                // The source for all this is in backend/peak_tracker.{cpp,h}
+                
 	protected:
 		GuiServer_Interface* gui;
 

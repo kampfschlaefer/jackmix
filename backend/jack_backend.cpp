@@ -28,7 +28,7 @@
 
 using namespace JackMix;
 
-JackBackend::JackBackend( GuiServer_Interface* g ) : BackendInterface( g ), PeakTracker() {
+JackBackend::JackBackend( GuiServer_Interface* g ) : BackendInterface( g ) {
 	//qDebug() << "JackBackend::JackBackend()";
 	client = ::jack_client_open( "JackMix", JackNoStartServer, NULL );
 	if ( client ) {
