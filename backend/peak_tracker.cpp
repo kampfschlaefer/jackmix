@@ -10,8 +10,8 @@
 
 namespace JackMix {
 
-
-const float PeakTracker::threshold[] = {0, 0.01, 0.25, 0.5};
+// Thresholds are at -50dB, -18dB and -6dB
+const float PeakTracker::threshold[] = {0, 0.00316, 0.12589, 0.50119};
         
 PeakTracker::PeakTracker(QObject* parent)
 {
