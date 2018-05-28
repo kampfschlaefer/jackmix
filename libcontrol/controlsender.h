@@ -89,6 +89,12 @@ signals:
 	void controlSignal(int val); //<! broadcast any change of control value
 
 protected:
+        /** ALSA sequencer available and opened successfully */
+        bool have_alsa_seq;
+        /** JACK sequencer available and opened successfully */
+        bool have_jack_seq;
+
+protected:
 	int port_id;
 	snd_seq_t *seq_handle;
 	static const int maxMidiParam = 120;

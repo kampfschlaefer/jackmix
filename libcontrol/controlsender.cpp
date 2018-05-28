@@ -74,23 +74,32 @@ void PortListener::run()
 	exit(0);
 }
 
-ControlSender::ControlSender(const char* port_name) {
-	if (snd_seq_open(&seq_handle, "hw", SND_SEQ_OPEN_DUPLEX, 0) < 0)
-		throw new MidiControlException("Can't connect to MIDI subsystem");
-	
-	// Name the client
-	snd_seq_set_client_name(seq_handle, port_name);
+ControlSender::ControlSender(const char* port_name) 
+	: have_alsa_seq {false}, have_jack_seq {false}
+	, port_listener {nullptr}
+{
 
-	// Open one input port
-	if ((port_id = snd_seq_create_simple_port(seq_handle, "Control Input",
-	                                         SND_SEQ_PORT_CAP_WRITE | SND_SEQ_PORT_CAP_SUBS_WRITE,
-	                                         SND_SEQ_PORT_TYPE_APPLICATION)) < 0)
-		throw new MidiControlException("Can't open MIDI port");
+	if ((have_alsa_seq = snd_seq_open(&seq_handle, "default", SND_SEQ_OPEN_DUPLEX, 0)) == 0) {
+		// Name the client
+		snd_seq_set_client_name(seq_handle, port_name);
+
+		// Open one input port
+		if ((port_id = snd_seq_create_simple_port(seq_handle, "Control Input",
+							SND_SEQ_PORT_CAP_WRITE | SND_SEQ_PORT_CAP_SUBS_WRITE,
+							SND_SEQ_PORT_TYPE_APPLICATION)) < 0)
+			throw new MidiControlException("Can't open MIDI port");
+	} else
+		seq_handle = nullptr;
+	
+	// TODO Do the same sort of thing for Jack MIDI.
 	
 	// Start a QThread which will handle incomming MIDI messages on this port
-	port_listener = new JackMix::MidiControl::PortListener(seq_handle, port_id);
-	port_listener->start();
-	connect (port_listener, SIGNAL(message(int, int)), this, SLOT(despatch_message(int, int)) );
+	// TODO: extend to look after ALSA or Jack MIDI (or neither or both)
+	if (have_alsa_seq || have_jack_seq) {
+		port_listener = new JackMix::MidiControl::PortListener(seq_handle, port_id);
+		port_listener->start();
+		connect (port_listener, SIGNAL(message(int, int)), this, SLOT(despatch_message(int, int)) );
+	}
 }
 
 ControlSender::~ControlSender() {
