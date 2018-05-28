@@ -211,6 +211,9 @@ void MainWindow::init() {
                 _inputswidget, SLOT(update_peak_inidicators(JackMix::PeakTracker::levels_t)));
         connect (static_cast<JackBackend*>(_backend), SIGNAL(outputLevelsChanged(JackMix::PeakTracker::levels_t)),
                 _outputswidget, SLOT(update_peak_inidicators(JackMix::PeakTracker::levels_t)));
+	
+	// Connect the backend's MIDI control events to the MIDI listener's despatcher.
+	// TODO
 
 }
 

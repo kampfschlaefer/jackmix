@@ -64,7 +64,6 @@ public:
 signals:
         void inputLevelsChanged(JackMix::PeakTracker::levels_t);
         void outputLevelsChanged(JackMix::PeakTracker::levels_t);
-        void sendsize(int);
 
 private:
         typedef struct {

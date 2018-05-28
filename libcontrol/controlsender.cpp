@@ -75,7 +75,7 @@ void PortListener::run()
 }
 
 ControlSender::ControlSender(const char* port_name) 
-	: have_alsa_seq {false}, have_jack_seq {false}
+	: have_alsa_seq {false}
 	, port_listener {nullptr}
 {
 
@@ -88,18 +88,12 @@ ControlSender::ControlSender(const char* port_name)
 							SND_SEQ_PORT_CAP_WRITE | SND_SEQ_PORT_CAP_SUBS_WRITE,
 							SND_SEQ_PORT_TYPE_APPLICATION)) < 0)
 			throw new MidiControlException("Can't open MIDI port");
-	} else
-		seq_handle = nullptr;
-	
-	// TODO Do the same sort of thing for Jack MIDI.
-	
-	// Start a QThread which will handle incomming MIDI messages on this port
-	// TODO: extend to look after ALSA or Jack MIDI (or neither or both)
-	if (have_alsa_seq || have_jack_seq) {
+		
 		port_listener = new JackMix::MidiControl::PortListener(seq_handle, port_id);
 		port_listener->start();
 		connect (port_listener, SIGNAL(message(int, int)), this, SLOT(despatch_message(int, int)) );
-	}
+	} else
+		seq_handle = nullptr;
 }
 
 ControlSender::~ControlSender() {

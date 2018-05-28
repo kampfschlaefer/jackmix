@@ -91,8 +91,6 @@ signals:
 protected:
         /** ALSA sequencer available and opened successfully */
         bool have_alsa_seq;
-        /** JACK sequencer available and opened successfully */
-        bool have_jack_seq;
 
 protected:
 	int port_id;
@@ -104,7 +102,7 @@ protected:
 	 */
 	static QList<ControlReceiver *> dtab[maxMidiParam];
 
-protected slots:
+public slots:
 	void despatch_message(int ch, int val);      //<! Route message
 
 private:
