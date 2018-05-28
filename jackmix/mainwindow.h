@@ -32,6 +32,8 @@
 #include <QtCore/QHash>
 #include <QtWidgets/QGridLayout>
 
+#include "controlsender.h"
+
 class QHBox;
 class QSettings;
 class QDomElement;
@@ -132,6 +134,8 @@ private:
 	bool _autofillscheduled;
 
 	qLash::qLashClient* _lashclient;
+        
+        MidiControl::ControlSender* midiControlSender;
 };
 
 };

@@ -107,8 +107,10 @@ ControlSender::~ControlSender() {
 	port_listener->quit();
 	port_listener->wait();
 	// then close the MIDI port
-	snd_seq_delete_simple_port(seq_handle, port_id);
-	snd_seq_close(seq_handle);
+	if (have_alsa_seq) {
+		snd_seq_delete_simple_port(seq_handle, port_id);
+		snd_seq_close(seq_handle);
+	}
 }
 
 QList<ControlReceiver*> ControlSender::dtab[maxMidiParam];

@@ -87,7 +87,7 @@ MainWindow::MainWindow( QWidget* p ) : QMainWindow( p ), _backend( new JackBacke
 	outs = _backend->outchannels();
 	if ( ins.empty() || outs.empty() )
 		statusBar()->showMessage( "No Channels available :-(" );
-
+	
 	_autofillscheduled = false;
 	scheduleAutoFill();
 
@@ -204,6 +204,8 @@ void MainWindow::init() {
 	connect( _lashclient, SIGNAL( saveToDir( QString ) ), this, SLOT( saveLash( QString ) ) );
 	connect( _lashclient, SIGNAL( restoreFromDir( QString ) ), this, SLOT( restoreLash( QString ) ) );
 	//_lashclient->setJackName( "JackMix" );
+	
+	midiControlSender = new MidiControl::ControlSender("JackMix Control");
 
         connect (static_cast<JackBackend*>(_backend), SIGNAL(inputLevelsChanged(JackMix::PeakTracker::levels_t)),
                 _inputswidget, SLOT(update_peak_inidicators(JackMix::PeakTracker::levels_t)));
@@ -214,6 +216,7 @@ void MainWindow::init() {
 
 MainWindow::~MainWindow() {
 	//qDebug() << "MainWindow::~MainWindow()";
+	delete midiControlSender;
 	delete _backend;
 }
 
