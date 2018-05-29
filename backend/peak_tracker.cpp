@@ -19,7 +19,7 @@ PeakTracker::PeakTracker(QObject* parent)
 //                  this, SLOT( testSlot(JackMix::PeakTracker::levels_t) ) );
 }
         
-PeakTracker::Level PeakTracker::signalToLevel(float sig)
+PeakTracker::Level PeakTracker::signalToLevel(float sig) const
 {
         if (sig >= threshold[too_high]) return too_high;
         if (sig >= threshold[high])     return high;

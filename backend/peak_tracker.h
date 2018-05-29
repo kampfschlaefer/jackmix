@@ -58,7 +58,7 @@ public:
         PeakTracker(QObject* parent = 0);
         void newInputLevel(QString which, float maxSignal);
         void newOutputLevel(QString which, float maxSignal);
-        Level signalToLevel(float sig);
+        Level signalToLevel(float sig) const;
         void report();
         
 signals:

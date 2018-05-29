@@ -32,6 +32,7 @@ JackBackend::JackBackend( GuiServer_Interface* g ) : BackendInterface( g ) {
 	//qDebug() << "JackBackend::JackBackend()";
 	client = ::jack_client_open( "JackMix", JackNoStartServer, NULL );
 	if ( client ) {
+		::jack_port_register(client, "Control", JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
 		::jack_set_process_callback( client, JackMix::process, this );
 		//qDebug() << "JackBackend::JackBackend() activate";
 		::jack_activate( client );
@@ -215,6 +216,9 @@ float JackBackend::getInVolume( QString ch ) {
 
 
 int JackMix::process( jack_nframes_t nframes, void* arg ) {
+	// Deal with MIDI events
+	// TODO
+	
 	//qDebug() << "JackMix::process( jack_nframes_t " << nframes << ", void* )";
 	JackMix::JackBackend* backend = static_cast<JackMix::JackBackend*>( arg );
 	QMap<QString,jack_default_audio_sample_t*> ins;
