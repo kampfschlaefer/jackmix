@@ -22,6 +22,7 @@
 #define BACKEND_INTERFACE_H
 
 #include <QtCore/QStringList>
+#include <QObject>
 
 #include "guiserver_interface.h"
 #include "peak_tracker.h"
@@ -35,8 +36,9 @@ namespace JackMix {
 	 *
 	 * A backend has to implement this functions...
 	 */
-	class BackendInterface : public PeakTracker
+	class BackendInterface : public QObject
 	{
+Q_OBJECT
 	public:
 		BackendInterface( GuiServer_Interface* );
 		virtual ~BackendInterface();
@@ -102,7 +104,7 @@ namespace JackMix {
 		 */
 		virtual bool removeInput( QString ) =0;
                 
-                // The PeakTracker interface is assumed present in all backends.
+                // The BackendInterface interface is assumed present in all backends.
                 // This is responsible for making the flashy lights on the input
                 // and output pots change colour. If you don't want to implement
                 // that you can ignore it, and no signals will be sent; the input
@@ -114,9 +116,38 @@ namespace JackMix {
                 // do that for you. When the levels for each input and output have
                 // been recorded, call report() to signal the Widget to change the
                 // colours of the input and output elements
-                //
-                // The source for all this is in backend/peak_tracker.{cpp,h}
                 
+	public:
+		enum Level {none, nominal, high, too_high};
+		Q_ENUM(Level)
+		typedef QMap<QString,Level> levels_t;
+
+		virtual void newInputLevel(QString which, float maxSignal);
+		virtual void newOutputLevel(QString which, float maxSignal);
+		Level signalToLevel(float sig) const;
+		virtual void report();
+		
+	signals:
+		void inputLevelsChanged(JackMix::BackendInterface::levels_t);
+		void outputLevelsChanged(JackMix::BackendInterface::levels_t);
+
+	private:
+		typedef struct {
+			Level level;
+			float max;
+			bool  changed;
+			QTime timeout;
+		} Stats;
+
+		QMap<QString, Stats> stats[2];
+
+		void newLevel(Stats& s, float maxSignal); 
+		void report_group(int which, levels_t& result);
+		
+		static const float threshold[];
+		
+	private slots:
+		void testSlot(JackMix::BackendInterface::levels_t);
 	protected:
 		GuiServer_Interface* gui;
 

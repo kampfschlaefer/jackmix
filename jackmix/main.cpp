@@ -24,13 +24,12 @@
 
 #include "jack_backend.h"
 #include "mainwindow.h"
-#include "peak_tracker.h"
 
 int main( int argc, char** argv ) {
 	qDebug() << "JackMix starting";
 
 	QApplication *qapp = new QApplication( argc, argv );
-        qRegisterMetaType<JackMix::PeakTracker::levels_t>("JackMix::PeakTracker::levels_t");
+        qRegisterMetaType<JackMix::BackendInterface::levels_t>("JackMix::BackendInterface::levels_t");
 	QStringList args = qapp->arguments();
 	QString file;
 	for( int i=1; i<args.size(); ++i ) {

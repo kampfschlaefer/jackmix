@@ -18,13 +18,89 @@
 
 */
 
+#include <QtCore/QDebug>
+
 #include "backend_interface.h"
+#include "backend_interface.moc"
 
 namespace JackMix {
 
 BackendInterface::BackendInterface( GuiServer_Interface* g ) : gui( g ) {
+// Uncomment to test signal-change detection
+//         connect( this, SIGNAL( outputLevelsChanged(JackMix::BackendInterface::levels_t) ),
+//                  this, SLOT( testSlot(JackMix::BackendInterface::levels_t) ) );
 }
+
 BackendInterface::~BackendInterface() {
+}
+
+// Thresholds are at -50dB, -18dB and -6dB
+const float BackendInterface::threshold[] = {0, 0.00316, 0.12589, 0.50119};
+
+BackendInterface::Level BackendInterface::signalToLevel(float sig) const
+{
+        if (sig >= threshold[too_high]) return too_high;
+        if (sig >= threshold[high])     return high;
+        if (sig >= threshold[nominal])  return nominal;
+        return none;
+}
+
+void BackendInterface::newLevel(Stats& s, float maxSignal)
+{
+        Level levelNow = signalToLevel(maxSignal);
+        if (levelNow == too_high) s.timeout.start();
+        if (s.level == too_high && s.timeout.elapsed() < 1000) 
+                s.changed = (s.level != too_high);
+        else {
+                s.changed = (s.level != levelNow);
+                s.level = levelNow;
+        }
+}
+
+void BackendInterface::newInputLevel(QString which, float maxSignal)
+{
+        newLevel(stats[0][which], maxSignal);
+}
+
+void BackendInterface::newOutputLevel(QString which, float maxSignal)
+{
+        newLevel(stats[1][which], maxSignal);
+}
+
+void BackendInterface::report_group(int which, levels_t& result)
+{
+        QMap<QString, Stats>::const_iterator i = stats[which].constBegin();
+        while (i != stats[which].constEnd()) {
+                const Stats* v = &i.value();
+                if (v->changed) {
+                        result[i.key()] = v->level;
+                }
+                ++i;
+        }
+}
+
+void BackendInterface::report() {
+        levels_t updated;
+        
+        // Report input levels
+        report_group(0, updated);
+        if (!updated.empty()) {
+                emit(inputLevelsChanged(updated));
+        }
+        
+        updated.clear();
+        
+        // Report output levels
+        report_group(1, updated);
+        if (!updated.empty()) {
+                emit(outputLevelsChanged(updated));
+        }
+
+}
+
+void BackendInterface::testSlot(levels_t changed) {
+        if (!changed.empty())
+                qDebug() << "BackendInterface Audo level changed testSlot " << changed;
 }
 
 };
