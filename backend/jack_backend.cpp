@@ -21,8 +21,9 @@
 */
 
 #include "jack_backend.h"
+#include <jack/midiport.h>
 //#include "jack_backend.moc"
-#include "peak_tracker.h"
+#include <iostream>
 
 #include <QtCore/QDebug>
 
@@ -32,7 +33,8 @@ JackBackend::JackBackend( GuiServer_Interface* g ) : BackendInterface( g ) {
 	//qDebug() << "JackBackend::JackBackend()";
 	client = ::jack_client_open( "JackMix", JackNoStartServer, NULL );
 	if ( client ) {
-		::jack_port_register(client, "Control", JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
+		midi_port = ::jack_port_register(client, "Control",
+		                                 JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
 		::jack_set_process_callback( client, JackMix::process, this );
 		//qDebug() << "JackBackend::JackBackend() activate";
 		::jack_activate( client );
@@ -216,11 +218,19 @@ float JackBackend::getInVolume( QString ch ) {
 
 
 int JackMix::process( jack_nframes_t nframes, void* arg ) {
-	// Deal with MIDI events
-	// TODO
-	
 	//qDebug() << "JackMix::process( jack_nframes_t " << nframes << ", void* )";
 	JackMix::JackBackend* backend = static_cast<JackMix::JackBackend*>( arg );
+
+	// Deal with MIDI events
+// 	::jack_midi_event_t event;
+// 	::jack_nframes_t event_count { jack_midi_get_event_count(backend->midi_port) };
+//	void* midi_port_buf { ::jack_port_get_buffer(backend->midi_port, event_count) };
+	
+// 	for (::jack_nframes_t e {0}; e < event_count; e++) {
+// 		::jack_midi_event_get(&event, midi_port_buf, e);
+// 		std::cout << "MIDI event [" << e << "] " << event.buffer[0] << ":" << event.buffer[1] << ":"<< event.buffer[2] << std::endl;
+// 	}
+	
 	QMap<QString,jack_default_audio_sample_t*> ins;
 	JackMix::ports_it it;
 	for ( it = backend->in_ports.begin(); it!=backend->in_ports.end(); ++it )

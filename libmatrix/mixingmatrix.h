@@ -36,7 +36,6 @@
 #include <QtCore/QDebug>
 
 #include "backend_interface.h"
-#include "peak_tracker.h"
 #include "abstractslider.h"
 #include "midicontrolchannelassigner.h"
 #include "controlreceiver.h"
@@ -135,7 +134,7 @@ public slots:
         /** When the peak tracker in the backend wants to change the indicator states
          *  on the widget, it sends a map of the ones it wants to change to this slot
          */ 
-        void update_peak_inidicators(JackMix::PeakTracker::levels_t newLevels);
+        void update_peak_inidicators(JackMix::BackendInterface::levels_t newLevels);
 
 private:
 	enum Mode _mode;

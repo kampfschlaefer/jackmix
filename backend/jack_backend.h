@@ -27,10 +27,10 @@
 #include <QtCore/QHash>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
+#include <QtCore/QTime>
 #include <jack/jack.h>
 
 #include "backend_interface.h"
-#include "peak_tracker.h"
 
 class QDomElement;
 class QDomDocument;
@@ -103,6 +103,9 @@ private:
 	QMap<QString,QMap<QString,float> > volumes;
 	QHash<QString,float> outvolumes;
 	QHash<QString,float> involumes;
+	
+	/// Port to listen on for MIDI signals
+	::jack_port_t *midi_port;
 };
 
 };

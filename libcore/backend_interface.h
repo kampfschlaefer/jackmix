@@ -22,10 +22,10 @@
 #define BACKEND_INTERFACE_H
 
 #include <QtCore/QStringList>
+#include <QtCore/QTime>
 #include <QObject>
 
 #include "guiserver_interface.h"
-#include "peak_tracker.h"
 
 class QDomElement;
 class QDomDocument;

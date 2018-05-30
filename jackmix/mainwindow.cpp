@@ -25,7 +25,6 @@
 #include "mainwindow.moc"
 
 #include "jack_backend.h"
-#include "peak_tracker.h"
 
 #include "mixingmatrix.h"
 #include "channelselector.h"
@@ -207,10 +206,10 @@ void MainWindow::init() {
 	
 	midiControlSender = new MidiControl::ControlSender("JackMix Control");
 
-	connect (_backend, SIGNAL(inputLevelsChanged(JackMix::PeakTracker::levels_t)),
-	         _inputswidget, SLOT(update_peak_inidicators(JackMix::PeakTracker::levels_t)));
-	connect (_backend, SIGNAL(outputLevelsChanged(JackMix::PeakTracker::levels_t)),
-                 _outputswidget, SLOT(update_peak_inidicators(JackMix::PeakTracker::levels_t)));
+	connect (_backend, SIGNAL(inputLevelsChanged(JackMix::BackendInterface::levels_t)),
+	         _inputswidget, SLOT(update_peak_inidicators(JackMix::BackendInterface::levels_t)));
+	connect (_backend, SIGNAL(outputLevelsChanged(JackMix::BackendInterface::levels_t)),
+                 _outputswidget, SLOT(update_peak_inidicators(JackMix::BackendInterface::levels_t)));
 	
 	// Connect the backend's MIDI control events to the MIDI listener's despatcher.
 	// TODO

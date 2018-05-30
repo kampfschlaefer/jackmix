@@ -27,8 +27,8 @@ namespace JackMix {
 
 BackendInterface::BackendInterface( GuiServer_Interface* g ) : gui( g ) {
 // Uncomment to test signal-change detection
-//         connect( this, SIGNAL( outputLevelsChanged(JackMix::BackendInterface::levels_t) ),
-//                  this, SLOT( testSlot(JackMix::BackendInterface::levels_t) ) );
+// 	connect( this, SIGNAL( outputLevelsChanged(JackMix::BackendInterface::levels_t) ),
+// 	         this, SLOT( testSlot(JackMix::BackendInterface::levels_t) ) );
 }
 
 BackendInterface::~BackendInterface() {

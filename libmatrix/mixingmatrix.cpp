@@ -25,7 +25,6 @@
 #include "mixingmatrix_privat.h"
 #include "mixingmatrix.moc"
 #include "mixingmatrix_privat.moc"
-#include "peak_tracker.h"
 
 
 #include "aux_elements.h"
@@ -170,14 +169,14 @@ void Widget::autoFill() {
 	resizeEvent( 0 );
 }
 
-void Widget::update_peak_inidicators(JackMix::PeakTracker::levels_t newLevels) {
+void Widget::update_peak_inidicators(JackMix::BackendInterface::levels_t newLevels) {
         
         //qDebug() << "update_peak_inidicators slot: " << newLevels;
-        JackMix::PeakTracker::levels_t::const_iterator it = newLevels.constBegin();
+        JackMix::BackendInterface::levels_t::const_iterator it = newLevels.constBegin();
 
         while (it != newLevels.constEnd()) {
                 QString n { it.key() };
-                JackMix::PeakTracker::Level l { it.value() };
+                JackMix::BackendInterface::Level l { it.value() };
                 
                 Element* e { getResponsible(n, n) };
                 if (e) {
@@ -547,7 +546,7 @@ bool Global::create( QString type, QStringList ins, QStringList outs, Widget* pa
                 // All input mixers are AuxElements
                 if (elem && parent->direction() != Widget::None) {
                         static_cast<JackMix::MixerElements::AuxElement*>(elem)->
-                          setIndicator(Widget::indicatorColors[JackMix::PeakTracker::Level::none]);
+                          setIndicator(Widget::indicatorColors[JackMix::BackendInterface::Level::none]);
                 }
         }
         //qDebug("Used factory %d to create elem %p", i-1, elem);
