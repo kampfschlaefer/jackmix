@@ -212,7 +212,8 @@ void MainWindow::init() {
                  _outputswidget, SLOT(update_peak_inidicators(JackMix::BackendInterface::levels_t)));
 	
 	// Connect the backend's MIDI control events to the MIDI listener's despatcher.
-	// TODO
+	connect (_backend, SIGNAL(cc_message(int, int)),
+		 midiControlSender, SLOT(despatch_message(int, int)));
 
 }
 

@@ -29,6 +29,8 @@
 #include <QtCore/QStringList>
 #include <QtCore/QTime>
 #include <jack/jack.h>
+#include <jack/midiport.h>
+
 
 #include "backend_interface.h"
 
@@ -43,7 +45,7 @@ typedef QMap<QString,jack_port_t*> portsmap;
 typedef portsmap::Iterator ports_it;
 typedef portsmap::ConstIterator ports_cit;
 
-class JackBackend : public JackMix::BackendInterface {
+class JackBackend : public BackendInterface {
 
 	friend int process( ::jack_nframes_t, void* );
 public:
@@ -74,7 +76,7 @@ public:
 	void setVolume( QString,QString,float );
 	/// returns the volume of channel,output
 	float getVolume( QString,QString );
-
+	
 private:
 	void setOutVolume( QString, float );
 	float getOutVolume( QString );
@@ -104,6 +106,9 @@ private:
 	QHash<QString,float> outvolumes;
 	QHash<QString,float> involumes;
 	
+	/// Process the second and third bytes of the MIDI CC message
+	/// (the JACK process() routine can't do this because it's not a QObject
+	void send_signal(const ::jack_midi_data_t b1, const ::jack_midi_data_t b2);
 	/// Port to listen on for MIDI signals
 	::jack_port_t *midi_port;
 };

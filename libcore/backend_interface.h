@@ -116,6 +116,10 @@ Q_OBJECT
                 // do that for you. When the levels for each input and output have
                 // been recorded, call report() to signal the Widget to change the
                 // colours of the input and output elements
+		//
+		// Similarly, of the backend of the dervied class uses its own
+		// MIDI message handler, it can use the cc_message signal to notify
+		// control changes.
                 
 	public:
 		enum Level {none, nominal, high, too_high};
@@ -130,6 +134,7 @@ Q_OBJECT
 	signals:
 		void inputLevelsChanged(JackMix::BackendInterface::levels_t);
 		void outputLevelsChanged(JackMix::BackendInterface::levels_t);
+		void cc_message(int ch, int val);
 
 	private:
 		typedef struct {

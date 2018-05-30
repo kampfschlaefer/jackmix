@@ -127,7 +127,6 @@ void ControlSender::unsubscribe(ControlReceiver *receiver, int parameter) {
 }
 
 void ControlSender::despatch_message(int param, int val) {
-	//qDebug() << "ControlSender:despatch_message: parameter " << param << ", value=" << val;
 	QListIterator<ControlReceiver*> iterator(dtab[param]);
 	while (iterator.hasNext())
 		iterator.next()->controlEvent(param, val);

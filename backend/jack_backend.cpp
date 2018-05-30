@@ -22,8 +22,8 @@
 
 #include "jack_backend.h"
 #include <jack/midiport.h>
+
 //#include "jack_backend.moc"
-#include <iostream>
 
 #include <QtCore/QDebug>
 
@@ -216,20 +216,26 @@ float JackBackend::getInVolume( QString ch ) {
 	return involumes[ ch ];
 }
 
+void JackBackend::send_signal(const ::jack_midi_data_t b1,
+			      const ::jack_midi_data_t b2)  {
+	emit(cc_message(b1, b2));
+}
+
 
 int JackMix::process( jack_nframes_t nframes, void* arg ) {
 	//qDebug() << "JackMix::process( jack_nframes_t " << nframes << ", void* )";
 	JackMix::JackBackend* backend = static_cast<JackMix::JackBackend*>( arg );
 
 	// Deal with MIDI events
-// 	::jack_midi_event_t event;
-// 	::jack_nframes_t event_count { jack_midi_get_event_count(backend->midi_port) };
-//	void* midi_port_buf { ::jack_port_get_buffer(backend->midi_port, event_count) };
+	void* midi_buffer { ::jack_port_get_buffer(backend->midi_port, nframes) };
+	::jack_midi_event_t event;
+	::jack_nframes_t event_count { jack_midi_get_event_count(midi_buffer) };
 	
-// 	for (::jack_nframes_t e {0}; e < event_count; e++) {
-// 		::jack_midi_event_get(&event, midi_port_buf, e);
-// 		std::cout << "MIDI event [" << e << "] " << event.buffer[0] << ":" << event.buffer[1] << ":"<< event.buffer[2] << std::endl;
-// 	}
+	for (::jack_nframes_t e {0}; e < event_count; e++) {
+		::jack_midi_event_get(&event, midi_buffer, e);
+		if (event.buffer[0] == 0xb0) // It's a control change message
+			backend->send_signal(event.buffer[1], event.buffer[2]);
+	}
 	
 	QMap<QString,jack_default_audio_sample_t*> ins;
 	JackMix::ports_it it;
