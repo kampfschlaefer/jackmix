@@ -55,12 +55,15 @@ Q_OBJECT
 		/**
 		 * @brief Set the volume of the named node.
 		 */
+		virtual void setVolumeNew( QString, QString, float ) =0;
+		/**
+		 * @brief Set the volume of the named node.
+		 */
 		virtual void setVolume( QString, QString, float ) =0;
 		/**
 		 * @brief Get the volume of the named node.
 		 */
 		virtual float getVolume( QString, QString ) =0;
-
 		/**
 		 * @brief Add a channel and return true on success.
 		 *

@@ -23,6 +23,7 @@
 #ifndef JACKMIX_JACK_BACKEND_H
 #define JACKMIX_JACK_BACKEND_H
 
+#include <QtCore/QtMath>
 #include <QtCore/QMap>
 #include <QtCore/QHash>
 #include <QtCore/QString>
@@ -74,14 +75,20 @@ public:
 	
 	/// sets the volume of channel,output
 	void setVolume( QString,QString,float );
+	void setVolumeNew( QString,QString,float );
 	/// returns the volume of channel,output
 	float getVolume( QString,QString );
+	float getVolumeNew ( QString,QString );
 	
 private:
 	void setOutVolume( QString, float );
+	void setOutVolumeNew( QString, float );
 	float getOutVolume( QString );
+	float getOutVolumeNew( QString );
 	void setInVolume( QString, float );
+	void setInVolumeNew( QString,float );
 	float getInVolume( QString );
+	float getInVolumeNew( QString );
 	bool rename(portsmap &map, QStringList &lst, const QString old_name, const char *new_name);
 public:
 	/// returns a QStringList with the names of the out-channels
@@ -103,8 +110,11 @@ private:
 	::jack_client_t *client;
 	/// First dimension is input-channels, second is output-channels
 	QMap<QString,QMap<QString,float> > volumes;
+	QMap<QString,QMap<QString,float> > volumes_new;
 	QHash<QString,float> outvolumes;
+	QHash<QString,float> outvolumes_new;
 	QHash<QString,float> involumes;
+	QHash<QString,float> involumes_new;
 	
 	/// Process the second and third bytes of the MIDI CC message
 	/// (the JACK process() routine can't do this because it's not a QObject

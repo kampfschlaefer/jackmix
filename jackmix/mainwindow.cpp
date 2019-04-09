@@ -263,7 +263,7 @@ void MainWindow::openFile( QString path ) {
 				QString volume = in.attribute( "volume" );
 				QString midi = in.attribute( "midi" );
 				addInput( name );
-				_backend->setVolume( name, name, volume.toDouble() );
+				_backend->setVolumeNew( name, name, volume.toDouble() );
 				// Input gain elements have the same name for input and output
 				_inputmps[QString("%1,%1").arg(name)] = midi;
 				
@@ -275,7 +275,7 @@ void MainWindow::openFile( QString path ) {
 				QString volume = out.attribute( "volume" );
 				QString midi = out.attribute("midi");
 				addOutput( name );
-				_backend->setVolume( name, name, volume.toDouble() );
+				_backend->setVolumeNew( name, name, volume.toDouble() );
 				// Output gain elements have the same name for input and output
 				_outputmps[QString("%1,%1").arg(name)] = midi;
 			}
@@ -286,7 +286,7 @@ void MainWindow::openFile( QString path ) {
 				QString out = volume.attribute( "out" );
 				QString value = volume.attribute( "value" );
 				QString midi = volume.attribute( "midi" );
-				_backend->setVolume( in, out, value.toDouble() );
+				_backend->setVolumeNew( in, out, value.toDouble() );
 				if (!midi.isEmpty()) _mixermps[QString("%1,%2").arg(in, out)] = midi;
 			}
 

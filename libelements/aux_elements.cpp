@@ -116,7 +116,7 @@ AuxElement::~AuxElement() {
 }
 
 void AuxElement::emitvalue( double n ) {
-	backend()->setVolume( _in[0], _out[0], dbtoamp( n ) );
+	backend()->setVolumeNew( _in[0], _out[0], dbtoamp( n ) );
 }
 
 void AuxElement::setIndicator(const QColor& c) { _poti->setIndicatorColor(c); };
