@@ -102,11 +102,15 @@ bool JackBackend::renameInput(const QString old_name, const QString new_name) {
 	if (done_it) { // Maintain the volume maps
 		if (involumes.contains(old_name)) {
 			involumes.insert(new_name, involumes[old_name]);
+			involumes_new.insert( new_name, involumes_new[ old_name ] );
 			involumes.remove(old_name);
+			involumes_new.remove(old_name);
 		}
 		if (volumes.contains(old_name)) {
 			volumes.insert(new_name, volumes[old_name]);
+			volumes_new.insert( new_name, volumes[ old_name ] );
 			volumes.remove(old_name);
+			volumes_new.remove( old_name );
 		}
 	}
 	
@@ -121,14 +125,18 @@ bool JackBackend::renameOutput(const QString old_name, const QString new_name) {
 	if (done_it) {
 		if (outvolumes.contains(old_name)) {
 			outvolumes.insert(new_name, outvolumes[old_name]);
+			outvolumes_new.insert( new_name, outvolumes[ old_name ] );
 			outvolumes.remove(old_name);
+			outvolumes_new.remove( old_name );
 		}
 		QStringListIterator ipi(in_ports_list);
 		while(ipi.hasNext()) {
 			QString input(ipi.next());
 			if (volumes[input].contains(old_name)) {
 				volumes[input].insert(new_name, volumes[input][old_name]);
+				volumes_new[ input ].insert( new_name, volumes[ input ][ old_name ] );
 				volumes[input].remove(old_name);
+				volumes_new[ input ].remove( old_name );
 			}
 		}
 	}
@@ -165,8 +173,8 @@ bool JackBackend::rename(portsmap &map, QStringList &lst, const QString old_name
 }
 
 
-void JackBackend::setVolume( QString channel, QString output, float volume ) {
-	//qDebug() << "JackBackend::setVolume( " << channel << ", " << output << ", " << volume << " )";
+void JackBackend::updateVolume( QString channel, QString output, float volume ) {
+	//qDebug() << "JackBackend::updateVolume( " << channel << ", " << output << ", " << volume << " )";
 	if ( channel == output ) {
 		if ( involumes.contains( channel ) )
 			setInVolume( channel, volume );
@@ -174,6 +182,17 @@ void JackBackend::setVolume( QString channel, QString output, float volume ) {
 			setOutVolume( channel, volume );
 	} else
 		volumes[ channel ][ output ] = volume;
+}
+
+void JackBackend::setVolume(QString channel, QString output, float volume) {
+	//qDebug() << "JackBackend::setVolume( " << channel << ", " << output << ", " << volume << " )";
+	if ( channel == output ) {
+		if ( involumes_new.contains( channel ) )
+			setInVolumeNew( channel, volume );
+		else
+			setOutVolumeNew( channel, volume );
+	} else
+		volumes_new[ channel ][ output ] = volume;
 }
 
 float JackBackend::getVolume( QString channel, QString output ) {
@@ -193,10 +212,38 @@ float JackBackend::getVolume( QString channel, QString output ) {
 	return 0;
 }
 
+float JackBackend::getVolumeNew(QString channel, QString output) {
+	//qDebug() << "JackBackend::getVolumeNew( " << channel << ", " << output << " ) = " << volumes[ channel ][ output ];
+	if ( channel == output ) {
+		if ( outvolumes_new.contains( channel ) )
+			return getOutVolumeNew( channel );
+		if ( involumes_new.contains( channel ) )
+			return getInVolumeNew( channel );
+	} else {
+		//if ( !volumes.contains( channel ) )
+		//	volumes.insert( channel, QMap<QString,float> );
+		if ( !volumes_new[ channel ].contains( output ) ) {
+			if ( volumes[ channel ].contains( output ) ) {
+				volumes_new[ channel ].insert( output, volumes[ channel ][ output ]);
+			} else {
+				volumes_new[ channel ].insert( output, 0 );
+			}
+		}
+		return volumes_new[ channel ][ output ];
+	}
+	return 0;
+}
+
 void JackBackend::setOutVolume( QString ch, float n ) {
 	//qDebug() << "JackBackend::setOutVolume(QString " << ch << ", float " << n << " )";
 	outvolumes[ ch ] = n;
 }
+
+void JackBackend::setOutVolumeNew( QString ch, float n ) {
+	//qDebug() << "JackBackend::setOutVolumeNew(QString " << ch << ", float " << n << " )";
+	outvolumes_new[ ch ] = n;
+}
+
 float JackBackend::getOutVolume( QString ch ) {
 	//qDebug() << "JackBackend::getOutVolume(QString " << ch << " )";
 	//outvolumes.insert( ch, 1 );
@@ -204,16 +251,43 @@ float JackBackend::getOutVolume( QString ch ) {
 		outvolumes.insert( ch, 1 );
 	return outvolumes[ ch ];
 }
+
+float JackBackend::getOutVolumeNew( QString ch ) {
+	//qDebug() << "JackBackend::getOutVolumeNew(QString " << ch << " )";
+	if ( !outvolumes_new.contains( ch ) )
+		outvolumes_new.insert( ch, 1 );
+	return outvolumes_new[ ch ];
+}
+
 void JackBackend::setInVolume( QString ch, float n ) {
 	//qDebug() << "JackBackend::setInVolume(QString " << ch << ", float " << n << " )";
 	involumes[ ch ] = n;
 }
+
+void JackBackend::setInVolumeNew(QString ch , float n) {
+	//qDebug() << "JackBackend::setInVolumeNew(QString " << ch << ", float " << n << " )";
+	involumes_new[ ch ] = n;
+}
+
 float JackBackend::getInVolume( QString ch ) {
 	//qDebug() << "JackBackend::getInVolume(QString " << ch << " )";
 	//involumes.insert( ch, 1 );
 	if ( !involumes.contains( ch ) )
 		involumes.insert( ch, 1 );
 	return involumes[ ch ];
+}
+
+float JackBackend::getInVolumeNew(QString ch) {
+	//qDebug() << "JackBackend::getInVolumeNew(QString " << ch << " )";
+	//involumes.insert( ch, 1 );
+	if ( !involumes_new.contains( ch ) ) {
+		if ( involumes.contains( ch ) ) {
+			involumes_new.insert( ch, involumes[ ch ] );
+		} else {
+			involumes_new.insert( ch, 1 );
+		}
+	}
+	return involumes_new[ ch ];
 }
 
 void JackBackend::send_signal(const ::jack_midi_data_t b1,
@@ -253,40 +327,74 @@ int JackMix::process( jack_nframes_t nframes, void* arg ) {
 	}
 	/// Adjust inlevels.
 	for ( in_it = backend->in_ports.begin(); in_it != backend->in_ports.end(); ++in_it ) {
-                QString key {in_it.key()};
-		jack_default_audio_sample_t* tmp = ins[key];
-		float volume = backend->getInVolume(key);
-                float max {0};
-		for ( jack_nframes_t n=0; n<nframes; n++ ) {
-                        tmp[ n ] *= volume;
-                        max = qMax(max, static_cast<float>(tmp[n]));
-                }
-                backend->newInputLevel(key, max);
+		QString key {in_it.key()};
+		jack_default_audio_sample_t* tmp = ins[ key ];
+		float volume = backend->getInVolume( key );
+		float volume_new = backend->getInVolumeNew( key );
+		float max {0};
+		if ( !qFuzzyCompare(volume_new, volume)) {
+			for ( jack_nframes_t n=0; n<nframes; n++ ) {
+				tmp[ n ] *=	volume + n * ( volume_new - volume ) / nframes;
+				max = qMax(max, tmp[n]);
+			}
+		} else {
+			for ( jack_nframes_t n=0; n<nframes; n++) {
+				tmp[ n ] *= volume_new;
+				max = qMax(max, tmp[n]);
+			}
+		}
+		backend->newInputLevel( key, max );
+		if ( volume_new != volume ) {
+			backend->setInVolume( key, volume_new );
+		}
 	}
+		 
 	/// The actual mixing.
 	for ( in_it = backend->in_ports.begin(); in_it != backend->in_ports.end(); ++in_it ) {
 		jack_default_audio_sample_t* tmpin = ins[ in_it.key() ];
 		for ( out_it = backend->out_ports.begin(); out_it != backend->out_ports.end(); ++out_it ) {
 			jack_default_audio_sample_t* tmpout = outs[ out_it.key() ];
-			float tmpvolume = backend->getVolume( in_it.key(), out_it.key() );
-			for ( jack_nframes_t n=0; n<nframes; n++ ) {
-				tmpout[ n ] += tmpin[ n ] * tmpvolume;
+			float volume = backend->getVolume( in_it.key(), out_it.key() );
+			float volume_new = backend->getVolumeNew( in_it.key(), out_it.key() );
+			if (!qFuzzyCompare(volume_new, volume)) {
+				for ( jack_nframes_t n=0; n<nframes; ++n ) {
+					tmpout[ n ] += tmpin[ n ] * ( volume + n * (volume_new - volume) / nframes );
+				}
+			} else {
+				for ( jack_nframes_t n=0; n<nframes; n++ ) {
+					tmpout[ n ] += tmpin[ n ] * volume_new;
+				}
+			}
+			if ( volume != volume_new) {
+				backend->updateVolume( in_it.key(), out_it.key(), volume_new);
 			}
 		}
 	}
 	/// Adjust outlevels.
 	for ( out_it = backend->out_ports.begin(); out_it != backend->out_ports.end(); ++out_it ) {
-                QString key {out_it.key()};
+		QString key {out_it.key()};
 		jack_default_audio_sample_t* tmp = outs[ key ];
 		float volume = backend->getOutVolume( key );
-                float max {0};
-		for ( jack_nframes_t n=0; n<nframes; n++ ) {
-                        tmp[ n ] *= volume;
-                        max = qMax(max, static_cast<float>(tmp[n]));
-                }
-                backend->newOutputLevel(key, max);
+		float volume_new = backend->getOutVolumeNew( key );
+		float max {0};
+		if ( !qFuzzyCompare(volume_new, volume)) {
+			qDebug() << "BIG CHANGE: " << volume_new << " != " << volume;
+			for ( jack_nframes_t n=0; n<nframes; n++ ) {
+				tmp[ n ] *=	volume + n * ( volume_new - volume ) / nframes;
+				max = qMax( max, static_cast<float>( tmp[ n ] ) );
+			}
+		} else {
+			for ( jack_nframes_t n=0; n<nframes; n++ ) {
+				tmp[ n ] *= volume;
+				max = qMax( max, static_cast<float>( tmp[ n ] ) );
+			}
+		}
+		backend->newOutputLevel(key, max);
+		if ( volume_new != volume ) {
+			backend->setOutVolume( key, volume_new );
+		}
 	}
-	
+
 	// Send any information about channel levels
 	backend->report();
         

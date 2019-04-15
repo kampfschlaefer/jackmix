@@ -92,7 +92,7 @@ Mono2StereoElement::Mono2StereoElement( QStringList inchannel, QStringList outch
 	QVBoxLayout* _layout = new QVBoxLayout( this );
 	_layout->setMargin( 0 );
 	_layout->setSpacing( 0 );
-
+  
 	menu()->addAction( "Select", this, SLOT( slot_simple_select() ) );
 	menu()->addAction( "Replace", this, SLOT( slot_simple_replace() ) );
         menu()->addAction( "Explode", this, SLOT( slot_simple_explode() ) );
