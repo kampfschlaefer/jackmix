@@ -75,12 +75,12 @@ public:
 	
 	/// sets the volume of channel,output
 	void setVolume( QString,QString,float );
-	void setVolumeNew( QString,QString,float );
 	/// returns the volume of channel,output
 	float getVolume( QString,QString );
 	float getVolumeNew ( QString,QString );
 	
 private:
+	void updateVolume( QString,QString,float );
 	void setOutVolume( QString, float );
 	void setOutVolumeNew( QString, float );
 	float getOutVolume( QString );

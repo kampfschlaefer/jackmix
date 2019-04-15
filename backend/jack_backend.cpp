@@ -173,8 +173,8 @@ bool JackBackend::rename(portsmap &map, QStringList &lst, const QString old_name
 }
 
 
-void JackBackend::setVolume( QString channel, QString output, float volume ) {
-	//qDebug() << "JackBackend::setVolume( " << channel << ", " << output << ", " << volume << " )";
+void JackBackend::updateVolume( QString channel, QString output, float volume ) {
+	//qDebug() << "JackBackend::updateVolume( " << channel << ", " << output << ", " << volume << " )";
 	if ( channel == output ) {
 		if ( involumes.contains( channel ) )
 			setInVolume( channel, volume );
@@ -184,8 +184,8 @@ void JackBackend::setVolume( QString channel, QString output, float volume ) {
 		volumes[ channel ][ output ] = volume;
 }
 
-void JackBackend::setVolumeNew(QString channel, QString output, float volume) {
-	//qDebug() << "JackBackend::setVolumeNew( " << channel << ", " << output << ", " << volume << " )";
+void JackBackend::setVolume(QString channel, QString output, float volume) {
+	//qDebug() << "JackBackend::setVolume( " << channel << ", " << output << ", " << volume << " )";
 	if ( channel == output ) {
 		if ( involumes_new.contains( channel ) )
 			setInVolumeNew( channel, volume );
@@ -300,7 +300,6 @@ int JackMix::process( jack_nframes_t nframes, void* arg ) {
 	//qDebug() << "JackMix::process( jack_nframes_t " << nframes << ", void* )";
 	JackMix::JackBackend* backend = static_cast<JackMix::JackBackend*>( arg );
 
-	float threshold = 0.0000001;
 	// Deal with MIDI events
 	void* midi_buffer { ::jack_port_get_buffer(backend->midi_port, nframes) };
 	::jack_midi_event_t event;
@@ -333,15 +332,15 @@ int JackMix::process( jack_nframes_t nframes, void* arg ) {
 		float volume = backend->getInVolume( key );
 		float volume_new = backend->getInVolumeNew( key );
 		float max {0};
-		if ( qFabs( ( volume_new - volume ) / volume ) > threshold) {
+		if ( !qFuzzyCompare(volume_new, volume)) {
 			for ( jack_nframes_t n=0; n<nframes; n++ ) {
 				tmp[ n ] *=	volume + n * ( volume_new - volume ) / nframes;
-				max = qMax( max, static_cast<float>( tmp[ n ] ) );
+				max = qMax(max, tmp[n]);
 			}
 		} else {
 			for ( jack_nframes_t n=0; n<nframes; n++) {
 				tmp[ n ] *= volume_new;
-				max = qMax( max, static_cast<float>( tmp[ n ] ) );
+				max = qMax(max, tmp[n]);
 			}
 		}
 		backend->newInputLevel( key, max );
@@ -357,7 +356,7 @@ int JackMix::process( jack_nframes_t nframes, void* arg ) {
 			jack_default_audio_sample_t* tmpout = outs[ out_it.key() ];
 			float volume = backend->getVolume( in_it.key(), out_it.key() );
 			float volume_new = backend->getVolumeNew( in_it.key(), out_it.key() );
-			if ( qFabs( ( volume_new - volume ) / volume ) > threshold ) {
+			if (!qFuzzyCompare(volume_new, volume)) {
 				for ( jack_nframes_t n=0; n<nframes; ++n ) {
 					tmpout[ n ] += tmpin[ n ] * ( volume + n * (volume_new - volume) / nframes );
 				}
@@ -367,7 +366,7 @@ int JackMix::process( jack_nframes_t nframes, void* arg ) {
 				}
 			}
 			if ( volume != volume_new) {
-				backend->setVolume( in_it.key(), out_it.key(), volume_new);
+				backend->updateVolume( in_it.key(), out_it.key(), volume_new);
 			}
 		}
 	}
@@ -378,8 +377,8 @@ int JackMix::process( jack_nframes_t nframes, void* arg ) {
 		float volume = backend->getOutVolume( key );
 		float volume_new = backend->getOutVolumeNew( key );
 		float max {0};
-		if ( qFabs( ( volume_new - volume ) / volume ) > threshold ) {
-			qDebug() << "BIG CHANGE";
+		if ( !qFuzzyCompare(volume_new, volume)) {
+			qDebug() << "BIG CHANGE: " << volume_new << " != " << volume;
 			for ( jack_nframes_t n=0; n<nframes; n++ ) {
 				tmp[ n ] *=	volume + n * ( volume_new - volume ) / nframes;
 				max = qMax( max, static_cast<float>( tmp[ n ] ) );

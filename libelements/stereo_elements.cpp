@@ -154,8 +154,8 @@ void Mono2StereoElement::calculateVolumes() {
 		left = dbtoamp( _volume_value )*( 1-_balance_value );
 	if ( _balance_value < 0 )
 		right = dbtoamp( _volume_value )*( 1+_balance_value );
-	backend()->setVolumeNew( _in[0], _out[0], left );
-	backend()->setVolumeNew( _in[0], _out[1], right );
+	backend()->setVolume( _in[0], _out[0], left );
+	backend()->setVolume( _in[0], _out[1], right );
 }
 
 
@@ -167,8 +167,8 @@ Stereo2StereoElement::Stereo2StereoElement( QStringList inchannels, QStringList 
 	, _balance_value( 0 )
 	, _volume_value( 0 )
 {
-	backend()->setVolumeNew( _in[0], _out[1], 0 );
-	backend()->setVolumeNew( _in[1], _out[0], 0 );
+	backend()->setVolume( _in[0], _out[1], 0 );
+	backend()->setVolume( _in[1], _out[0], 0 );
 	double left = backend()->getVolume( _in[0], _out[0] );
 	double right = backend()->getVolume( _in[1], _out[1] );
 	if ( left>right )
@@ -253,6 +253,6 @@ void Stereo2StereoElement::calculateVolumes() {
 		left = dbtoamp( _volume_value )*( 1-_balance_value );
 	if ( _balance_value < 0 )
 		right = dbtoamp( _volume_value )*( 1+_balance_value );
-	backend()->setVolumeNew( _in[0], _out[0], left );
-	backend()->setVolumeNew( _in[1], _out[1], right );
+	backend()->setVolume( _in[0], _out[0], left );
+	backend()->setVolume( _in[1], _out[1], right );
 }
