@@ -82,9 +82,9 @@ public:
 private:
 	void updateVolume( QString,QString,float );
 	void setOutVolume( QString, float );
-	void setOutVolumeNew( QString, float );
-	float getOutVolume( QString );
-	float getOutVolumeNew( QString );
+	//void setOutVolumeNew( QString, float );
+	FaderState& getOutVolume( QString );
+	//float getOutVolumeNew( QString );
 	void setInVolume( QString, float );
 	void setInVolumeNew( QString,float );
 	float getInVolume( QString );
@@ -111,8 +111,8 @@ private:
 	/// First dimension is input-channels, second is output-channels
 	QMap<QString,QMap<QString,float> > volumes;
 	QMap<QString,QMap<QString,float> > volumes_new;
-	QHash<QString,float> outvolumes;
-	QHash<QString,float> outvolumes_new;
+	QHash<QString,FaderState> outvolumes;
+	//QHash<QString,float> outvolumes_new;
 	QHash<QString,float> involumes;
 	QHash<QString,float> involumes_new;
 	

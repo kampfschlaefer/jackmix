@@ -25,6 +25,8 @@
 #include <QtCore/QTime>
 #include <QObject>
 
+#include <QtCore/QDebug>
+
 #include "guiserver_interface.h"
 
 class QDomElement;
@@ -154,6 +156,68 @@ Q_OBJECT
 		void testSlot(JackMix::BackendInterface::levels_t);
 	protected:
 		GuiServer_Interface* gui;
+		/**
+		 * @brief State of a fader (including interpolation)
+		 * 
+		 * Faders implemented in the backend need to interpolate the
+		 * volume setting because otherwise sudden changes produce
+		 * clicks in the output. Presently, the backend is expected
+		 * (but not required) to change to a new volume setting from
+		 * the previous one over the duration of one audio buffer.
+		 */
+		struct FaderState {
+			/**
+			 * 
+			 */
+			float target; /**< The target setting of the fader */
+			float current; /**< The current setting of the fader,
+				            chanding troughout interpolation */
+			
+			FaderState(float initial=0)
+			: target {initial}, current{initial}
+			{ }
+		};
+		
+		/**
+		 * @brief Perform volume scaling on a buffer of a given type.
+		 * 
+		 * The volume interpolation is controlled by the parameter
+		 * fs, a FaderState reference. The current field of fs is
+		 * updated accordingly.
+		 * 
+		 * This assumes samples are stored in a buffer which can be
+		 * subscripted via [] and that they are all multiplied
+		 * by a constant which changes continuously througout
+		 * the length of the buffer. If that isn't true for the
+		 * backend implementing this interface, it will have
+		 * to provide its own code. You can't have virtual
+		 * templates.
+		 * 
+		 * @param buf     Pointer to buffer of samples
+		 * @param nframes Number of frames (= samples) in the buffer
+		 * @param fs      A FaderState to control the fading
+		 * @returns       Maximum sample value in the buffer
+		 */
+		template <typename SampT>
+		inline SampT interp_fader(SampT* buf, size_t nframes, FaderState& fs) {
+			SampT max {0};
+			
+			if ( !qFuzzyCompare(fs.target, fs.current)) {
+				qDebug() << "FADER CHANGE: " << fs.current << " -> " << fs.target;
+				for (size_t n {0}; n<nframes; n++) {
+					buf[n] *= fs.current + n*(fs.target - fs.current)/nframes;
+					max = qMax(max, buf[n]);
+				}
+			} else {
+				for ( size_t n {0}; n<nframes; n++ ) {
+					buf[n] *= fs.current;
+					max = qMax(max, buf[n]);
+				}
+			}
+			
+			fs.current = fs.target;
+			return max;
+		}
 
 	};
 };
