@@ -169,9 +169,9 @@ Q_OBJECT
 			/**
 			 * 
 			 */
-			float target; /**< The target setting of the fader */
+			float target;  /**< The target setting of the fader */
 			float current; /**< The current setting of the fader,
-				            chanding troughout interpolation */
+				            changing troughout interpolation */
 			
 			FaderState(float initial=0)
 			: target {initial}, current{initial}

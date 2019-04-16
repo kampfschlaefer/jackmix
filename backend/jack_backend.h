@@ -81,15 +81,14 @@ public:
 	
 private:
 	void updateVolume( QString,QString,float );
+	
 	void setOutVolume( QString, float );
-	//void setOutVolumeNew( QString, float );
 	FaderState& getOutVolume( QString );
-	//float getOutVolumeNew( QString );
 	void setInVolume( QString, float );
-	void setInVolumeNew( QString,float );
-	float getInVolume( QString );
-	float getInVolumeNew( QString );
+	FaderState& getInVolume( QString );
+	
 	bool rename(portsmap &map, QStringList &lst, const QString old_name, const char *new_name);
+	
 public:
 	/// returns a QStringList with the names of the out-channels
 	const QStringList &outchannels() const { return out_ports_list; };
@@ -112,9 +111,7 @@ private:
 	QMap<QString,QMap<QString,float> > volumes;
 	QMap<QString,QMap<QString,float> > volumes_new;
 	QHash<QString,FaderState> outvolumes;
-	//QHash<QString,float> outvolumes_new;
-	QHash<QString,float> involumes;
-	QHash<QString,float> involumes_new;
+	QHash<QString,FaderState> involumes;
 	
 	/// Process the second and third bytes of the MIDI CC message
 	/// (the JACK process() routine can't do this because it's not a QObject
