@@ -73,15 +73,10 @@ public:
 	bool renameOutput(const QString old_name, const QString new_name);
 	bool renameOutput(const QString old_name, const char *new_name);
 	
-	/// sets the volume of channel,output
-	void setVolume( QString,QString,float );
-	/// returns the volume of channel,output
-	float getVolume( QString,QString );
-	float getVolumeNew ( QString,QString );
-	
 private:
 	void updateVolume( QString,QString,float );
 	
+	FaderState& getMatrixVolume(QString, QString);
 	void setOutVolume( QString, float );
 	FaderState& getOutVolume( QString );
 	void setInVolume( QString, float );
@@ -90,6 +85,13 @@ private:
 	bool rename(portsmap &map, QStringList &lst, const QString old_name, const char *new_name);
 	
 public:
+	/// sets the volume of channel,output
+	void setVolume( QString,QString,float );
+	/// returns the volume of channel,output
+	float getVolume(QString in, QString out) {
+		return getMatrixVolume(in, out).target;
+	}
+	
 	/// returns a QStringList with the names of the out-channels
 	const QStringList &outchannels() const { return out_ports_list; };
 	/// returns a QStringList with the names of the in-channels
@@ -108,8 +110,7 @@ private:
 	
 	::jack_client_t *client;
 	/// First dimension is input-channels, second is output-channels
-	QMap<QString,QMap<QString,float> > volumes;
-	QMap<QString,QMap<QString,float> > volumes_new;
+	QMap<QString,QMap<QString,FaderState> > volumes;
 	QHash<QString,FaderState> outvolumes;
 	QHash<QString,FaderState> involumes;
 	

@@ -185,6 +185,16 @@ Q_OBJECT
 		 * fs, a FaderState reference. The current field of fs is
 		 * updated accordingly.
 		 * 
+		 * If the interpolation is performed in-place, the maximum
+		 * sample value is returned.
+		 * 
+		 * If the output buffer is different from the input buffer,
+		 * post-faded sample values are added to the data in the
+		 * output buffer and 0 is returned. That's because input
+		 * and output faders work in-place, whereas matrix faders
+		 * accumulate input data into the output buffer, and the
+		 * max reporting is meaningless anyway.
+		 * 
 		 * This assumes samples are stored in a buffer which can be
 		 * subscripted via [] and that they are all multiplied
 		 * by a constant which changes continuously througout
@@ -193,26 +203,41 @@ Q_OBJECT
 		 * to provide its own code. You can't have virtual
 		 * templates.
 		 * 
-		 * @param buf     Pointer to buffer of samples
+		 * @param outbuf  Where to store result samples
+		 * @param inbuf   Whence to read input samples
 		 * @param nframes Number of frames (= samples) in the buffer
 		 * @param fs      A FaderState to control the fading
 		 * @returns       Maximum sample value in the buffer
 		 */
 		template <typename SampT>
-		inline SampT interp_fader(SampT* buf, size_t nframes, FaderState& fs) {
+		inline SampT interp_fader(SampT* outbuf, const SampT* inbuf, const size_t nframes, FaderState& fs) {
 			SampT max {0};
+			bool inplace = (outbuf==inbuf);
 			
 			if ( !qFuzzyCompare(fs.target, fs.current)) {
-				qDebug() << "FADER CHANGE: " << fs.current << " -> " << fs.target;
-				for (size_t n {0}; n<nframes; n++) {
-					buf[n] *= fs.current + n*(fs.target - fs.current)/nframes;
-					max = qMax(max, buf[n]);
-				}
+				qDebug() << "FADER CHANGE: " << fs.current << " -> " << fs.target << (inplace ? " (inplace)" : "");
+				if (inplace)
+					for (size_t n {0}; n < nframes; n++) {
+						outbuf[n] *= fs.current + n*(fs.target - fs.current)/nframes;
+						max = qMax(max, inbuf[n]);
+					}
+				else
+					for (size_t n {0}; n < nframes; n++) {
+						outbuf[n] += inbuf[n]*(fs.current + n*(fs.target - fs.current)/nframes);
+						//max = qMax(max, outbuf[n]);
+					}
 			} else {
-				for ( size_t n {0}; n<nframes; n++ ) {
-					buf[n] *= fs.current;
-					max = qMax(max, buf[n]);
-				}
+				if (inplace)
+					for ( size_t n {0}; n < nframes; n++ ) {
+						outbuf[n] *= fs.current;
+						max = qMax(max, inbuf[n]);
+					}
+				else
+					for ( size_t n {0}; n < nframes; n++ ) {
+						outbuf[n] += inbuf[n]*fs.target;
+						//max = qMax(max, outbuf[n]);
+					}
+
 			}
 			
 			fs.current = fs.target;
