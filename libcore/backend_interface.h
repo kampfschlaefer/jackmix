@@ -29,6 +29,8 @@
 
 #include "guiserver_interface.h"
 
+#define NUM_INTERPOLATION_STEPS 1024
+
 class QDomElement;
 class QDomDocument;
 
@@ -172,9 +174,11 @@ Q_OBJECT
 			float target;  /**< The target setting of the fader */
 			float current; /**< The current setting of the fader,
 				            changing troughout interpolation */
-			
-			FaderState(float initial=0)
-			: target {initial}, current{initial}
+			unsigned int num_steps;
+			unsigned int cur_step;
+			FaderState(float initial=0, unsigned int _num_steps=NUM_INTERPOLATION_STEPS)
+				: target {initial}, current{initial}, num_steps{_num_steps},
+				  cur_step {0}
 			{ }
 		};
 		
@@ -202,21 +206,20 @@ Q_OBJECT
 		inline SampT interp_fader(SampT* buf, const size_t nframes, FaderState& fs) {
 			SampT max {0};
 			
-			if ( !qFuzzyCompare(fs.target, fs.current)) {
-				qDebug() << "FADER: " << fs.current << " -> " << fs.target << " (inplace)";
-
-				for (size_t n {0}; n < nframes; n++) {
-					buf[n] *= fs.current + n*(fs.target - fs.current)/nframes;
+			for (size_t n {0}; n < nframes; n++) {
+				if ( !qFuzzyCompare(fs.target, fs.current)) {
+					buf[n] *= fs.current + fs.cur_step*(fs.target - fs.current)/fs.num_steps;
 					max = qMax(max, buf[n]);
-				}
-			} else {
-				for ( size_t n {0}; n < nframes; n++ ) {
+					fs.cur_step++;
+					if (fs.cur_step == fs.num_steps) {
+						fs.current = fs.target;
+						fs.cur_step = 0;
+					}
+				} else {
 					buf[n] *= fs.current;
 					max = qMax(max, buf[n]);
 				}
 			}
-			
-			fs.current = fs.target;
 			return max;
 		}
 		
@@ -245,19 +248,19 @@ Q_OBJECT
 		inline void interp_fader(SampT* outbuf, const SampT* inbuf,
 					 const size_t nframes, FaderState& fs) {
 			
-			if ( !qFuzzyCompare(fs.target, fs.current)) {
-				qDebug() << "FADER CHANGE: " << fs.current << " -> " << fs.target;
-				for (size_t n {0}; n < nframes; n++)
-					outbuf[n] += inbuf[n]*(fs.current + n*(fs.target - fs.current)/nframes);
-			} else {
-				for ( size_t n {0}; n < nframes; n++ )
+			for (size_t n {0}; n < nframes; n++) {
+				if ( !qFuzzyCompare(fs.target, fs.current)) {
+					outbuf[n] += inbuf[n]*(fs.current + fs.cur_step*(fs.target - fs.current)/fs.num_steps);
+					fs.cur_step++;
+					if (fs.cur_step == fs.num_steps) {
+						fs.current = fs.target;
+						fs.cur_step = 0;
+					}
+				} else {
 					outbuf[n] += inbuf[n]*fs.target;
+				}
 			}
-			
-			fs.current = fs.target;
 		}
-
-
 	};
 };
 
