@@ -178,7 +178,7 @@ void JackBackend::setVolume(QString channel, QString output, float volume) {
 
 JackBackend::FaderState& JackBackend::getMatrixVolume( QString channel, QString output ) {
 	//qDebug() << "JackBackend::getVolume(" << channel << ", " << output << ") = " << volumes[channel][output].current;
-	static JackBackend::FaderState invalid(-1);
+	static JackBackend::FaderState invalid(-1); // no likee - somebody might change it. FIXME
 	
 	if ( channel == output ) {
 		if ( outvolumes.contains( channel ) )
@@ -187,7 +187,7 @@ JackBackend::FaderState& JackBackend::getMatrixVolume( QString channel, QString 
 			return getInVolume(channel);
 	} else {
 		if (!volumes[channel].contains(output))
-			volumes[channel].insert(output, 0);
+			volumes[channel].insert(output, FaderState(0));
 		return volumes[channel][output];
 	}
 	
