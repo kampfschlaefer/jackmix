@@ -168,18 +168,30 @@ Q_OBJECT
 		 * the previous one over the duration of one audio buffer.
 		 */
 		struct FaderState {
-			/**
-			 * 
-			 */
+
 			float target;  /**< The target setting of the fader */
 			float current; /**< The current setting of the fader,
 				            changing troughout interpolation */
 			unsigned int num_steps;
 			unsigned int cur_step;
 			FaderState(float initial=0, unsigned int _num_steps=NUM_INTERPOLATION_STEPS)
-				: target {initial}, current{initial}, num_steps{_num_steps},
-				  cur_step {0}
+				: target {initial}, current{initial}
+				, num_steps{_num_steps}, cur_step {0}
 			{ }
+
+			/**
+			 * Assigning a target value. Interpolation will restart
+			 * from the current value towards the new target.
+			 */
+			FaderState& operator=(float volume) {
+				if (!qFuzzyCompare(current, target))
+					// Time to change current in case we're not finished interpolating
+					current += cur_step*(target - current)/num_steps;
+				target = volume;
+				cur_step = 0;
+				
+				return *this;
+			}
 		};
 		
 		/**

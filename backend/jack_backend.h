@@ -74,8 +74,6 @@ public:
 	bool renameOutput(const QString old_name, const char *new_name);
 	
 private:
-	void updateVolume( QString,QString,float );
-	
 	FaderState& getMatrixVolume(QString, QString);
 	void setOutVolume( QString, float );
 	FaderState& getOutVolume( QString );

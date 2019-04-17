@@ -165,17 +165,6 @@ bool JackBackend::rename(portsmap &map, QStringList &lst, const QString old_name
 }
 
 
-void JackBackend::updateVolume( QString channel, QString output, float volume ) {
-	//qDebug() << "JackBackend::updateVolume( " << channel << ", " << output << ", " << volume << " )";
-	if ( channel == output ) {
-		if ( involumes.contains( channel ) )
-			setInVolume( channel, volume );
-		else
-			setOutVolume( channel, volume );
-	} else
-		volumes[channel][output].target = volume;
-}
-
 void JackBackend::setVolume(QString channel, QString output, float volume) {
 	//qDebug() << "JackBackend::setVolume( " << channel << ", " << output << ", " << volume << " )";
 	if ( channel == output ) {
@@ -183,15 +172,8 @@ void JackBackend::setVolume(QString channel, QString output, float volume) {
 			setInVolume(channel, volume);
 		else
 			setOutVolume(channel, volume);
-	} else {
-		FaderState *fs = &volumes[channel][output];
-		if (!qFuzzyCompare(fs->current, fs->target)) {
-			fs->current = fs->current + fs->cur_step *
-					(fs->target - fs->current) / fs->num_steps;
-		}
-		volumes[channel][output].target = volume;
-		volumes[channel][output].cur_step = 0;
-	}
+	} else
+		volumes[channel][output] = volume;
 }
 
 JackBackend::FaderState& JackBackend::getMatrixVolume( QString channel, QString output ) {
@@ -215,13 +197,7 @@ JackBackend::FaderState& JackBackend::getMatrixVolume( QString channel, QString 
 
 void JackBackend::setOutVolume( QString ch, float n ) {
 	//qDebug() << "JackBackend::setOutVolume(QString " << ch << ", float " << n << " )";
-	FaderState *fs = &outvolumes[ch];
-	if (!qFuzzyCompare(fs->current, fs->target)) {
-		fs->current = fs->current + fs->cur_step *
-				(fs->target - fs->current) / fs->num_steps;
-	}
-	outvolumes[ch].target = n;
-	outvolumes[ch].cur_step = 0;
+	outvolumes[ch] = n;
 }
 
 JackBackend::FaderState& JackBackend::getOutVolume( QString ch ) {
@@ -233,13 +209,7 @@ JackBackend::FaderState& JackBackend::getOutVolume( QString ch ) {
 
 void JackBackend::setInVolume( QString ch, float n ) {
 	//qDebug() << "JackBackend::setInVolume(QString " << ch << ", float " << n << " )";
-	FaderState *fs = &involumes[ch];
-	if (!qFuzzyCompare(fs->current, fs->target)) {
-		fs->current = fs->current + fs->cur_step *
-				(fs->target - fs->current) / fs->num_steps;
-	}
-	involumes[ch].target = n;
-	involumes[ch].cur_step = 0;
+	involumes[ch] = n;
 }
 
 JackBackend::FaderState&  JackBackend::getInVolume( QString ch ) {
