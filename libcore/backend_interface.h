@@ -179,21 +179,11 @@ Q_OBJECT
 		};
 		
 		/**
-		 * @brief Perform volume scaling on a buffer of a given type.
+		 * @brief Perform interpolated volume scaling.
 		 * 
 		 * The volume interpolation is controlled by the parameter
 		 * fs, a FaderState reference. The current field of fs is
 		 * updated accordingly.
-		 * 
-		 * If the interpolation is performed in-place, the maximum
-		 * sample value is returned.
-		 * 
-		 * If the output buffer is different from the input buffer,
-		 * post-faded sample values are added to the data in the
-		 * output buffer and 0 is returned. That's because input
-		 * and output faders work in-place, whereas matrix faders
-		 * accumulate input data into the output buffer, and the
-		 * max reporting is meaningless anyway.
 		 * 
 		 * This assumes samples are stored in a buffer which can be
 		 * subscripted via [] and that they are all multiplied
@@ -203,46 +193,70 @@ Q_OBJECT
 		 * to provide its own code. You can't have virtual
 		 * templates.
 		 * 
-		 * @param outbuf  Where to store result samples
-		 * @param inbuf   Whence to read input samples
+		 * @param buf     A pointer to a buffer of samples to process
 		 * @param nframes Number of frames (= samples) in the buffer
 		 * @param fs      A FaderState to control the fading
 		 * @returns       Maximum sample value in the buffer
 		 */
 		template <typename SampT>
-		inline SampT interp_fader(SampT* outbuf, const SampT* inbuf, const size_t nframes, FaderState& fs) {
+		inline SampT interp_fader(SampT* buf, const size_t nframes, FaderState& fs) {
 			SampT max {0};
-			bool inplace = (outbuf==inbuf);
 			
 			if ( !qFuzzyCompare(fs.target, fs.current)) {
-				qDebug() << "FADER CHANGE: " << fs.current << " -> " << fs.target << (inplace ? " (inplace)" : "");
-				if (inplace)
-					for (size_t n {0}; n < nframes; n++) {
-						outbuf[n] *= fs.current + n*(fs.target - fs.current)/nframes;
-						max = qMax(max, inbuf[n]);
-					}
-				else
-					for (size_t n {0}; n < nframes; n++) {
-						outbuf[n] += inbuf[n]*(fs.current + n*(fs.target - fs.current)/nframes);
-						//max = qMax(max, outbuf[n]);
-					}
-			} else {
-				if (inplace)
-					for ( size_t n {0}; n < nframes; n++ ) {
-						outbuf[n] *= fs.current;
-						max = qMax(max, inbuf[n]);
-					}
-				else
-					for ( size_t n {0}; n < nframes; n++ ) {
-						outbuf[n] += inbuf[n]*fs.target;
-						//max = qMax(max, outbuf[n]);
-					}
+				qDebug() << "FADER: " << fs.current << " -> " << fs.target << " (inplace)";
 
+				for (size_t n {0}; n < nframes; n++) {
+					buf[n] *= fs.current + n*(fs.target - fs.current)/nframes;
+					max = qMax(max, buf[n]);
+				}
+			} else {
+				for ( size_t n {0}; n < nframes; n++ ) {
+					buf[n] *= fs.current;
+					max = qMax(max, buf[n]);
+				}
 			}
 			
 			fs.current = fs.target;
 			return max;
 		}
+		
+		/**
+		 * @brief Add samples from one buffer to another with interplolated scaling
+		 * 
+		 * An overload of the in-place version of the template which leaves the
+		 * input buffer unchanged but adds its data into the output buffer with
+		 * interpolated scaling. Unlike the in-place version, the maximum value
+		 * in the target buffer is not returned. This is because it is anticipated
+		 * that the caller will mix a number of input buffers into the output
+		 * by repeatedly calling this function, and since the maximum value is
+		 * meaningless until that process is complete, it is simply a waste of
+		 * computational effort. 
+		 * 
+		 * @see interp_fader(SampT* buf, const size_t nframes, FaderState& fs)
+		 * 
+		 * Similar assumptions about sample ordering and storage are made.
+		 * 
+		 * @param outbuf  Where to store result samples
+		 * @param inbuf   Whence to read input samples
+		 * @param nframes Number of frames (= samples) in the buffer
+		 * @param fs      A FaderState to control the fading
+		 */
+		template <typename SampT>
+		inline void interp_fader(SampT* outbuf, const SampT* inbuf,
+					 const size_t nframes, FaderState& fs) {
+			
+			if ( !qFuzzyCompare(fs.target, fs.current)) {
+				qDebug() << "FADER CHANGE: " << fs.current << " -> " << fs.target;
+				for (size_t n {0}; n < nframes; n++)
+					outbuf[n] += inbuf[n]*(fs.current + n*(fs.target - fs.current)/nframes);
+			} else {
+				for ( size_t n {0}; n < nframes; n++ )
+					outbuf[n] += inbuf[n]*fs.target;
+			}
+			
+			fs.current = fs.target;
+		}
+
 
 	};
 };

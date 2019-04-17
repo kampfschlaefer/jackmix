@@ -272,7 +272,7 @@ int JackMix::process( jack_nframes_t nframes, void* arg ) {
 
 		float max =
 			backend->interp_fader<jack_default_audio_sample_t>(
-				tmp, tmp, nframes, backend->getInVolume(key)
+				tmp, nframes, backend->getInVolume(key)
 			);
 		
 		backend->newInputLevel(key, max);
@@ -296,7 +296,7 @@ int JackMix::process( jack_nframes_t nframes, void* arg ) {
 		
 		float max =
 			backend->interp_fader<jack_default_audio_sample_t>(
-				tmp, tmp, nframes, backend->getOutVolume(key)
+				tmp, nframes, backend->getOutVolume(key)
 			);
 		
 		backend->newOutputLevel(key, max);
