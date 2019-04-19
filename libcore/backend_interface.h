@@ -172,8 +172,9 @@ Q_OBJECT
 			float target;  /**< The target setting of the fader */
 			float current; /**< The current setting of the fader,
 				            changing troughout interpolation */
-			unsigned int num_steps;
-			unsigned int cur_step;
+			unsigned int num_steps; /**< The number of steps required
+			                             to interpolate this fader change */
+			unsigned int cur_step;  /**< Count of steps in this interpolation */
 			FaderState(float initial=0, unsigned int _num_steps=NUM_INTERPOLATION_STEPS)
 				: target {initial}, current{initial}
 				, num_steps{_num_steps}, cur_step {0}
