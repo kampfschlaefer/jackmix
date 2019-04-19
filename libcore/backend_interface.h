@@ -205,9 +205,9 @@ Q_OBJECT
 		template <typename SampT>
 		inline SampT interp_fader(SampT* buf, const size_t nframes, FaderState& fs) {
 			SampT max {0};
-			
-			for (size_t n {0}; n < nframes; n++) {
-				if ( !qFuzzyCompare(fs.target, fs.current)) {
+
+			if ( !qFuzzyCompare(fs.target, fs.current)) {
+				for (size_t n {0}; n < nframes; n++) {
 					buf[n] *= fs.current + fs.cur_step*(fs.target - fs.current)/fs.num_steps;
 					max = qMax(max, buf[n]);
 					fs.cur_step++;
@@ -215,7 +215,9 @@ Q_OBJECT
 						fs.current = fs.target;
 						fs.cur_step = 0;
 					}
-				} else {
+				}
+			} else {
+				for (size_t n {0}; n < nframes; n++) {
 					buf[n] *= fs.current;
 					max = qMax(max, buf[n]);
 				}
@@ -248,15 +250,17 @@ Q_OBJECT
 		inline void interp_fader(SampT* outbuf, const SampT* inbuf,
 					 const size_t nframes, FaderState& fs) {
 			
-			for (size_t n {0}; n < nframes; n++) {
-				if ( !qFuzzyCompare(fs.target, fs.current)) {
+			if ( !qFuzzyCompare(fs.target, fs.current)) {
+				for (size_t n {0}; n < nframes; n++) {
 					outbuf[n] += inbuf[n]*(fs.current + fs.cur_step*(fs.target - fs.current)/fs.num_steps);
 					fs.cur_step++;
 					if (fs.cur_step == fs.num_steps) {
 						fs.current = fs.target;
 						fs.cur_step = 0;
 					}
-				} else {
+				}
+			} else {
+				for (size_t n {0}; n < nframes; n++) {
 					outbuf[n] += inbuf[n]*fs.target;
 				}
 			}
