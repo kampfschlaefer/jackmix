@@ -67,6 +67,11 @@ void BackendInterface::newOutputLevel(QString which, float maxSignal)
         newLevel(stats[1][which], maxSignal);
 }
 
+void BackendInterface::set_interp_len(float sr) {
+	interp_len = 1 + sr*interp_time;
+}
+
+
 void BackendInterface::report_group(int which, levels_t& result)
 {
         QMap<QString, Stats>::const_iterator i = stats[which].constBegin();

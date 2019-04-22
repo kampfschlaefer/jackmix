@@ -29,6 +29,7 @@
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtCore/QTime>
+#include <QException>
 #include <jack/jack.h>
 #include <jack/midiport.h>
 
@@ -117,6 +118,36 @@ private:
 	void send_signal(const ::jack_midi_data_t b1, const ::jack_midi_data_t b2);
 	/// Port to listen on for MIDI signals
 	::jack_port_t *midi_port;
+	
+	/**
+	 * Handle changes in jack server sample rate
+	 * 
+	 * @param rate New sample rate
+	 * @param args Client-supplied args (not used)
+	 * @returns 0 (success)
+	 */
+	::JackSampleRateCallback new_srate(::jack_nframes_t rate, void* args) {
+		set_interp_len(rate);
+		return 0;
+	}
+};
+
+class InvalidMatrixFaderException : public QException {
+public:
+	InvalidMatrixFaderException(QString const& message)
+	: message {message}
+	{ }
+	
+	InvalidMatrixFaderException* clone() const {
+		return new InvalidMatrixFaderException(*this);
+	}
+	
+	void raise() const { throw *this; }
+	
+	QString getMessage() const { return message; }
+
+private:
+	QString message;
 };
 
 };

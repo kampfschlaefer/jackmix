@@ -38,6 +38,7 @@ JackBackend::JackBackend( GuiServer_Interface* g ) : BackendInterface( g ) {
 		::jack_set_process_callback( client, JackMix::process, this );
 		//qDebug() << "JackBackend::JackBackend() activate";
 		::jack_activate( client );
+		set_interp_len(::jack_get_sample_rate(client));
 	}
 	else {
 		qWarning() << "\n No jack-connection! :(\n\n";
@@ -178,7 +179,7 @@ void JackBackend::setVolume(QString channel, QString output, float volume) {
 
 JackBackend::FaderState& JackBackend::getMatrixVolume( QString channel, QString output ) {
 	//qDebug() << "JackBackend::getVolume(" << channel << ", " << output << ") = " << volumes[channel][output].current;
-	static JackBackend::FaderState invalid(-1); // no likee - somebody might change it. FIXME
+	static JackBackend::FaderState invalid(-1,0); // no likee - somebody might change it. FIXME
 	
 	if ( channel == output ) {
 		if ( outvolumes.contains( channel ) )
@@ -187,11 +188,13 @@ JackBackend::FaderState& JackBackend::getMatrixVolume( QString channel, QString 
 			return getInVolume(channel);
 	} else {
 		if (!volumes[channel].contains(output))
-			volumes[channel].insert(output, FaderState(0));
+			volumes[channel].insert(output, FaderState(0, interp_len));
 		return volumes[channel][output];
 	}
 	
 	// Should never get here.
+	throw(InvalidMatrixFaderException(channel + "->" + output));
+	// Consequently, this won't happen...
 	return invalid;
 }
 
@@ -203,7 +206,7 @@ void JackBackend::setOutVolume( QString ch, float n ) {
 JackBackend::FaderState& JackBackend::getOutVolume( QString ch ) {
 	//qDebug() << "JackBackend::getOutVolume(QString " << ch << " )";
 	if ( !outvolumes.contains(ch) )
-		outvolumes.insert(ch, FaderState(1));
+		outvolumes.insert(ch, FaderState(1, interp_len));
 	return outvolumes[ch];
 }
 
@@ -215,7 +218,7 @@ void JackBackend::setInVolume( QString ch, float n ) {
 JackBackend::FaderState&  JackBackend::getInVolume( QString ch ) {
 	//qDebug() << "JackBackend::getInVolume(QString " << ch << " )";
 	if ( !involumes.contains( ch ) )
-		involumes.insert(ch, FaderState(1));
+		involumes.insert(ch, FaderState(1, interp_len));
 	return involumes[ch];
 }
 

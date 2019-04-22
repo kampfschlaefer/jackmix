@@ -158,6 +158,21 @@ Q_OBJECT
 		void testSlot(JackMix::BackendInterface::levels_t);
 	protected:
 		GuiServer_Interface* gui;
+		
+		/** How long a fader change takes to execute (for de-zipping) */
+		constexpr static float interp_time {0.05};
+		/** Fader iterpolation length in samples. It is initialised
+		 *  by the class implementing this interface based on the
+		 *  interp_time and the backend's sample rate, probably by
+		 *  calling the utility function set_interp_len
+		 */
+		unsigned int interp_len;
+		/**
+		 * Set the fader interpolation length in samples
+		 * 
+		 * @param sr Sample rate
+		 */
+		void set_interp_len(float sr);
 		/**
 		 * @brief State of a fader (including interpolation)
 		 * 
@@ -175,10 +190,18 @@ Q_OBJECT
 			unsigned int num_steps; /**< The number of steps required
 			                             to interpolate this fader change */
 			unsigned int cur_step;  /**< Count of steps in this interpolation */
-			FaderState(float initial=0, unsigned int _num_steps=NUM_INTERPOLATION_STEPS)
+			/**
+			 * Construct a FaderState object which interpolates
+			 * over a given number of steps. This number will normally
+			 * be that provided by the backend's interp_len property.
+			 * 
+			 * @param steps Number of steps over which fader changes.
+			 * @param initial Initial value
+			 */
+			FaderState(float initial, unsigned int steps)
 				: target {initial}, current{initial}
-				, num_steps{_num_steps}, cur_step {0}
-			{ }
+				, num_steps{steps}, cur_step{0}
+			{ }		
 
 			/**
 			 * Assigning a target value. Interpolation will restart
@@ -193,6 +216,15 @@ Q_OBJECT
 				
 				return *this;
 			}
+			
+			/**
+			 * Qt types (particuarly qHash, qMap) need a default constructor
+			 * because they don't have copy constructors. See:
+			 *  https://doc.qt.io/qt-5/qobject.html#no-copy-constructor-or-assignment-operator
+			 * So we have to supply one for FaderState so it plays nice with
+			 * them. This should never be called though.
+			 */
+			FaderState() : FaderState(0,1) { }
 		};
 		
 		/**
@@ -217,6 +249,7 @@ Q_OBJECT
 		 */
 		template <typename SampT>
 		inline SampT interp_fader(SampT* buf, const size_t nframes, FaderState& fs) {
+			//qDebug() << "Target " << fs.target;
 			SampT max {0};
 
 			if ( !qFuzzyCompare(fs.target, fs.current)) {
