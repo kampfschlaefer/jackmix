@@ -204,9 +204,11 @@ void JackBackend::setOutVolume( QString ch, float n ) {
 }
 
 JackBackend::FaderState& JackBackend::getOutVolume( QString ch ) {
-	//qDebug() << "JackBackend::getOutVolume(QString " << ch << " )";
 	if ( !outvolumes.contains(ch) )
 		outvolumes.insert(ch, FaderState(1, interp_len));
+	qDebug() << "JackBackend::getOutVolume(QString " << ch
+	         << " ).\n\tnum_steps = " << outvolumes[ch].num_steps
+	         << "; target=" << outvolumes[ch].target;
 	return outvolumes[ch];
 }
 
