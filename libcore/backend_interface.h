@@ -249,19 +249,24 @@ Q_OBJECT
 		 */
 		template <typename SampT>
 		inline SampT interp_fader(SampT* buf, const size_t nframes, FaderState& fs) {
-			//qDebug() << "Target " << fs.target;
 			SampT max {0};
 
 			if ( !qFuzzyCompare(fs.target, fs.current)) {
+				qDebug() << "In/Out fader. Target " << fs.target
+				         << ": " << fs.num_steps << " steps, now " << fs.cur_step ;
+					 
 				for (size_t n {0}; n < nframes; n++) {
 					buf[n] *= fs.current + fs.cur_step*(fs.target - fs.current)/fs.num_steps;
 					max = qMax(max, buf[n]);
-					fs.cur_step++;
-					if (fs.cur_step == fs.num_steps) {
-						fs.current = fs.target;
-						fs.cur_step = 0;
-					}
+					fs.cur_step += (fs.cur_step < fs.num_steps);
 				}
+				
+				if (fs.cur_step == fs.num_steps) {
+					qDebug() << "In/Out fader reached target at step " << fs.cur_step ;
+					fs.current = fs.target;
+					fs.cur_step = 0; // for safety
+				}
+				
 			} else {
 				for (size_t n {0}; n < nframes; n++) {
 					buf[n] *= fs.current;
@@ -297,14 +302,20 @@ Q_OBJECT
 					 const size_t nframes, FaderState& fs) {
 			
 			if ( !qFuzzyCompare(fs.target, fs.current)) {
+				qDebug() << "Matrix fader. Target " << fs.target
+				         << ": " << fs.num_steps << " steps, now " << fs.cur_step ;
+
 				for (size_t n {0}; n < nframes; n++) {
 					outbuf[n] += inbuf[n]*(fs.current + fs.cur_step*(fs.target - fs.current)/fs.num_steps);
-					fs.cur_step++;
-					if (fs.cur_step == fs.num_steps) {
-						fs.current = fs.target;
-						fs.cur_step = 0;
-					}
+					fs.cur_step += (fs.cur_step < fs.num_steps);
 				}
+
+				if (fs.cur_step == fs.num_steps) {
+					qDebug() << "Matrix fader reached target at step " << fs.cur_step ;
+					fs.current = fs.target;
+					fs.cur_step = 0; // for safety
+				}
+				
 			} else {
 				for (size_t n {0}; n < nframes; n++) {
 					outbuf[n] += inbuf[n]*fs.target;
