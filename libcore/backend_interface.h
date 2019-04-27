@@ -160,7 +160,7 @@ Q_OBJECT
 		GuiServer_Interface* gui;
 		
 		/** How long a fader change takes to execute (for de-zipping) */
-		constexpr static float interp_time {0.05};
+		constexpr static float interp_time {5};
 		/** Fader iterpolation length in samples. It is initialised
 		 *  by the class implementing this interface based on the
 		 *  interp_time and the backend's sample rate, probably by
@@ -183,7 +183,6 @@ Q_OBJECT
 		 * the previous one over the duration of one audio buffer.
 		 */
 		struct FaderState {
-
 			float target;  /**< The target setting of the fader */
 			float current; /**< The current setting of the fader,
 				            changing troughout interpolation */
@@ -208,9 +207,14 @@ Q_OBJECT
 			 * from the current value towards the new target.
 			 */
 			FaderState& operator=(float volume) {
-				if (!qFuzzyCompare(current, target))
-					// Time to change current in case we're not finished interpolating
-					current += cur_step*(target - current)/num_steps;
+				if (num_steps > 0) {
+					if (!qFuzzyCompare(current, target)) {
+						// Time to change current in case we're not finished interpolating
+						current += cur_step*(target - current)/num_steps;
+					}
+				} else {
+					current = volume;
+				}
 				target = volume;
 				cur_step = 0;
 				
@@ -222,9 +226,15 @@ Q_OBJECT
 			 * because they don't have copy constructors. See:
 			 *  https://doc.qt.io/qt-5/qobject.html#no-copy-constructor-or-assignment-operator
 			 * So we have to supply one for FaderState so it plays nice with
-			 * them. This should never be called though.
+			 * them. This might get called very early in the program, e.g. if the
+			 * mixer layout is being read from the file and the backend isn't available
+			 * to set interpolation parameters. In that case, the interpolation functions
+			 * do their best but interpolation is disabled.
+			 * 
+			 * Backend implementations of the get*Volume methods should check whether
+			 * num_steps is zero, and if so, take appropriate action to update the FaderState.
 			 */
-			FaderState() : FaderState(0,1) { }
+			FaderState() : FaderState(0, 0) { } //qDebug() << "Called default FaderState constructor"; }
 		};
 		
 		/**
@@ -233,6 +243,8 @@ Q_OBJECT
 		 * The volume interpolation is controlled by the parameter
 		 * fs, a FaderState reference. The current field of fs is
 		 * updated accordingly.
+		 * 
+		 * If fs.num_steps == 0, no interpolation takes place.
 		 * 
 		 * This assumes samples are stored in a buffer which can be
 		 * subscripted via [] and that they are all multiplied
@@ -251,7 +263,7 @@ Q_OBJECT
 		inline SampT interp_fader(SampT* buf, const size_t nframes, FaderState& fs) {
 			SampT max {0};
 
-			if ( !qFuzzyCompare(fs.target, fs.current)) {
+			if ( fs.num_steps > 0 && !qFuzzyCompare(fs.target, fs.current)) {
 				qDebug() << "In/Out fader. Target " << fs.target
 				         << ": " << fs.num_steps << " steps, now " << fs.cur_step ;
 					 
@@ -268,6 +280,7 @@ Q_OBJECT
 				}
 				
 			} else {
+				//qDebug() << "No interp. current = " << fs.current ;
 				for (size_t n {0}; n < nframes; n++) {
 					buf[n] *= fs.current;
 					max = qMax(max, buf[n]);
@@ -301,9 +314,9 @@ Q_OBJECT
 		inline void interp_fader(SampT* outbuf, const SampT* inbuf,
 					 const size_t nframes, FaderState& fs) {
 			
-			if ( !qFuzzyCompare(fs.target, fs.current)) {
-				qDebug() << "Matrix fader. Target " << fs.target
-				         << ": " << fs.num_steps << " steps, now " << fs.cur_step ;
+			if ( fs.num_steps > 0 && !qFuzzyCompare(fs.target, fs.current)) {
+// 				qDebug() << "Matrix fader. Target " << fs.target
+// 				         << ": " << fs.num_steps << " steps, now " << fs.cur_step ;
 
 				for (size_t n {0}; n < nframes; n++) {
 					outbuf[n] += inbuf[n]*(fs.current + fs.cur_step*(fs.target - fs.current)/fs.num_steps);
@@ -318,7 +331,7 @@ Q_OBJECT
 				
 			} else {
 				for (size_t n {0}; n < nframes; n++) {
-					outbuf[n] += inbuf[n]*fs.target;
+					outbuf[n] += inbuf[n]*fs.current;
 				}
 			}
 		}

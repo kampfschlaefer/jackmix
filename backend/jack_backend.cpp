@@ -167,14 +167,17 @@ bool JackBackend::rename(portsmap &map, QStringList &lst, const QString old_name
 
 
 void JackBackend::setVolume(QString channel, QString output, float volume) {
-	//qDebug() << "JackBackend::setVolume( " << channel << ", " << output << ", " << volume << " )";
+	qDebug() << "JackBackend::setVolume( " << channel << ", " << output << ", " << volume << " )";
 	if ( channel == output ) {
 		if ( involumes.contains( channel ) )
 			setInVolume(channel, volume);
 		else
 			setOutVolume(channel, volume);
-	} else
+	} else {
+ 		if (!volumes[channel].contains(output))
+ 			volumes[channel].insert(output, FaderState(0, interp_len));                
 		volumes[channel][output] = volume;
+        }
 }
 
 JackBackend::FaderState& JackBackend::getMatrixVolume( QString channel, QString output ) {
@@ -187,8 +190,11 @@ JackBackend::FaderState& JackBackend::getMatrixVolume( QString channel, QString 
 		if ( involumes.contains( channel ) )
 			return getInVolume(channel);
 	} else {
-		if (!volumes[channel].contains(output))
+		if (!volumes[channel].contains(output) || volumes[channel][output].num_steps == 0) {
+                        qDebug() << "Inserting new FaderState in volumes";
 			volumes[channel].insert(output, FaderState(0, interp_len));
+		}
+
 		return volumes[channel][output];
 	}
 	
@@ -199,27 +205,26 @@ JackBackend::FaderState& JackBackend::getMatrixVolume( QString channel, QString 
 }
 
 void JackBackend::setOutVolume( QString ch, float n ) {
-	//qDebug() << "JackBackend::setOutVolume(QString " << ch << ", float " << n << " )";
+//	qDebug() << "JackBackend::setOutVolume(QString " << ch << ", float " << n << " )";
+                
 	outvolumes[ch] = n;
 }
 
 JackBackend::FaderState& JackBackend::getOutVolume( QString ch ) {
-	if ( !outvolumes.contains(ch) )
+	if (outvolumes[ch].num_steps == 0)
 		outvolumes.insert(ch, FaderState(1, interp_len));
-// 	qDebug() << "JackBackend::getOutVolume(QString " << ch
-// 	         << " ).\n\tnum_steps = " << outvolumes[ch].num_steps
-// 	         << "; target=" << outvolumes[ch].target;
+
 	return outvolumes[ch];
 }
 
 void JackBackend::setInVolume( QString ch, float n ) {
-	//qDebug() << "JackBackend::setInVolume(QString " << ch << ", float " << n << " )";
+//	qDebug() << "JackBackend::setInVolume(QString " << ch << ", float " << n << " )";
 	involumes[ch] = n;
 }
 
 JackBackend::FaderState&  JackBackend::getInVolume( QString ch ) {
 	//qDebug() << "JackBackend::getInVolume(QString " << ch << " )";
-	if ( !involumes.contains( ch ) )
+	if (involumes[ch].num_steps == 0)
 		involumes.insert(ch, FaderState(1, interp_len));
 	return involumes[ch];
 }
