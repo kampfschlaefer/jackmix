@@ -11,3 +11,17 @@
 *.lai
 *.la
 *.a
+
+# buildsystem stuff
+*.moc
+*.pyc
+.sconsign.dblite
+cache/
+config.log
+
+# compiled binaries
+jackmix/jackmix
+libcontrol/controlsender_test
+libgui/channelselector_test
+libgui/midicontrolchannelassigner_test
+libgui/slider_test
