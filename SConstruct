@@ -16,7 +16,7 @@ env = Environment(
 env.Replace( LIBS="" )
 env.Replace( LIBPATH="" )
 
-env.MergeFlags( ['-Wall', '-Werror', '-g', '-fpic'] )
+env.MergeFlags( ['-Wall', '-Werror', '-g', '-fpic', '-std=c++11'] )
 
 tests = { }
 tests.update( env['PKGCONFIG_TESTS'] )
