@@ -3,7 +3,7 @@
 
     Modified to permit control via MIDI by Nick Bailey <nick@n-ism.org>
     Released as version 0.5.0 (et seq.) copyright 2013.
-    
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation;
@@ -67,7 +67,7 @@ public:
 	MainWindow( QWidget* =0 );
 	MainWindow( QString filename, QWidget* =0 );
 	~MainWindow();
-	
+
 signals:
 	/** If the user requests a channel name already in use,
 	 *  an alternative is chosen and this signal is fired
@@ -108,8 +108,8 @@ private slots:
 
 	void saveLash( QString dir );
 	void restoreLash( QString dir );
-	
-	/** Set all of the contained elements' MIDI parameters only after AutoFill is over */ 
+
+	/** Set all of the contained elements' MIDI parameters only after AutoFill is over */
 	void updateAutoFilledMidiParams(MixingMatrix::Widget *);
 
 private:
@@ -134,7 +134,7 @@ private:
 	bool _autofillscheduled;
 
 	qLash::qLashClient* _lashclient;
-        
+
         MidiControl::ControlSender* midiControlSender;
 };
 

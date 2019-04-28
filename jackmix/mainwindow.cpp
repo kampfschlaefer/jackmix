@@ -3,7 +3,7 @@
 
     Modified to permit control via MIDI by Nick Bailey <nick@n-ism.org>
     Released as version 0.5.0 (et seq.) copyright 2013.
-    
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation;
@@ -86,7 +86,7 @@ MainWindow::MainWindow( QWidget* p ) : QMainWindow( p ), _backend( new JackBacke
 	outs = _backend->outchannels();
 	if ( ins.empty() || outs.empty() )
 		statusBar()->showMessage( "No Channels available :-(" );
-	
+
 	_autofillscheduled = false;
 	scheduleAutoFill();
 
@@ -185,7 +185,7 @@ void MainWindow::init() {
 		 this, SLOT(updateAutoFilledMidiParams(MixingMatrix::Widget *)) );
 	connect (_outputswidget, SIGNAL(autoFillComplete(MixingMatrix::Widget *)),
 		 this, SLOT(updateAutoFilledMidiParams(MixingMatrix::Widget *)) );
-        
+
 	_mw->layout->setRowStretch( 0, 1 );
 	_mw->layout->setRowStretch( 1, int( 1E2 ) );
 	_mw->layout->setColumnStretch( 1, 1 );
@@ -203,14 +203,14 @@ void MainWindow::init() {
 	connect( _lashclient, SIGNAL( saveToDir( QString ) ), this, SLOT( saveLash( QString ) ) );
 	connect( _lashclient, SIGNAL( restoreFromDir( QString ) ), this, SLOT( restoreLash( QString ) ) );
 	//_lashclient->setJackName( "JackMix" );
-	
+
 	midiControlSender = new MidiControl::ControlSender("JackMix Control");
 
 	connect (_backend, SIGNAL(inputLevelsChanged(JackMix::BackendInterface::levels_t)),
 	         _inputswidget, SLOT(update_peak_inidicators(JackMix::BackendInterface::levels_t)));
 	connect (_backend, SIGNAL(outputLevelsChanged(JackMix::BackendInterface::levels_t)),
                  _outputswidget, SLOT(update_peak_inidicators(JackMix::BackendInterface::levels_t)));
-	
+
 	// Connect the backend's MIDI control events to the MIDI listener's despatcher.
 	connect (_backend, SIGNAL(cc_message(int, int)),
 		 midiControlSender, SLOT(despatch_message(int, int)));
@@ -266,7 +266,7 @@ void MainWindow::openFile( QString path ) {
 				_backend->setVolume( name, name, volume.toDouble() );
 				// Input gain elements have the same name for input and output
 				_inputmps[QString("%1,%1").arg(name)] = midi;
-				
+
 			}
 
 			QDomElement outs = jackmix.firstChildElement( "outs" );
@@ -301,7 +301,7 @@ void MainWindow::openFile( QString path ) {
 				_mixerwidget->createControl( ins, outs );
 				// Just one set of midi control parameters for the whole saved element
 				_mixermps[QString("%1,%2").arg(ins[0], outs[0])] = element.attribute("midi");
-	
+
 			}
 		}
 
@@ -358,13 +358,13 @@ void MainWindow::updateAutoFilledMidiParams(MixingMatrix::Widget *w) {
 		}
 	}
 }
-	
+
 void MainWindow::saveFile( QString path ) {
 	if ( path.isEmpty() )
 		path = QFileDialog::getSaveFileName( this, 0, 0, "JackMix-XML (*.jm-xml)" );
 	if ( path.isEmpty() )
 		return;
-	
+
 	if ( ! path.endsWith( ".jm-xml" ) )
 		path += ".jm-xml";
 
@@ -456,7 +456,7 @@ void MainWindow::about() {
 		<p>JackMix is the ultimative mixer application for Jack \
 		   (<a href=\"http://www.jackaudio.org/\">www.jackaudio.org</a>). \
 		   Check out \
-		   <a href=\"http://www.arnoldarts.de/drupal/?q=JackMix\">http://www.arnoldarts.de/drupal/?q=JackMix</a> \
+		   <a href=\"http://www.arnoldarts.de/jackmix\">http://www.arnoldarts.de/jackmix</a> \
 		   for more information and new versions of JackMix.</p> \
 		<p>This application and all its components are licensed under the GPL.</p> \
 		</qt>" );
@@ -505,7 +505,7 @@ void MainWindow::addInput() {
 }
 void MainWindow::addInput( QString name ) {
 	if ( !_backend->inchannels().contains(name) &&
-	     !_backend->outchannels().contains(name) && 
+	     !_backend->outchannels().contains(name) &&
 	     _backend->addInput( name ) ) {
 		_mixerwidget->addinchannel( name );
 		_inputswidget->addinchannel( name );
@@ -523,7 +523,7 @@ void MainWindow::addOutput() {
 }
 void MainWindow::addOutput( QString name ) {
 	if ( !_backend->inchannels().contains(name) &&
-	     !_backend->outchannels().contains(name) && 
+	     !_backend->outchannels().contains(name) &&
 	     _backend->addOutput( name ) ) {
 		_mixerwidget->addoutchannel( name );
 		_outputswidget->addoutchannel( name );
