@@ -16,6 +16,7 @@
 *.moc
 *.pyc
 .sconsign.dblite
+.sconf_temp/
 cache/
 config.log
 
