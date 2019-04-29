@@ -169,7 +169,7 @@ bool JackBackend::rename(portsmap &map, QStringList &lst, const QString old_name
 
 
 void JackBackend::setVolume(QString channel, QString output, float volume) {
-	qDebug() << "JackBackend::setVolume( " << channel << ", " << output << ", " << volume << " )";
+	//qDebug() << "JackBackend::setVolume( " << channel << ", " << output << ", " << volume << " )";
 	if ( channel == output ) {
 		// addInput or addOutput will have created uninitialised FaderState entries,
                 // so we can use that in the following test.
@@ -179,7 +179,7 @@ void JackBackend::setVolume(QString channel, QString output, float volume) {
 			setOutVolume(channel, volume);
 	} else {
  		if (!volumes[channel].contains(output)) {
-			qDebug() << "Creating new FaderState. interp_len = " << interp_len;
+			//qDebug() << "Creating new FaderState. interp_len = " << interp_len;
  			volumes[channel].insert(output, FaderState(volume, this));
 		} else
 			volumes[channel][output] = volume;
@@ -211,13 +211,14 @@ JackBackend::FaderState& JackBackend::getMatrixVolume( QString channel, QString 
 }
 
 void JackBackend::setOutVolume( QString ch, float n ) {
-	qDebug() << "JackBackend::setOutVolume(QString " << ch << ", float " << n << " )";
+	//qDebug() << "JackBackend::setOutVolume(QString " << ch << ", float " << n << " )";
 	
 	if (outvolumes[ch].p == nullptr) { // need to construct a new Faderstate
-		qDebug() << "New output FaderState, volume = " << n;
+		//qDebug() << "New output FaderState, volume = " << n;
 		outvolumes.insert(ch, FaderState(n, this));
-	} else                            // update the existing one
+	} else {                           // update the existing one
 		outvolumes[ch] = n;
+	}
 }
 
 JackBackend::FaderState& JackBackend::getOutVolume( QString ch ) {
@@ -225,16 +226,14 @@ JackBackend::FaderState& JackBackend::getOutVolume( QString ch ) {
 }
 
 void JackBackend::setInVolume( QString ch, float n ) {
-	qDebug() << "JackBackend::setInVolume(QString " << ch << ", float " << n << " )";
+	//qDebug() << "JackBackend::setInVolume(QString " << ch << ", float " << n << " )";
 	
 	if (involumes[ch].p == nullptr) { // need to construct a new Faderstate
-		qDebug() << "New input FaderState, volume = " << n;
+		//qDebug() << "New input FaderState, volume = " << n;
 		involumes.insert(ch, FaderState(n, this));
-	}
-	else                              // update the existing one
+	} else {                          // update the existing one
 		involumes[ch] = n;
-
-	qDebug() << ch << " (out): " << involumes[ch].current;
+	}
 }
 
 JackBackend::FaderState&  JackBackend::getInVolume( QString ch ) {

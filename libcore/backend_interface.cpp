@@ -111,7 +111,7 @@ void BackendInterface::testSlot(levels_t changed) {
 
 BackendInterface::FaderState::FaderState(float initial, BackendInterface* parent)
 	: target{initial}, current{initial}, cur_step{0}, p{parent}
-	{ qDebug() << "New FaderState currently " << current; }
+	{ }
 
 
 BackendInterface::FaderState& BackendInterface::FaderState::operator=(float volume) {
