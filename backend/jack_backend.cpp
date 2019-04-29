@@ -169,20 +169,23 @@ bool JackBackend::rename(portsmap &map, QStringList &lst, const QString old_name
 void JackBackend::setVolume(QString channel, QString output, float volume) {
 	qDebug() << "JackBackend::setVolume( " << channel << ", " << output << ", " << volume << " )";
 	if ( channel == output ) {
+		// FIXME: If an input channel doesn't exist yet, it gets created by setOutVolume!
 		if ( involumes.contains( channel ) )
 			setInVolume(channel, volume);
 		else
 			setOutVolume(channel, volume);
 	} else {
- 		if (!volumes[channel].contains(output))
- 			volumes[channel].insert(output, FaderState(0, interp_len));                
-		volumes[channel][output] = volume;
+ 		if (!volumes[channel].contains(output)) {
+			qDebug() << "Creating new FaderState. interp_len = " << interp_len;
+ 			volumes[channel].insert(output, FaderState(volume, this));
+		} else
+			volumes[channel][output] = volume;
         }
 }
 
 JackBackend::FaderState& JackBackend::getMatrixVolume( QString channel, QString output ) {
-	//qDebug() << "JackBackend::getVolume(" << channel << ", " << output << ") = " << volumes[channel][output].current;
-	static JackBackend::FaderState invalid(-1,0); // no likee - somebody might change it. FIXME
+	//qDebug() << "JackBackend::getVolume(" << channel << ", " << output << ");
+	static JackBackend::FaderState invalid(-1, nullptr); // no likee - somebody might change it. FIXME
 	
 	if ( channel == output ) {
 		if ( outvolumes.contains( channel ) )
@@ -190,9 +193,9 @@ JackBackend::FaderState& JackBackend::getMatrixVolume( QString channel, QString 
 		if ( involumes.contains( channel ) )
 			return getInVolume(channel);
 	} else {
-		if (!volumes[channel].contains(output) || volumes[channel][output].num_steps == 0) {
-                        qDebug() << "Inserting new FaderState in volumes";
-			volumes[channel].insert(output, FaderState(0, interp_len));
+		if (!volumes[channel].contains(output) ){//|| volumes[channel][output].p == nullptr) {
+                        qDebug() << "Inserting new FaderState in volumes.";
+			volumes[channel].insert(output, FaderState(0, this));
 		}
 
 		return volumes[channel][output];
@@ -205,27 +208,39 @@ JackBackend::FaderState& JackBackend::getMatrixVolume( QString channel, QString 
 }
 
 void JackBackend::setOutVolume( QString ch, float n ) {
-//	qDebug() << "JackBackend::setOutVolume(QString " << ch << ", float " << n << " )";
-                
-	outvolumes[ch] = n;
+	qDebug() << "JackBackend::setOutVolume(QString " << ch << ", float " << n << " )";
+	
+	if (outvolumes[ch].p == nullptr) { // need to construct a new Faderstate
+		qDebug() << "New output FaderState, volume = " << n;
+		outvolumes.insert(ch, FaderState(n, this));
+	} else                            // update the existing one
+		outvolumes[ch] = n;
 }
 
 JackBackend::FaderState& JackBackend::getOutVolume( QString ch ) {
-	if (outvolumes[ch].num_steps == 0)
-		outvolumes.insert(ch, FaderState(1, interp_len));
-
+// 	if (outvolumes[ch].num_steps == 0)
+// 		outvolumes.insert(ch, FaderState(1, this));
+// 
 	return outvolumes[ch];
 }
 
 void JackBackend::setInVolume( QString ch, float n ) {
-//	qDebug() << "JackBackend::setInVolume(QString " << ch << ", float " << n << " )";
-	involumes[ch] = n;
+	qDebug() << "JackBackend::setInVolume(QString " << ch << ", float " << n << " )";
+	
+	if (involumes[ch].p == nullptr) { // need to construct a new Faderstate
+		qDebug() << "New input FaderState, volume = " << n;
+		involumes.insert(ch, FaderState(n, this));
+	}
+	else                              // update the existing one
+		involumes[ch] = n;
+
+	qDebug() << ch << " (out): " << outvolumes[ch].current;
 }
 
 JackBackend::FaderState&  JackBackend::getInVolume( QString ch ) {
 	//qDebug() << "JackBackend::getInVolume(QString " << ch << " )";
-	if (involumes[ch].num_steps == 0)
-		involumes.insert(ch, FaderState(1, interp_len));
+// 	if (involumes[ch].num_steps == 0)
+// 		involumes.insert(ch, FaderState(1, this));
 	return involumes[ch];
 }
 

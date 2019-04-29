@@ -108,5 +108,26 @@ void BackendInterface::testSlot(levels_t changed) {
                 qDebug() << "BackendInterface Audo level changed testSlot " << changed;
 }
 
+
+BackendInterface::FaderState::FaderState(float initial, BackendInterface* parent)
+	: target{initial}, current{initial}, cur_step{0}, p{parent}
+	{ qDebug() << "New FaderState currently " << current; }
+
+
+BackendInterface::FaderState& BackendInterface::FaderState::operator=(float volume) {
+
+	if (!qFuzzyCompare(current, target)) {
+		// Time to change current in case we're not finished interpolating
+		current += cur_step*(target - current)/num_steps;
+	}
+
+	target = volume;
+	cur_step = 0;
+	num_steps = p->interp_len;
+
+	return *this;
+}
+
 };
+
 

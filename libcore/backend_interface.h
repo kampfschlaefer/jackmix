@@ -189,37 +189,24 @@ Q_OBJECT
 			unsigned int num_steps; /**< The number of steps required
 			                             to interpolate this fader change */
 			unsigned int cur_step;  /**< Count of steps in this interpolation */
+			
+			BackendInterface* p;	/**< The parent backend interface */
+			
 			/**
 			 * Construct a FaderState object which interpolates
 			 * over a given number of steps. This number will normally
 			 * be that provided by the backend's interp_len property.
 			 * 
-			 * @param steps Number of steps over which fader changes.
 			 * @param initial Initial value
+			 * @param parent The parent BackendInterface
 			 */
-			FaderState(float initial, unsigned int steps)
-				: target {initial}, current{initial}
-				, num_steps{steps}, cur_step{0}
-			{ }		
+			FaderState(float initial, BackendInterface* parent);
 
 			/**
 			 * Assigning a target value. Interpolation will restart
 			 * from the current value towards the new target.
 			 */
-			FaderState& operator=(float volume) {
-				if (num_steps > 0) {
-					if (!qFuzzyCompare(current, target)) {
-						// Time to change current in case we're not finished interpolating
-						current += cur_step*(target - current)/num_steps;
-					}
-				} else {
-					current = volume;
-				}
-				target = volume;
-				cur_step = 0;
-				
-				return *this;
-			}
+			FaderState& operator=(float volume);
 			
 			/**
 			 * Qt types (particuarly qHash, qMap) need a default constructor
@@ -234,7 +221,7 @@ Q_OBJECT
 			 * Backend implementations of the get*Volume methods should check whether
 			 * num_steps is zero, and if so, take appropriate action to update the FaderState.
 			 */
-			FaderState() : FaderState(0, 0) { } //qDebug() << "Called default FaderState constructor"; }
+			FaderState() : FaderState(0, nullptr) { }
 		};
 		
 		/**
@@ -315,8 +302,8 @@ Q_OBJECT
 					 const size_t nframes, FaderState& fs) {
 			
 			if ( fs.num_steps > 0 && !qFuzzyCompare(fs.target, fs.current)) {
-// 				qDebug() << "Matrix fader. Target " << fs.target
-// 				         << ": " << fs.num_steps << " steps, now " << fs.cur_step ;
+				qDebug() << "Matrix fader. Target " << fs.target
+				         << ": " << fs.num_steps << " steps, now " << fs.cur_step ;
 
 				for (size_t n {0}; n < nframes; n++) {
 					outbuf[n] += inbuf[n]*(fs.current + fs.cur_step*(fs.target - fs.current)/fs.num_steps);
