@@ -59,6 +59,7 @@ bool JackBackend::addOutput( QString name ) {
 		//qDebug() << "JackBackend::addOutput(" << name << ")";
 		out_ports.insert( name, jack_port_register ( client, name.toStdString().c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0 ) );
 		out_ports_list << name;
+                outvolumes[name]; //NJB
 		return true;
 	}
 	return false;
@@ -68,6 +69,7 @@ bool JackBackend::addInput( QString name ) {
 		//qDebug() << "JackBackend::addInput(" << name << ")";
 		in_ports.insert( name, jack_port_register ( client, name.toStdString().c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0 ) );
 		in_ports_list << name;
+                involumes[name]; //NJB
 		return true;
 	}
 	return false;
@@ -219,8 +221,6 @@ void JackBackend::setOutVolume( QString ch, float n ) {
 
 JackBackend::FaderState& JackBackend::getOutVolume( QString ch ) {
 // 	if (outvolumes[ch].num_steps == 0)
-// 		outvolumes.insert(ch, FaderState(1, this));
-// 
 	return outvolumes[ch];
 }
 
@@ -234,13 +234,11 @@ void JackBackend::setInVolume( QString ch, float n ) {
 	else                              // update the existing one
 		involumes[ch] = n;
 
-	qDebug() << ch << " (out): " << outvolumes[ch].current;
+	qDebug() << ch << " (out): " << involumes[ch].current;
 }
 
 JackBackend::FaderState&  JackBackend::getInVolume( QString ch ) {
 	//qDebug() << "JackBackend::getInVolume(QString " << ch << " )";
-// 	if (involumes[ch].num_steps == 0)
-// 		involumes.insert(ch, FaderState(1, this));
 	return involumes[ch];
 }
 
