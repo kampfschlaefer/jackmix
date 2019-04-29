@@ -171,7 +171,8 @@ bool JackBackend::rename(portsmap &map, QStringList &lst, const QString old_name
 void JackBackend::setVolume(QString channel, QString output, float volume) {
 	qDebug() << "JackBackend::setVolume( " << channel << ", " << output << ", " << volume << " )";
 	if ( channel == output ) {
-		// FIXME: If an input channel doesn't exist yet, it gets created by setOutVolume!
+		// addInput or addOutput will have created uninitialised FaderState entries,
+                // so we can use that in the following test.
 		if ( involumes.contains( channel ) )
 			setInVolume(channel, volume);
 		else
@@ -220,7 +221,6 @@ void JackBackend::setOutVolume( QString ch, float n ) {
 }
 
 JackBackend::FaderState& JackBackend::getOutVolume( QString ch ) {
-// 	if (outvolumes[ch].num_steps == 0)
 	return outvolumes[ch];
 }
 
