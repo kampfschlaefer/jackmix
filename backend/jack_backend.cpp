@@ -57,9 +57,19 @@ JackBackend::~JackBackend() {
 bool JackBackend::addOutput( QString name ) {
 	if ( client ) {
 		//qDebug() << "JackBackend::addOutput(" << name << ")";
+		/*
+		 * We need to register inputs by creating entries
+                 * in the involumes hash if the interpolation functions
+                 * are to be used. Just referencing them is sufficient
+		 * to create a partially initialised FaderState.
+		 * 
+		 * setOutput() will finish the job when the output level
+		 * is set.
+		 */
+		outvolumes[name];
+		
 		out_ports.insert( name, jack_port_register ( client, name.toStdString().c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0 ) );
 		out_ports_list << name;
-                outvolumes[name]; //NJB
 		return true;
 	}
 	return false;
@@ -67,9 +77,13 @@ bool JackBackend::addOutput( QString name ) {
 bool JackBackend::addInput( QString name ) {
 	if ( client ) {
 		//qDebug() << "JackBackend::addInput(" << name << ")";
+		
+		/* Register the input port (see above) */
+		involumes[name];
+		
 		in_ports.insert( name, jack_port_register ( client, name.toStdString().c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0 ) );
 		in_ports_list << name;
-                involumes[name]; //NJB
+		
 		return true;
 	}
 	return false;

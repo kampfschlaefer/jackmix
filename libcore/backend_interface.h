@@ -77,7 +77,7 @@ Q_OBJECT
 		 * If the actual backend doesn't support adding and removing, thats
 		 * okay. Just return false..
 		 */
-		virtual bool addInput( QString ) =0;
+		virtual bool addInput(QString name) =0;
 		/**
 		 * @brief Rename the output.
 		 * 
