@@ -250,7 +250,7 @@ Q_OBJECT
 		inline SampT interp_fader(SampT* buf, const size_t nframes, FaderState& fs) {
 			SampT max {0};
 
-			if ( fs.num_steps > 0 && !qFuzzyCompare(fs.target, fs.current)) {
+			if ( fs.p != nullptr && !qFuzzyCompare(fs.target, fs.current)) {
 // 				qDebug() << "In/Out fader. Target " << fs.target
 // 				         << ": " << fs.num_steps << " steps, now " << fs.cur_step ;
 					 
@@ -263,6 +263,7 @@ Q_OBJECT
 				if (fs.cur_step == fs.num_steps) {
 					qDebug() << "In/Out fader reached target at step " << fs.cur_step ;
 					fs.current = fs.target;
+					fs.num_steps = interp_len; // in case sample rate has changed
 					fs.cur_step = 0; // for safety
 				}
 				
@@ -301,7 +302,7 @@ Q_OBJECT
 		inline void interp_fader(SampT* outbuf, const SampT* inbuf,
 					 const size_t nframes, FaderState& fs) {
 			
-			if ( fs.num_steps > 0 && !qFuzzyCompare(fs.target, fs.current)) {
+			if ( fs.p != nullptr && !qFuzzyCompare(fs.target, fs.current)) {
 // 				qDebug() << "Matrix fader. Target " << fs.target
 // 				         << ": " << fs.num_steps << " steps, now " << fs.cur_step ;
 
@@ -313,6 +314,7 @@ Q_OBJECT
 				if (fs.cur_step == fs.num_steps) {
 					qDebug() << "Matrix fader reached target at step " << fs.cur_step ;
 					fs.current = fs.target;
+					fs.num_steps = interp_len; // in case sample rate has changed
 					fs.cur_step = 0; // for safety
 				}
 				
