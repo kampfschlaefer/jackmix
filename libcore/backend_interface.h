@@ -160,7 +160,7 @@ Q_OBJECT
 		GuiServer_Interface* gui;
 		
 		/** How long a fader change takes to execute (for de-zipping) */
-		constexpr static float interp_time {5};
+		constexpr static float interp_time {.08};
 		/** Fader iterpolation length in samples. It is initialised
 		 *  by the class implementing this interface based on the
 		 *  interp_time and the backend's sample rate, probably by
