@@ -7,6 +7,7 @@
 | Arnold Krille <arnold@arnoldarts.de> | Almost everything.       |
 | Nick Bailey <nick@n-ism.org>         | MIDI control extensions. |
 |                                      | Qt5 port attempt.        |
+| Daniel Sheeler                       | De-zippering             |
 
 ---
 See:
