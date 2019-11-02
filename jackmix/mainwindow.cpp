@@ -452,7 +452,7 @@ void MainWindow::about() {
 	QMessageBox::about( this, "JackMix: About JackMix", "<qt> \
 		<p><b>&copy;2004-2007 by Arnold Krille</b> &lt;arnold@arnoldarts.de&gt;</p> \
 		<p><b>&copy;2013 Nick Bailey</b> &lt;nick@n-ism.org&gt;</p> \
-		<p>Version 0.6.0 (file format " JACKMIX_FILE_FORMAT_VERSION ")</p> \
+		<p>Version 0.6.1 (file format " JACKMIX_FILE_FORMAT_VERSION ")</p> \
 		<p>JackMix is the ultimative mixer application for Jack \
 		   (<a href=\"http://www.jackaudio.org/\">www.jackaudio.org</a>). \
 		   Check out \
