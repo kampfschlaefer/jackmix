@@ -20,18 +20,17 @@
 
 #include <QtCore/QDebug>
 #include <QtCore/QFile>
-#include <QtGui/QApplication>
+#include <QtWidgets/QApplication>
 
 #include "jack_backend.h"
 #include "mainwindow.h"
-#include "controlsender.h"
 
 int main( int argc, char** argv ) {
 	qDebug() << "JackMix starting";
 
 	QApplication *qapp = new QApplication( argc, argv );
+        qRegisterMetaType<JackMix::BackendInterface::levels_t>("JackMix::BackendInterface::levels_t");
 	QStringList args = qapp->arguments();
-	JackMix::MidiControl::ControlSender midiControlSender("JackMix Control");
 	QString file;
 	for( int i=1; i<args.size(); ++i ) {
 		qDebug() << QString( " arg %1: %2" ).arg( i ).arg( args[ i ] );

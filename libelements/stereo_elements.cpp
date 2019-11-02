@@ -28,12 +28,12 @@
 #include "slider.h"
 #include "midicontrolchannelassigner.h"
 
-#include <QtGui/QLayout>
-#include <QtGui/QPushButton>
+#include <QtWidgets/QLayout>
+#include <QtWidgets/QPushButton>
 #include <QtCore/QList>
-#include <QtGui/QLabel>
+#include <QtWidgets/QLabel>
 #include <QtCore/QVariant>
-#include <QtGui/QAction>
+#include <QtWidgets/QAction>
 
 #include <controlsender.h>
 
@@ -92,9 +92,10 @@ Mono2StereoElement::Mono2StereoElement( QStringList inchannel, QStringList outch
 	QVBoxLayout* _layout = new QVBoxLayout( this );
 	_layout->setMargin( 0 );
 	_layout->setSpacing( 0 );
-
+  
 	menu()->addAction( "Select", this, SLOT( slot_simple_select() ) );
 	menu()->addAction( "Replace", this, SLOT( slot_simple_replace() ) );
+        menu()->addAction( "Explode", this, SLOT( slot_simple_explode() ) );
 	menu()->addAction( "Assign MIDI Parameter", this, SLOT( slot_assign_midi_parameters() ) );
 	
 	_balance = new JackMix::GUI::Knob( _balance_value, -1, 1, 2, 0.1, this, "%1" );
@@ -197,6 +198,10 @@ Stereo2StereoElement::Stereo2StereoElement( QStringList inchannels, QStringList 
 	QAction *replace = new QAction( "Replace", this );
 	connect( replace, SIGNAL( triggered() ), this, SLOT( slot_simple_replace() ) );
 	menu()->addAction( replace );
+	QAction *explode = new QAction( "Explode", this );
+	connect( explode, SIGNAL( triggered() ), this, SLOT( slot_simple_explode() ) );
+	menu()->addAction( explode );
+
 	QAction *assign = new QAction( "Assign MIDI Parameter", this );
 	connect( assign, SIGNAL( triggered() ), this, SLOT( slot_assign_midi_parameters() ) );
 	menu()->addAction( assign );

@@ -25,7 +25,7 @@
 
 #include <QtCore/QDebug>
 #include <QtGui/QMouseEvent>
-#include <QtGui/QDoubleSpinBox>
+#include <QtWidgets/QDoubleSpinBox>
 
 namespace JackMix {
 namespace GUI {
@@ -85,7 +85,8 @@ void AbstractSlider::showInput() {
 		_spinbox->setSingleStep( _pagestep );
 		_spinbox->setValue( _value );
 		_spinbox->setFrame( false );
-		connect( _spinbox, SIGNAL( editingFinished() ), this, SLOT( hideInput() ) );	//qDebug() << iv << "=>" << ((static_cast<double>(iv))/127.0);
+		connect( _spinbox, SIGNAL( editingFinished() ), this, SLOT( hideInput() ) );
+		//qDebug() << iv << "=>" << ((static_cast<double>(iv))/127.0);
 
 		connect( _spinbox, SIGNAL( valueChanged( double ) ), this, SLOT( value( double ) ) );
 		connect( this, SIGNAL( valueChanged( double ) ), _spinbox, SLOT( setValue( double ) ) );
@@ -96,6 +97,7 @@ void AbstractSlider::showInput() {
 }
 
 void AbstractSlider::contextMenuEvent( QContextMenuEvent* ev ) {
+	//qDebug() << "AbstractSlider ContextMenuEvent at " << ev->x() << " " << ev->y();
 	//qDebug() << "AbstractSlider::contextMenuEvent(" << ev << ") is accepted?" << ev->isAccepted();
 	if ( _spinbox.isNull() )
 		showInput();

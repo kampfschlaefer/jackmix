@@ -21,10 +21,10 @@
 #include "editablechannelselector.h"
 #include "editablechannelselector.moc"
 
-#include <QtGui/QListWidget>
-#include <QtGui/QListWidgetItem>
+#include <QtWidgets/QListWidget>
+#include <QtWidgets/QListWidgetItem>
 
-#include <Qt/qdebug.h>
+#include <QtCore/qdebug.h>
 
 namespace JackMix {
 namespace GUI {

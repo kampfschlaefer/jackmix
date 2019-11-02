@@ -1,10 +1,10 @@
 
 #include "graphicalguiserver.h"
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 
-#include <QtGui/QMessageBox>
-#include <QtGui/QInputDialog>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QInputDialog>
 
 namespace JackMix {
 namespace GUI {
@@ -35,7 +35,7 @@ double GraphicalGuiServer::getDouble( const QString& title, const QString& label
 }
 
 int GraphicalGuiServer::getInt( const QString& title, const QString& label, int initvalue, int minvalue, int maxvalue ) const {
-	return QInputDialog::getInteger( _parent, title, label, initvalue, minvalue, maxvalue );
+	return QInputDialog::getInt( _parent, title, label, initvalue, minvalue, maxvalue );
 }
 
 QString GraphicalGuiServer::getString( const QString& title, const QString& label, const QString& initvalue ) const {

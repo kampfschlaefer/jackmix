@@ -23,6 +23,14 @@
 #ifndef KNOB_H
 #define KNOB_H
 
+#include <QtCore/QString>
+#include <QtCore/QTimer>
+#include <QtCore/QObject>
+#include <QtWidgets/QWidget>
+#include <QtGui/QColor>
+#include <QtGui/QPaintEvent>
+#include <QtGui/QPalette>
+
 #include "abstractslider.h"
 
 class QTimer;
@@ -33,12 +41,21 @@ namespace GUI {
 class Knob : public AbstractSlider
 {
 Q_OBJECT
+Q_PROPERTY(QColor _indicator READ getIndicatorColor WRITE setIndicatorColor)
 public:
-	Knob( double value, double min, double max, int precision, double pagestep, QWidget*, QString = "%1 dB" );
+	Knob( double value, double min, double max, int precision,
+              double pagestep, QWidget*p, QString valuestring = "%1 dB" ) :
+                Knob( value, min, max, precision, pagestep, p, valuestring, QColor(0,0,0) ) {
+                _indicator = palette().color(QPalette::Highlight);
+        };
+        Knob( double value, double min, double max, int precision,
+              double pagestep, QWidget*, QString valuestring, QColor indicator );
 	~Knob();
 
 	virtual void value( double n, bool show_numeric = true );
-
+        QColor getIndicatorColor() const { return _indicator; };
+        void setIndicatorColor(const QColor& c);
+ 
 protected:
 	void paintEvent( QPaintEvent* );
 
@@ -50,6 +67,7 @@ private:
 
 	QTimer *_timer;
 	bool _show_value;
+        QColor _indicator;
 };
 
 }; // GUI

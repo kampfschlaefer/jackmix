@@ -26,22 +26,27 @@
 #include "mixingmatrix.moc"
 #include "mixingmatrix_privat.moc"
 
+
+#include "aux_elements.h"
 #include "controlsender.h"
 
-#include <QtGui/QLayout>
-#include <QtGui/QListWidget>
-#include <QtGui/QPushButton>
-#include <QtGui/QMenu>
-#include <QtGui/QAction>
+#include <QtWidgets/QLayout>
+#include <QtWidgets/QListWidget>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QAction>
 #include <QtGui/QCursor>
 #include <QtCore/QTimer>
 #include <QtGui/QContextMenuEvent>
 #include <QtCore/QMetaProperty>
 #include <QtCore/QDebug>
 #include <QtCore/QList>
+#include <QtGui/QColor>
 
 namespace JackMix {
 namespace MixingMatrix {
+        
+const QColor Widget::indicatorColors[] { QColor("dimgrey"), QColor("lawngreen"), QColor("orange"), QColor("red") };
 
 Widget::Widget( QStringList ins, QStringList outs, JackMix::BackendInterface* backend, QWidget* p, const char* n )
 	: QFrame( p )
@@ -73,6 +78,7 @@ Widget::~Widget() {
 void Widget::addElement( Element* n ) {
 	_elements.push_back( n );
 	connect( n, SIGNAL( replace( Element* ) ), this, SLOT( replace( Element* ) ) );
+	connect( n, SIGNAL( explode( Element* ) ), this, SLOT( explode( Element* ) ) );
 	resizeEvent( 0 );
 }
 void Widget::removeElement( Element* n ) {
@@ -101,6 +107,13 @@ void Widget::replace( Element* n ) {
 	QTimer::singleShot( 1, this, SLOT( autoFill() ) );
 }
 
+void Widget::explode( Element* n )  {
+	//qDebug()<<"Widget::explode slot\n";
+	
+	n->deleteLater();
+	QTimer::singleShot( 1, this, SLOT( autoFill() ) );
+}
+
 Element* Widget::getResponsible( QString in, QString out ) const {
 	//qDebug() << "Widget::getResponsible(" << in << "," << out << ") size =" << _elements.size();
 	for ( int i=0; i<_elements.size(); i++ )
@@ -110,7 +123,7 @@ Element* Widget::getResponsible( QString in, QString out ) const {
 }
 
 bool Widget::createControl( QStringList inchannels, QStringList outchannels ) {
-	//qDebug( "Widget::createControl( QStringList '%s', QStringList '%s')", qPrintable( inchannels.join( "," ) ), qPrintable( outchannels.join( "," ) ) );
+	//qDebug( "Widget::createControl( QStringList '%s', QStringList '%s', %s)", qPrintable( inchannels.join( "," ) ), qPrintable( outchannels.join( "," ) ) );
 
 	QStringList controls = Global::the()->canCreate( inchannels.size(), outchannels.size() );
 	if ( ! controls.isEmpty() ) {
@@ -146,13 +159,34 @@ void Widget::autoFill() {
 		//qDebug() << "Available inputs are" << _inchannels.join( "," );
 		for ( QStringList::Iterator init=_inchannels.begin(); init!=_inchannels.end(); ++init ) {
 			//qDebug() << "Setting element for" << *init;
-			if ( !getResponsible( *init, *init ) )// {
+			if ( !getResponsible( *init, *init ) ) {
 				//qDebug() << " No responsible element found, creating a new one";
 				createControl( QStringList()<<*init, QStringList()<<*init );
-			//}
+			}
+			
 		}
 	}
 	resizeEvent( 0 );
+}
+
+void Widget::update_peak_inidicators(JackMix::BackendInterface::levels_t newLevels) {
+        
+        //qDebug() << "update_peak_inidicators slot: " << newLevels;
+        JackMix::BackendInterface::levels_t::const_iterator it = newLevels.constBegin();
+
+        while (it != newLevels.constEnd()) {
+                QString n { it.key() };
+                JackMix::BackendInterface::Level l { it.value() };
+                
+                Element* e { getResponsible(n, n) };
+                if (e) {
+                        (static_cast<MixerElements::AuxElement*>(e))->setIndicator(indicatorColors[l]);
+                 } else {
+                        qDebug() << "getResponsible(" << n << ", " << n << "] returned null";
+                }
+                
+                ++it;
+        }
 }
 
 void Widget::anotherControl() {
@@ -420,7 +454,7 @@ void Element::showMenu() {
 	_menu->exec( QCursor::pos() );
 }
 void Element::contextMenuEvent( QContextMenuEvent* ev ) {
-	qDebug() << "Element::contextMenuEvent(" << ev << ") is accepted?" <<ev->isAccepted();
+	//qDebug() << "Element::contextMenuEvent(" << ev << ") is accepted?" <<ev->isAccepted();
 	showMenu();
 	ev->accept();
 }
@@ -503,10 +537,17 @@ QStringList Global::canCreate( int in, int out ) {
 bool Global::create( QString type, QStringList ins, QStringList outs, Widget* parent, const char* name ) {
 	//qDebug( "Global::create( type = %s, ins = [%s], outs = [%s], parent = %p, name = %s )",
         //        qPrintable( type ), qPrintable( ins.join( "," ) ), qPrintable( outs.join( "," ) ), parent, name );
+	// Only AuxElements can be non-selectable (input and output pots).
 	Element* elem=0;
         int i;
 	for ( i=0; i<_factories.size() && elem==0; i++ ) {
-		elem = _factories[ i ]->create( type, ins, outs, parent, name );
+                elem = _factories[ i ]->create( type, ins, outs, parent, name );
+                // If the element now exists, make it ready to display peaks
+                // All input mixers are AuxElements
+                if (elem && parent->direction() != Widget::None) {
+                        static_cast<JackMix::MixerElements::AuxElement*>(elem)->
+                          setIndicator(Widget::indicatorColors[JackMix::BackendInterface::Level::none]);
+                }
         }
         //qDebug("Used factory %d to create elem %p", i-1, elem);
 	//qDebug( "Will show and return %p", elem );

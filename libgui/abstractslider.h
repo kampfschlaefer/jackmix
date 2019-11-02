@@ -23,7 +23,7 @@
 #ifndef ABSTRACTSLIDER_H
 #define ABSTRACTSLIDER_H
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <QtCore/QPointer>
 #include "dbvolcalc.h"
 
@@ -63,6 +63,12 @@ signals:
 	 *  slot_simple_replace
 	 */
 	void replace(void);
+	/** Propagate explode requests
+	 *  This signal would normally be connected to the responsible element's
+	 *  slot_simple_explode
+	 */
+        void explode(void);
+        
 
 private slots:
 	void hideInput();

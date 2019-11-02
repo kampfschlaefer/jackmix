@@ -43,8 +43,7 @@ namespace MixerElements {
  * Simpliest form of a control connecting one input with one output.
  */
 class AuxElement : public JackMix::MixingMatrix::Element
-                 , public dB2VolCalc
-{
+                 , public dB2VolCalc {
 Q_OBJECT
 public:
 	AuxElement( QStringList inchannel, QStringList outchannel, MixingMatrix::Widget*, const char* =0 );
@@ -52,7 +51,9 @@ public:
 
 	int inchannels() const { return 1; }
 	int outchannels() const { return 1; }
-
+	
+	void setIndicator(const QColor& c);
+ 
 public slots:
 	void emitvalue( double );
 

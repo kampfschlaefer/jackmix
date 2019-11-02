@@ -74,23 +74,26 @@ void PortListener::run()
 	exit(0);
 }
 
-ControlSender::ControlSender(const char* port_name) throw (MidiControlException) {
-	if (snd_seq_open(&seq_handle, "hw", SND_SEQ_OPEN_DUPLEX, 0) < 0)
-		throw new MidiControlException("Can't connect to MIDI subsystem");
-	
-	// Name the client
-	snd_seq_set_client_name(seq_handle, port_name);
+ControlSender::ControlSender(const char* port_name) 
+	: have_alsa_seq {false}
+	, port_listener {nullptr}
+{
 
-	// Open one input port
-	if ((port_id = snd_seq_create_simple_port(seq_handle, "Control Input",
-	                                         SND_SEQ_PORT_CAP_WRITE | SND_SEQ_PORT_CAP_SUBS_WRITE,
-	                                         SND_SEQ_PORT_TYPE_APPLICATION)) < 0)
-		throw new MidiControlException("Can't open MIDI port");
-	
-	// Start a QThread which will handle incomming MIDI messages on this port
-	port_listener = new JackMix::MidiControl::PortListener(seq_handle, port_id);
-	port_listener->start();
-	connect (port_listener, SIGNAL(message(int, int)), this, SLOT(despatch_message(int, int)) );
+	if ((have_alsa_seq = snd_seq_open(&seq_handle, "default", SND_SEQ_OPEN_DUPLEX, 0)) == 0) {
+		// Name the client
+		snd_seq_set_client_name(seq_handle, port_name);
+
+		// Open one input port
+		if ((port_id = snd_seq_create_simple_port(seq_handle, "Control Input",
+							SND_SEQ_PORT_CAP_WRITE | SND_SEQ_PORT_CAP_SUBS_WRITE,
+							SND_SEQ_PORT_TYPE_APPLICATION)) < 0)
+			throw new MidiControlException("Can't open MIDI port");
+		
+		port_listener = new JackMix::MidiControl::PortListener(seq_handle, port_id);
+		port_listener->start();
+		connect (port_listener, SIGNAL(message(int, int)), this, SLOT(despatch_message(int, int)) );
+	} else
+		seq_handle = nullptr;
 }
 
 ControlSender::~ControlSender() {
@@ -98,8 +101,10 @@ ControlSender::~ControlSender() {
 	port_listener->quit();
 	port_listener->wait();
 	// then close the MIDI port
-	snd_seq_delete_simple_port(seq_handle, port_id);
-	snd_seq_close(seq_handle);
+	if (have_alsa_seq) {
+		snd_seq_delete_simple_port(seq_handle, port_id);
+		snd_seq_close(seq_handle);
+	}
 }
 
 QList<ControlReceiver*> ControlSender::dtab[maxMidiParam];
@@ -122,7 +127,6 @@ void ControlSender::unsubscribe(ControlReceiver *receiver, int parameter) {
 }
 
 void ControlSender::despatch_message(int param, int val) {
-	//qDebug() << "ControlSender:despatch_message: parameter " << param << ", value=" << val;
 	QListIterator<ControlReceiver*> iterator(dtab[param]);
 	while (iterator.hasNext())
 		iterator.next()->controlEvent(param, val);

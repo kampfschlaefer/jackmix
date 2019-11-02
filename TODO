@@ -1,3 +1,13 @@
+* Test this qt5 version properly
+
+  - currently compiles, builds and runs OK on my machine (nick)
+
+* Make matix components pretty
+
+  - proper group buttons, better adjust buttons...
+    I can't remember the key bindings, how can I expect the
+    casual user to?
+
 * Check validity under the following circumstances:
 
   - Removing all inputs and/or outputs (may segfault?)

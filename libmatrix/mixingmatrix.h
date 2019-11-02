@@ -24,16 +24,16 @@
 #ifndef MIXINGMATRIX_H
 #define MIXINGMATRIX_H
 
-#include <QtGui/QFrame>
 #include <QtCore/QList>
 #include <QtCore/QVector>
 #include <QtCore/QMap>
 #include <QtCore/QMutex>
-#include <QtGui/QMenu>
-#include <QtGui/QAction>
-#include <QtGui/QLabel>
+#include <QtWidgets/QFrame>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QAction>
+#include <QtWidgets/QLabel>
 
-//#include <QtCore/QDebug>
+#include <QtCore/QDebug>
 
 #include "backend_interface.h"
 #include "abstractslider.h"
@@ -84,7 +84,7 @@ public:
 	
 	/// Create Controls
 	// Create controls. return true on success
-	bool createControl( QStringList inchannels, QStringList outchannels );
+	bool createControl( QStringList inchannels, QStringList outchannels);
 
 	/// Layout
 	QSize smallestElement() const;
@@ -110,13 +110,20 @@ public:
 	void anotherControl();
 	/** Called when a lazy initialisation completes */
 	void placeFilled();
+        
+        /** These are the colours used for different levels defined in peak_tracker.h */
+        static const QColor indicatorColors[];
 
 signals:
 	/** AutoFill pass complete: safe to getResponsible() etc now */
 	void autoFillComplete(MixingMatrix::Widget *);
 
 public slots:
+        // Combine many elements to form a multichannel one
 	void replace( Element* );
+        
+        // Split a multichannel element into its constituents
+        void explode( Element* );
 
 	// Fills the empty nodes with 1to1-controls
 	void autoFill();
@@ -124,6 +131,10 @@ public slots:
 	// For testing of the properties
 	void debugPrint();
 	
+        /** When the peak tracker in the backend wants to change the indicator states
+         *  on the widget, it sends a map of the ones it wants to change to this slot
+         */ 
+        void update_peak_inidicators(JackMix::BackendInterface::levels_t newLevels);
 
 private:
 	enum Mode _mode;
@@ -134,6 +145,7 @@ private:
 	/** Controls have lazy initialisation: this counts how many are left to go
 	 *  before the whole widget is initialised. */
 	int _controls_remaining;
+                
 };
 
 class Element : public QFrame
@@ -210,7 +222,7 @@ public slots:
 
 signals:
 	void replace( Element* );
-
+        void explode( Element* );
 	// Informs, that Element* n, Property s has changed.
 	void valueChanged( Element* n, QString s );
 	/** Indicates completion of lazy initialisation */
@@ -250,6 +262,8 @@ protected:
 protected slots:
 	// Use this slot if you don't want to do something before replacement.
 	virtual void slot_simple_replace() { replace( this ); }
+	// Use this slot if you don't want to do something before explosion.
+	virtual void slot_simple_explode() { explode( this ); }
 	// Use this slot if you want a simple selection toggle
 	virtual void slot_simple_select() { select( !isSelected() ); }
 	/** Receive and forward midi events (parameter, value pairs) to

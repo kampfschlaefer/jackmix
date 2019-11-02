@@ -45,7 +45,10 @@ def uic_scanner( node, env, path ):
 		#print "uic_scanner returning" + str(ret)
 		return ret
 
-	if str(node).split(".")[-1] == "h":
+	node_parts = str(node).split(".")
+	node_extn = node_parts[-1] if len(node_parts) > 1 else ""
+
+	if node_extn in [ "h", "" ]:
 		#print "uic_scanner processing a h-file " + str(node)
 		ret = []
 		for inc in includes:
@@ -64,11 +67,9 @@ def uic_scanner( node, env, path ):
 				#print [ header_to_check.split("/")[-1] ]
 				ret.append( header_to_check.split("/")[-1] )
 
-		#if ret != []:
-		#	print "uic_scanner returning " + str(ret)
 		return ret
 
-	print "\nWarning! was called with an unhandled suffix: " + str(node).split(".")[-1] + " !\n"
+	print("\nWarning! was called with an unhandled suffix: [{}]\\n".format(node_extn))
 	return []
 
 def GetAppVersion( context, app, version ):
@@ -89,7 +90,7 @@ def GetAppVersion( context, app, version ):
 	return ret
 
 def generate( env ):
-	print "Configuring qt4muc..."
+	print "Configuring qt5muc..."
 
 	conf = env.Configure( custom_tests = { 'GetAppVersion' : GetAppVersion } )
 
@@ -101,15 +102,15 @@ def generate( env ):
 					ret = command
 		return ret
 
-	moc = CommandFromList( ( "moc", "moc4", "moc-qt4" ), "Qt 4." )
+	moc = CommandFromList( ( "moc", "moc5", "moc-qt5" ), "moc 5." )
 	if len( moc ) < 3:
 		env.Exit( 1 )
 
-	uic = CommandFromList( ( "uic", "uic4", "uic-qt4" ), "4." )
+	uic = CommandFromList( ( "uic", "uic5", "uic-qt5" ), "5." )
 	if len( uic ) < 3:
 		env.Exit( 1 )
 
-	rcc = CommandFromList( ( "rcc", "rcc4", "rcc-qt4" ), "4." )
+	rcc = CommandFromList( ( "rcc", "rcc5", "rcc-qt5" ), "5." )
 	if len( rcc ) < 3:
 		env.Exit( 1 )
 

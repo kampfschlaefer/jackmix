@@ -27,9 +27,9 @@
 #include "knob.h"
 #include "midicontrolchannelassigner.h"
 
-#include <QtGui/QLayout>
-#include <QtGui/QPushButton>
-#include <QtGui/QLabel>
+#include <QtWidgets/QLayout>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QLabel>
 #include <QtCore/QList>
 #include <QtCore/QStringList>
 //#include <QtCore/QDebug>
@@ -77,8 +77,10 @@ AuxElement::AuxElement( QStringList inchannel, QStringList outchannel, MixingMat
 	: Element( inchannel, outchannel, p, n )
 	, dB2VolCalc( -42, 6 )
 {
-	menu()->addAction( "Select", this, SLOT( slot_simple_select() ) );
-	menu()->addAction( "Replace", this, SLOT( slot_simple_replace() ) );
+	if (p->mode() == Widget::Select) {
+		menu()->addAction( "Select", this, SLOT( slot_simple_select() ) );
+		menu()->addAction( "Replace", this, SLOT( slot_simple_replace() ) );
+	}
 	menu()->addAction( "Assign MIDI Parameter", this, SLOT( slot_assign_midi_parameters() ) );
 
 	QVBoxLayout* _layout = new QVBoxLayout( this );
@@ -117,3 +119,4 @@ void AuxElement::emitvalue( double n ) {
 	backend()->setVolume( _in[0], _out[0], dbtoamp( n ) );
 }
 
+void AuxElement::setIndicator(const QColor& c) { _poti->setIndicatorColor(c); };
