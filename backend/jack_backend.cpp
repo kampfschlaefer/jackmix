@@ -42,7 +42,7 @@ JackBackend::JackBackend( GuiServer_Interface* g ) : BackendInterface( g ) {
 	}
 	else {
 		qWarning() << "\n No jack-connection! :(\n\n";
-		gui->message( "No Jack-connection :-(", "<qt><p>Sorry, I couldn't connect to Jack. This probably means that <b>no jackd is running</b>. Please start it and try JackMix again.</p><p>If you don't know what I am talking about, than JackMix might not be the program you want...</p></qt>" );
+		gui->message( "No Jack-connection :-(", "<qt><p>Sorry, I couldn't connect to Jack. This probably means that <b>no jackd is running</b>. Please start it and try JackMix again.</p><p>If you don't know what I am talking about, then JackMix might not be the program you want...</p></qt>" );
 	}
 	//qDebug() << "JackBackend::JackBackend() finished";
 }
