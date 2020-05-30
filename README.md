@@ -26,7 +26,4 @@ There's a video about Nick using jackmix at [https://vimeo.com/75655401]
 This version of jackmix is enhanced for compatibility with an external
 MIDI control surface and compiles for qt5.
 
-To build the qt5 version, say `git clone -b qt5` or if you've already
-cloned the project, `git checkout qt5`
-
 Nick Bailey <nick@n-ism.org>
