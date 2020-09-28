@@ -33,9 +33,9 @@
 
 #include "aux_elements.h"
 #include "stereo_elements.h"
-
+/*
 #include "qlash.h"
-
+*/
 #include <QtCore/QDebug>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
@@ -68,9 +68,9 @@ MainWindow::MainWindow( QWidget* p ) : QMainWindow( p ), _backend( new JackBacke
 	{
 		QStringList args = qApp->arguments();
 		bool yes = false;
-		foreach( QString tmp, args )
+        /*	foreach( QString tmp, args )
 			if ( tmp.contains( "lash" ) )
-				yes = true;
+                        yes = true;  */
 		if ( !yes ) {
 			ins = QStringList() << "in_1" << "in_2" << "in_3" << "in_4" << "in_5" << "in_6" << "in_7" << "in_8";
 			outs = QStringList() << "out_1" << "out_2";
@@ -197,13 +197,13 @@ void MainWindow::init() {
 
 	_select_action->toggle();
 	toggleselectmode();
-
+/*
 	_lashclient = new qLash::qLashClient( "JackMix", 0,0, this );
 	connect( _lashclient, SIGNAL( quitApp() ), this, SLOT( close() ) );
 	connect( _lashclient, SIGNAL( saveToDir( QString ) ), this, SLOT( saveLash( QString ) ) );
 	connect( _lashclient, SIGNAL( restoreFromDir( QString ) ), this, SLOT( restoreLash( QString ) ) );
 	//_lashclient->setJackName( "JackMix" );
-
+*/
 	midiControlSender = new MidiControl::ControlSender("JackMix Control");
 
 	connect (_backend, SIGNAL(inputLevelsChanged(JackMix::BackendInterface::levels_t)),
@@ -681,7 +681,7 @@ void MainWindow::restoreLash( QString dir ) {
 	qDebug() << "MainWindow::restoreLash(" << dir << ")";
 	QString file = QString( "%1/jackmix.jm-xml" ).arg( dir );
 	openFile( file );
-	_lashclient->setJackName( "JackMix" );
+/*	_lashclient->setJackName( "JackMix" ); */
 	qDebug() << "MainWindow::restoreLash() finished";
 }
 
