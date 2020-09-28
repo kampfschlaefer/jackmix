@@ -39,7 +39,7 @@ allpresent &= conf.CheckForPKGConfig()
 
 pkgs = {
 	'jack': '0.100.0',
-	'lash-1.0': '0.5.1',
+	#'lash-1.0': '0.5.1',
 	'Qt5Core': '5.3',
 	'Qt5Widgets': '5.3',
 	'Qt5Gui': '5.3',
@@ -69,7 +69,7 @@ env.MergeFlags(env["QT5WIDGETS_FLAGS"])
 env.SConscript(
 	dirs=[
 		'libcore',
-		'libqlash',
+		#'libqlash',
 		'libgui',
 		'backend',
 		'libmatrix',
