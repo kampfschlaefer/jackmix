@@ -24,10 +24,10 @@
 # Checks for pkg-config
 #
 def CheckForPKGConfig( context, version='0.0.0' ):
-	context.Message( "Checking for pkg-config (at least version %s)... " % version )
-	ret = context.TryAction( "pkg-config --atleast-pkgconfig-version=%s" %version )[0]
-	context.Result( ret )
-	return ret
+        context.Message( "Checking for pkg-config (at least version %s)... " % version )
+        ret = context.TryAction( "pkg-config --atleast-pkgconfig-version=%s" %version )[0]
+        context.Result( ret )
+        return ret
 
 #
 # Checks for the existance of the package and returns the packages flags.
@@ -35,27 +35,29 @@ def CheckForPKGConfig( context, version='0.0.0' ):
 # This should allow caching of the flags so that pkg-config is called only once.
 #
 def GetPKGFlags( context, name, version="" ):
-	import os
+        from subprocess import Popen, PIPE
 
-	if version == "":
-		context.Message( "Checking for %s... \t" % name )
-		ret = context.TryAction( "pkg-config --exists '%s'" % name )[0]
-	else:
-		context.Message( "Checking for %s (%s or higher)... \t" % (name,version) )
-		ret = context.TryAction( "pkg-config --atleast-version=%s '%s'" % (version,name) )[0]
+        if version == "":
+                context.Message( "Checking for %s... \t" % name )
+                ret = context.TryAction( "pkg-config --exists '%s'" % name )[0]
+        else:
+                context.Message( "Checking for %s (%s or higher)... \t" % (name,version) )
+                ret = context.TryAction( "pkg-config --atleast-version=%s '%s'" % (version,name) )[0]
 
-	if not ret:
-		context.Result( ret )
-		return ret
+        if not ret:
+                context.Result( ret )
+                return ret
 
-	out = os.popen2( "pkg-config --cflags --libs %s" % name )[1]
-	ret = out.read()
+        p = Popen("pkg-config --cflags --libs %s" % name,
+                  shell=True, stdin=PIPE, stdout=PIPE, close_fds=True)
+        out = p.stdout
+        ret = out.read()
 
-	context.Result( True )
-	return ret
+        context.Result( True )
+        return ret
 
 def generate( env, **kw ):
-	env['PKGCONFIG_TESTS' ] = { 'CheckForPKGConfig' : CheckForPKGConfig, 'GetPKGFlags' : GetPKGFlags }
+        env['PKGCONFIG_TESTS' ] = { 'CheckForPKGConfig' : CheckForPKGConfig, 'GetPKGFlags' : GetPKGFlags }
 
 def exists( env ):
-	return 1
+        return 1
