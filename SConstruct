@@ -8,9 +8,9 @@ import os
 
 # Load the builders in config
 env = Environment(
-	ENV=os.environ,
-	tools=['default', 'pkgconfig', 'qt5muc'],
-	toolpath=['admin']
+        ENV=os.environ,
+        tools=['default', 'pkgconfig', 'qt5muc'],
+        toolpath=['admin']
 )
 
 env.Replace(LIBS="")
@@ -22,16 +22,16 @@ tests = {}
 tests.update(env['PKGCONFIG_TESTS'])
 
 conf = Configure(
-	env,
-	custom_tests=tests,
-	conf_dir='cache',
-	log_file='cache/config.log'
+        env,
+        custom_tests=tests,
+        conf_dir='cache',
+        log_file='cache/config.log'
 )
 
 if not conf.CheckHeader('stdio.h', language="C"):
-	Exit(1)
+        Exit(1)
 if not conf.CheckHeader("iostream", language="C++"):
-	Exit(1)
+        Exit(1)
 
 allpresent = 1
 
@@ -47,16 +47,19 @@ pkgs = {
 	'alsa': '1.0'
 }
 for pkg in pkgs:
-	name2 = pkg.replace("+", "").replace(".", "").replace("-", "").upper()
-	env['%s_FLAGS' % name2] = conf.GetPKGFlags(pkg, pkgs[pkg])
-	if env['%s_FLAGS' % name2] == 0:
-		allpresent &= 0
+        name2 = pkg.replace("+", "").replace(".", "").replace("-", "").upper()
+        res = conf.GetPKGFlags(pkg, pkgs[pkg])
+        if isinstance(res, bytes):
+                res = res.decode()
+        env['%s_FLAGS' % name2] = res
+        if env['%s_FLAGS' % name2] == 0:
+                allpresent &= 0
 
 if not allpresent:
-	print(
-		"(At least) One of the dependencies is missing. I can't go on without it..."
-	)
-	Exit(1)
+        print(
+                "(At least) One of the dependencies is missing. I can't go on without it..."
+        )
+        Exit(1)
 
 env = conf.Finish()
 
