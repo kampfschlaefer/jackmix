@@ -32,6 +32,9 @@ int main( int argc, char** argv ) {
         qRegisterMetaType<JackMix::BackendInterface::levels_t>("JackMix::BackendInterface::levels_t");
 	QStringList args = qapp->arguments();
 	QString file;
+
+
+	//Check the arguments 
 	for( int i=1; i<args.size(); ++i ) {
 		qDebug() << QString( " arg %1: %2" ).arg( i ).arg( args[ i ] );
 		if ( QFile::exists( args[ i ] ) )
@@ -39,6 +42,8 @@ int main( int argc, char** argv ) {
 	}
 
 	JackMix::MainWindow *mw;
+
+	//Detects whether the local configuration file is loaded
 	if ( !file.isEmpty() )
 		mw = new JackMix::MainWindow( file );
 	else
