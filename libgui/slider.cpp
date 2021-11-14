@@ -41,7 +41,7 @@ Slider::Slider( double value, double min, double max, int precision, double page
 {
 	setAutoFillBackground( false );
 	int m = QFontMetrics( font() ).height();
-	int w = QFontMetrics( font() ).width( valuestring );
+	int w = QFontMetrics( font() ).horizontalAdvance( valuestring );
 	setMinimumSize( int( w*1.2 ), int( m*2.2 ) );
 	setFocusPolicy( Qt::TabFocus );
 
@@ -78,7 +78,7 @@ void Slider::paintEvent( QPaintEvent* ) {
 	else tmp = _valuestring.arg( tmp );
 
 	QFontMetrics metrics( font() );
-	int fontwidth = metrics.width( tmp );
+	int fontwidth = metrics.horizontalAdvance( tmp );
 
 	// Center the coordinates
 	p.translate( width()/2, height()/2 );
@@ -121,15 +121,15 @@ void Slider::paintEvent( QPaintEvent* ) {
 		p.drawLine( QPointF( 0, h/3 ), QPointF( 0, -h/3 ) );
 		QRectF rect(
 			0,0,
-			QFontMetrics( small ).width( _valuestring ),
+			QFontMetrics( small ).horizontalAdvance( _valuestring ),
 			QFontMetrics( small ).height() );
 		if ( !rotated ) {
 			if ( dbtondb( a ) > 0.5 )
-				rect.translate( -QFontMetrics( small ).width( _valuestring ), 0 );
+				rect.translate( -QFontMetrics( small ).horizontalAdvance( _valuestring ), 0 );
 			p.drawText( rect.translated( 0, h/3 ), Qt::AlignCenter, QString( _valuestring ).arg( a ) );
 			//p.drawText( rect.translated( 0, -h/3 -rect.height() ), Qt::AlignCenter, QString( _valuestring ).arg( a ) );
 			if ( a == 0.0 ) {
-				_nullclick = p.matrix().mapRect( rect.translated( 0, h/3 ) ).toRect();
+				_nullclick = p.transform().mapRect( rect.translated( 0, h/3 ) ).toRect();
 				//_nullclick = _nullclick.united( p.matrix().mapRect( rect.translated( 0, -h/3 -rect.height() ) ).toRect() );
 			}
 		} else {
@@ -139,7 +139,7 @@ void Slider::paintEvent( QPaintEvent* ) {
 			p.drawText( rect.translated( h/3, 0 ), Qt::AlignCenter, QString( _valuestring ).arg( a ) );
 			//p.drawText( rect.translated( -h/3 -rect.width(), 0 ), Qt::AlignCenter, QString( _valuestring ).arg( a ) );
 			if ( a == 0.0 ) {
-				_nullclick = p.matrix().mapRect( rect.translated( h/3,0 ) ).toRect();
+				_nullclick = p.transform().mapRect( rect.translated( h/3,0 ) ).toRect();
 				//_nullclick = _nullclick.united( p.matrix().mapRect( rect.translated( -h/3-rect.width(),0 ) ).toRect() );
 			}
 		}
@@ -157,9 +157,9 @@ void Slider::paintEvent( QPaintEvent* ) {
 		// Global ends first
 		grad.setColorAt( 0.0, palette().color( QPalette::Highlight ) );
 		if ( dbtondb( _value ) < 1.0 )
-			grad.setColorAt( 1.0, palette().color( QPalette::Highlight ).dark() );
+			grad.setColorAt( 1.0, palette().color( QPalette::Highlight ).darker() );
 		// Next soft-fades
-		grad.setColorAt( qMax( 0.0, dbtondb( _value )-0.01 ), palette().color( QPalette::Highlight ).light() );
+		grad.setColorAt( qMax( 0.0, dbtondb( _value )-0.01 ), palette().color( QPalette::Highlight ).lighter() );
 		if ( dbtondb( _value )+0.01 < 1.0 )
 		grad.setColorAt( qMin( 1.0, dbtondb( _value )+0.01 ), palette().color( QPalette::Highlight ) );
 		// Last the value itself
@@ -170,7 +170,7 @@ void Slider::paintEvent( QPaintEvent* ) {
 	}
 
 	// Set _faderarea correctly
-	_faderarea = p.matrix().mapRect( bar ).toRect();
+	_faderarea = p.transform().mapRect( bar ).toRect();
 
 	// de-rotate
 	if ( rotated )
@@ -182,7 +182,7 @@ void Slider::paintEvent( QPaintEvent* ) {
 		p.setPen( Qt::NoPen );
 		p.setBrush( palette().color( QPalette::Base ) );
 		p.setOpacity( 0.75 );
-		p.drawRoundRect( -fontwidth/2 -2, height()/3 -metrics.ascent() -1, fontwidth +4, metrics.ascent() +4 );
+		p.drawRoundedRect( -fontwidth/2 -2, height()/3 -metrics.ascent() -1, fontwidth +4, metrics.ascent() +4, 20, 20, Qt::RelativeSize );
 		p.restore();
 		// Text showing the value
 		p.drawText( -fontwidth/2, height()/3, tmp );

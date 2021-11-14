@@ -22,7 +22,7 @@
 #define BACKEND_INTERFACE_H
 
 #include <QtCore/QStringList>
-#include <QtCore/QTime>
+#include <QtCore/QElapsedTimer>
 #include <QObject>
 
 #include <QtCore/QDebug>
@@ -144,7 +144,7 @@ Q_OBJECT
 			Level level;
 			float max;
 			bool  changed;
-			QTime timeout;
+			QElapsedTimer timeout;
 		} Stats;
 
 		QMap<QString, Stats> stats[2];

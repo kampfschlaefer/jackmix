@@ -53,7 +53,8 @@ Knob::Knob( double v, double min, double max, int precision, double pagestep,
 	, _show_value( false )
         , _indicator(indicator)
 {
-	int m = fontMetrics().width( _valuestring ) + ( _precision+2 )* QFontMetrics( font() ).width( " " );
+	int m = fontMetrics().horizontalAdvance( _valuestring ) +
+		( _precision+2 )* QFontMetrics( font() ).horizontalAdvance( " " );
 	int h = fontMetrics().height();
 	setMinimumSize( int( m*1.1 ), int( h*2.2 ) );
 	setFocusPolicy( Qt::TabFocus );
@@ -109,7 +110,7 @@ void Knob::paintEvent( QPaintEvent* ) {
 	{
 		QRadialGradient grad( QPointF( 0,0 ), radius, QPointF( 0, radius*0.7 ) );
 		grad.setColorAt( 0, _indicator );
-		grad.setColorAt( 1, _indicator.dark() );
+		grad.setColorAt( 1, _indicator.darker() );
 		grad.setSpread( QGradient::PadSpread );
 		p.setBrush( grad );
 		p.drawEllipse( QRectF( -radius*0.8, -radius*0.8, radius*1.6, radius*1.6 ) );
@@ -117,7 +118,7 @@ void Knob::paintEvent( QPaintEvent* ) {
 	{
 		QRadialGradient grad( QPointF( 0,0 ), radius*0.60, QPointF( 0, radius*0.20 ) );
 		grad.setColorAt( 1, palette().color( QPalette::Highlight ) );
-		grad.setColorAt( 0, palette().color( QPalette::Highlight ).light() );
+		grad.setColorAt( 0, palette().color( QPalette::Highlight ).lighter() );
 		grad.setSpread( QGradient::PadSpread );
 		p.setBrush( grad );
 		p.drawEllipse( QRectF( -radius*0.65, -radius*0.65, radius*1.3, radius*1.3 ) );
@@ -156,13 +157,13 @@ void Knob::paintEvent( QPaintEvent* ) {
 		p.rotate( -dbtondb( a )*300 +240 );
 		QRectF rect(
 			0,0,
-			QFontMetrics( small ).width( _valuestring ),
+			QFontMetrics( small ).horizontalAdvance( _valuestring ),
 			QFontMetrics( small ).height() );
 		if ( dbtondb( a ) < 0.5 )
-			rect.translate( -QFontMetrics( small ).width( _valuestring ), 0 );
+			rect.translate( -QFontMetrics( small ).horizontalAdvance( _valuestring ), 0 );
 		p.drawText( rect, Qt::AlignCenter, QString( _valuestring ).arg( a ) );
 		if ( a == 0.0 )
-			_nullclick = p.matrix().mapRect( rect ).toRect();
+			_nullclick = p.transform().mapRect( rect ).toRect();
 		p.restore();
 	}
 	p.restore();
@@ -198,7 +199,7 @@ void Knob::paintEvent( QPaintEvent* ) {
 		//p.setBrush( palette().color( QPalette::Window ) );
 		p.setOpacity( 0.75 );
 		p.setBrush( palette().color( QPalette::Base ) );
-		p.drawRoundRect( rect.translated( -x, y*0.9 ).adjusted( -2, 1, 2,-2 ), 20, 50 );
+		p.drawRoundedRect( rect.translated( -x, y*0.9 ).adjusted( -2, 1, 2,-2 ), 20, 50 );
 		p.restore();
 	}
 	p.drawText( QPointF( -x, y*0.9 ), tmp );
