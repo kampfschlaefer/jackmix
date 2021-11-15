@@ -261,7 +261,7 @@ Q_OBJECT
 				}
 				
 				if (fs.cur_step == fs.num_steps) {
-					qDebug() << "In/Out fader reached target at step " << fs.cur_step ;
+					//qDebug() << "In/Out fader reached target at step " << fs.cur_step ;
 					fs.current = fs.target;
 					fs.num_steps = interp_len; // in case sample rate has changed
 					fs.cur_step = 0; // for safety
@@ -312,7 +312,7 @@ Q_OBJECT
 				}
 
 				if (fs.cur_step == fs.num_steps) {
-					qDebug() << "Matrix fader reached target at step " << fs.cur_step ;
+					//qDebug() << "Matrix fader reached target at step " << fs.cur_step ;
 					fs.current = fs.target;
 					fs.num_steps = interp_len; // in case sample rate has changed
 					fs.cur_step = 0; // for safety
