@@ -277,6 +277,15 @@ int JackMix::process( jack_nframes_t nframes, void* arg ) {
 	}
 	
 	// Make a copy of the input buffers taking each input fader setting into account.
+	// Thanks to Alan Amaral for reporting this. His report is reproduced below as it's spot on.
+	//
+	// In this loop we get a pointer to each input buffer, then allocate a new buffer and copy
+	// the data into it for use below.  If we don't do this then there is a subtle bug where
+	// if an output, say from a mono microphone, is routed to multiple different inputs, the code
+	// that adjusts the input levels processes the same input buffer multiple times.  This means
+	// that setting the input setting on any one of the inputs to zero (-42dB) causes all of the
+	// inputs with a common source to turn off, or setting 2 of the inputs to -6dB (with the rest
+	// at 0dB) causes all the inputs to be set to -12dB.  I'm pretty sure this is not intentional.
 	QMap<QString,jack_default_audio_sample_t*> ins;
 	JackMix::ports_it it;
 	jack_default_audio_sample_t in_bufs[backend->in_ports.size() * nframes];
