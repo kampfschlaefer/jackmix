@@ -95,7 +95,7 @@ protected:
 protected:
 	int port_id;
 	snd_seq_t *seq_handle;
-	static const int maxMidiParam = 120;
+	static const int maxMidiParam = 128;
 	/** Despatch table
 	 *  An array of vectors, one for each MIDI parameter read from the input
 	 *  channel.

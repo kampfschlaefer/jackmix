@@ -57,13 +57,16 @@ void PortListener::run()
 		// user-space every 200ms or so
 		if (poll(pfd, npfd, 200) > 0) {
 			do {
-				snd_seq_event_input(seq_handle, &ev);
-				if (ev -> type == SND_SEQ_EVENT_CONTROLLER) {
-					param = ev->data.control.param;
-					value = ev->data.control.value;
-					emit message(param, value);
+				// Returning -ENOSPC means the MIDI buffer overran, so check for an error here
+				if (snd_seq_event_input(seq_handle, &ev) >= 0) {
+					if (ev -> type == SND_SEQ_EVENT_CONTROLLER) {
+						param = ev->data.control.param;
+						value = ev->data.control.value;
+						qDebug()<<param<<value;
+						emit message(param, value);
+					}
+					snd_seq_free_event(ev);
 				}
-				snd_seq_free_event(ev);
 			} while (snd_seq_event_input_pending(seq_handle, 0) > 0);
 		}
 		
