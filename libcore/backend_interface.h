@@ -22,7 +22,7 @@
 #define BACKEND_INTERFACE_H
 
 #include <QtCore/QStringList>
-#include <QtCore/QTime>
+#include <QtCore/QElapsedTimer>
 #include <QObject>
 
 #include <QtCore/QDebug>
@@ -144,7 +144,7 @@ Q_OBJECT
 			Level level;
 			float max;
 			bool  changed;
-			QTime timeout;
+			QElapsedTimer timeout;
 		} Stats;
 
 		QMap<QString, Stats> stats[2];
@@ -261,7 +261,7 @@ Q_OBJECT
 				}
 				
 				if (fs.cur_step == fs.num_steps) {
-					qDebug() << "In/Out fader reached target at step " << fs.cur_step ;
+					//qDebug() << "In/Out fader reached target at step " << fs.cur_step ;
 					fs.current = fs.target;
 					fs.num_steps = interp_len; // in case sample rate has changed
 					fs.cur_step = 0; // for safety
@@ -312,7 +312,7 @@ Q_OBJECT
 				}
 
 				if (fs.cur_step == fs.num_steps) {
-					qDebug() << "Matrix fader reached target at step " << fs.cur_step ;
+					//qDebug() << "Matrix fader reached target at step " << fs.cur_step ;
 					fs.current = fs.target;
 					fs.num_steps = interp_len; // in case sample rate has changed
 					fs.cur_step = 0; // for safety

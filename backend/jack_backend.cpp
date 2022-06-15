@@ -42,7 +42,7 @@ JackBackend::JackBackend( GuiServer_Interface* g ) : BackendInterface( g ) {
 	}
 	else {
 		qWarning() << "\n No jack-connection! :(\n\n";
-		gui->message( "No Jack-connection :-(", "<qt><p>Sorry, I couldn't connect to Jack. This probably means that <b>no jackd is running</b>. Please start it and try JackMix again.</p><p>If you don't know what I am talking about, than JackMix might not be the program you want...</p></qt>" );
+		gui->message( "No Jack-connection :-(", "<qt><p>Sorry, I couldn't connect to Jack. This probably means that <b>no jackd is running</b>. Please start it and try JackMix again.</p><p>If you don't know what I am talking about, then JackMix might not be the program you want...</p></qt>" );
 	}
 	//qDebug() << "JackBackend::JackBackend() finished";
 }
@@ -276,31 +276,51 @@ int JackMix::process( jack_nframes_t nframes, void* arg ) {
 			backend->send_signal(event.buffer[1], event.buffer[2]);
 	}
 	
+	// Make a copy of the input buffers taking each input fader setting into account.
+	// Thanks to Alan Amaral for reporting this. His report is reproduced below as it's spot on.
+	//
+	// In this loop we get a pointer to each input buffer, then allocate a new buffer and copy
+	// the data into it for use below.  If we don't do this then there is a subtle bug where
+	// if an output, say from a mono microphone, is routed to multiple different inputs, the code
+	// that adjusts the input levels processes the same input buffer multiple times.  This means
+	// that setting the input setting on any one of the inputs to zero (-42dB) causes all of the
+	// inputs with a common source to turn off, or setting 2 of the inputs to -6dB (with the rest
+	// at 0dB) causes all the inputs to be set to -12dB.  I'm pretty sure this is not intentional.
 	QMap<QString,jack_default_audio_sample_t*> ins;
 	JackMix::ports_it it;
-	for ( it = backend->in_ports.begin(); it!=backend->in_ports.end(); ++it )
-		ins.insert( it.key(), (jack_default_audio_sample_t*) jack_port_get_buffer( it.value(), nframes ) );
+	jack_default_audio_sample_t in_bufs[backend->in_ports.size() * nframes];
+	memset(in_bufs, 0, sizeof(jack_default_audio_sample_t) * backend->in_ports.size() * nframes);
+	jack_default_audio_sample_t * buf_allocator {in_bufs};
+	for ( it = backend->in_ports.begin(), buf_allocator = in_bufs;
+		it != backend->in_ports.end();
+		++it, buf_allocator += nframes ) {
+		QString key {it.key()};
+		backend->interp_fader<jack_default_audio_sample_t>(
+			buf_allocator,
+			(jack_default_audio_sample_t*) jack_port_get_buffer( it.value(), nframes ),
+			nframes, backend->getInVolume(key)
+		);
+			
+		float max {0};
+		for (size_t s {0}; s < nframes; ++s)
+			max = qMax(max, buf_allocator[s]);
+		backend->newInputLevel(key, max);
+
+		ins.insert( it.key(), buf_allocator );
+	}
+	
+	// Build a map of output port buffers
 	QMap<QString,jack_default_audio_sample_t*> outs;
-	for ( it = backend->out_ports.begin(); it != backend->out_ports.end(); ++it )
+	for ( it = backend->out_ports.begin(); it != backend->out_ports.end(); ++it ) {
 		outs.insert( it.key(), (jack_default_audio_sample_t*) jack_port_get_buffer( it.value(), nframes ) );
+	}
 	ports_it in_it;
 	ports_it out_it;
+	
 	/// Blank outports...
 	for ( out_it = backend->out_ports.begin(); out_it != backend->out_ports.end(); ++out_it ) {
 		jack_default_audio_sample_t* tmp = outs[ out_it.key() ];
-		for ( jack_nframes_t n=0; n<nframes; n++ ) tmp[ n ] = 0;
-	}
-	/// Adjust inlevels.
-	for ( in_it = backend->in_ports.begin(); in_it != backend->in_ports.end(); ++in_it ) {
-		QString key {in_it.key()};
-		jack_default_audio_sample_t* tmp = ins[ key ];
-
-		float max =
-			backend->interp_fader<jack_default_audio_sample_t>(
-				tmp, nframes, backend->getInVolume(key)
-			);
-		
-		backend->newInputLevel(key, max);
+		memset(tmp, 0, nframes * sizeof(jack_default_audio_sample_t));
 	}
 		 
 	/// The actual mixing.
@@ -314,16 +334,17 @@ int JackMix::process( jack_nframes_t nframes, void* arg ) {
  		}
 		
 	}
+	
 	/// Adjust outlevels.
 	for ( out_it = backend->out_ports.begin(); out_it != backend->out_ports.end(); ++out_it ) {
 		QString key {out_it.key()};
- 		jack_default_audio_sample_t* tmp = outs[ key ];
-		
+		jack_default_audio_sample_t* tmp = outs[ key ];
+		// Use the inplace fader: it scales the output rather than incrementally adding to it from a source.
 		float max =
 			backend->interp_fader<jack_default_audio_sample_t>(
 				tmp, nframes, backend->getOutVolume(key)
 			);
-		
+
 		backend->newOutputLevel(key, max);
 	}
 

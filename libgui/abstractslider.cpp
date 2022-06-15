@@ -126,7 +126,7 @@ void AbstractSlider::mouseMoveEvent( QMouseEvent* ev ) {
 	mouseEvent( ev );
 }
 void AbstractSlider::wheelEvent( QWheelEvent* ev ) {
-	if ( ev->delta() > 0 )
+	if ( ev->angleDelta().y() > 0 )
 		value( value() + _pagestep, true );
 	else
 		value( value() - _pagestep, true );

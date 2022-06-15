@@ -57,13 +57,15 @@ void PortListener::run()
 		// user-space every 200ms or so
 		if (poll(pfd, npfd, 200) > 0) {
 			do {
-				snd_seq_event_input(seq_handle, &ev);
-				if (ev -> type == SND_SEQ_EVENT_CONTROLLER) {
-					param = ev->data.control.param;
-					value = ev->data.control.value;
-					emit message(param, value);
+				// Returning -ENOSPC means the MIDI buffer overran, so check for an error here
+				if (snd_seq_event_input(seq_handle, &ev) >= 0) {
+					if (ev -> type == SND_SEQ_EVENT_CONTROLLER) {
+						param = ev->data.control.param;
+						value = ev->data.control.value;
+						emit message(param, value);
+					}
+					snd_seq_free_event(ev);
 				}
-				snd_seq_free_event(ev);
 			} while (snd_seq_event_input_pending(seq_handle, 0) > 0);
 		}
 		
@@ -127,9 +129,16 @@ void ControlSender::unsubscribe(ControlReceiver *receiver, int parameter) {
 }
 
 void ControlSender::despatch_message(int param, int val) {
-	QListIterator<ControlReceiver*> iterator(dtab[param]);
-	while (iterator.hasNext())
-		iterator.next()->controlEvent(param, val);
+	// Ignore parameter index past end of the despatch table.
+	// That includes the "specials" like MIDI all-off, which, it turns out,
+	// is one of the reserved CC messages referred to as Channel Control messages
+	// (controller # >= 122) See for example:
+	//	https://cmtext.indiana.edu/MIDI/chapter3_channel_mode_messages.php
+	if (param < maxMidiParam) {
+		QListIterator<ControlReceiver*> iterator(dtab[param]);
+		while (iterator.hasNext())
+			iterator.next()->controlEvent(param, val);
+	}
 }
 
 };

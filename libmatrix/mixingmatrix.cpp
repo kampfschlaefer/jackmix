@@ -402,7 +402,7 @@ void Element::select( bool n ) {
 			QPalette pal;
 			if ( _selected ) {
 				setFrameShadow( QFrame::Sunken );
-				pal.setColor( QPalette::Window, pal.color( QPalette::Window ).dark() );
+				pal.setColor( QPalette::Window, pal.color( QPalette::Window ).darker() );
 			} else {
 				setFrameShadow( QFrame::Raised );
 				// The dark() method above returns the selected colour, but doesn't

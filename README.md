@@ -26,4 +26,8 @@ There's a video about Nick using jackmix at [https://vimeo.com/75655401]
 This version of jackmix is enhanced for compatibility with an external
 MIDI control surface and compiles for qt5.
 
+As of 15th June 2022, Lash support (session management) has been withdrawn.
+You can save and GUI settings to configurations to xml files
+using the File menu.
+
 Nick Bailey <nick@n-ism.org>
