@@ -1,0 +1,36 @@
+<jackmix version="0.5">
+<ins>
+<channel name="in_1" volume="0" midi="0" />
+<channel name="in_2" volume="0" midi="0" />
+<channel name="in_3" volume="0" midi="0" />
+<channel name="in_4" volume="0" midi="0" />
+<channel name="in_5" volume="0" midi="0" />
+<channel name="in_6" volume="0" midi="0" />
+<channel name="in_7" volume="0" midi="0" />
+<channel name="in_8" volume="0" midi="0" />
+</ins>
+<outs>
+<channel name="out_1" volume="0" midi="0" />
+<channel name="out_2" volume="0" midi="0" />
+</outs>
+<matrix>
+<volume in="in_1" out="out_1" value="0" midi="0" />
+<volume in="in_1" out="out_2" value="0" midi="0" />
+<volume in="in_2" out="out_1" value="0" midi="0" />
+<volume in="in_2" out="out_2" value="0" midi="0" />
+<volume in="in_3" out="out_1" value="0" midi="0" />
+<volume in="in_3" out="out_2" value="0" midi="0" />
+<volume in="in_4" out="out_1" value="0" midi="0" />
+<volume in="in_4" out="out_2" value="0" midi="0" />
+<volume in="in_5" out="out_1" value="0" midi="0" />
+<volume in="in_5" out="out_2" value="0" midi="0" />
+<volume in="in_6" out="out_1" value="0" midi="0" />
+<volume in="in_6" out="out_2" value="0" midi="0" />
+<volume in="in_7" out="out_1" value="0" midi="0" />
+<volume in="in_7" out="out_2" value="0" midi="0" />
+<volume in="in_8" out="out_1" value="0" midi="0" />
+<volume in="in_8" out="out_2" value="0" midi="0" />
+</matrix>
+<elements>
+</elements>
+</jackmix>

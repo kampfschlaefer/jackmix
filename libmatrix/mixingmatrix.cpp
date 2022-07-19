@@ -43,6 +43,10 @@
 #include <QtCore/QList>
 #include <QtGui/QColor>
 
+#include <QRadioButton>
+#include <QCheckBox>
+#include <QAbstractButton>
+
 namespace JackMix {
 namespace MixingMatrix {
         
@@ -81,30 +85,34 @@ void Widget::addElement( Element* n ) {
 	connect( n, SIGNAL( explode( Element* ) ), this, SLOT( explode( Element* ) ) );
 	resizeEvent( 0 );
 }
+
 void Widget::removeElement( Element* n ) {
 	//qDebug("Removing element");
 	_elements.removeAll( n );
 }
 
 void Widget::replace( Element* n ) {
-	//qDebug( "Widget::replace( Element* %p )", n );
-	//qDebug( "This Element has %i selected neighbors.", n->neighbors() );
-	//qDebug( " and %i selected followers.", n->followers( n->neighbors() ) );
+	qDebug( "Widget::replace --- ( Element* %p )", n );
+	qDebug( "Widget::replace --- This Element has %i selected neighbors.", n->neighbors() );
+	qDebug( "Widget::replace --- and %i selected followers.", n->followers( n->neighbors() ) );
 	QStringList in, out;
 	in = n->neighborsList();
-	//qDebug( "Selected ins = %s", qPrintable( in.join( "," ) ) );
+	qDebug( "Widget::replace --- Selected ins = %s", qPrintable( in.join( "," ) ) );
 	out = n->followersList();
-	//qDebug( "Selected outs = %s", qPrintable( out.join( "," ) ) );
+	qDebug( "Widget::replace --- Selected outs = %s", qPrintable( out.join( "," ) ) );
 	for ( QStringList::ConstIterator it=out.begin(); it!=out.end(); ++it ) {
 		for ( QStringList::ConstIterator jt=in.begin(); jt!=in.end(); ++jt ) {
 			Element* tmp = getResponsible( ( *jt ),( *it ) );
-			//qDebug( "About to delete %p", tmp );
+			qDebug( "Widget::replace --- About to delete %p", tmp );
 			if ( tmp )
 				tmp->deleteLater();
 		}
 	}
+	
 	createControl( in, out );
+	
 	QTimer::singleShot( 1, this, SLOT( autoFill() ) );
+		
 }
 
 void Widget::explode( Element* n )  {
@@ -141,10 +149,10 @@ void Widget::autoFill() {
 		//qDebug( "Doing the Autofill-boogie..." );
 		for ( QStringList::Iterator init=_inchannels.begin(); init!=_inchannels.end(); ++init )
 			for ( QStringList::Iterator outit=_outchannels.begin(); outit!=_outchannels.end(); ++outit ) {
-				if ( !getResponsible( *init, *outit ) ) // {
+				if ( !getResponsible( *init, *outit ) ) {
 					//qDebug( "...together with (%s|%s)", qPrintable( *init ), qPrintable( *outit ) );
 					createControl( QStringList()<<*init, QStringList()<<*outit );
-				// }
+				}
 				//else
 					//qDebug( "   (%s|%s) is allready occupied. :(", qPrintable( *init ), qPrintable( *outit ) );
 			}
@@ -163,7 +171,6 @@ void Widget::autoFill() {
 				//qDebug() << " No responsible element found, creating a new one";
 				createControl( QStringList()<<*init, QStringList()<<*init );
 			}
-			
 		}
 	}
 	resizeEvent( 0 );
@@ -263,12 +270,35 @@ QSize Widget::smallestElement() const {
 	return QSize( w,h );
 }
 
-QString Widget::nextIn( QString n ) const {
+
+QString Widget::previousIn( QString n) const {
 	//qDebug() << "Widget::nextIn(" << n << ")";
 	if ( n.isNull() )
 		return 0;
-	int i = _inchannels.indexOf( n ) + 1;
+	int i = _inchannels.indexOf( n ) - 1;
 	//qDebug() << " i=" << i;
+	if ( i > -1)
+		return _inchannels.at( i );
+	return 0;
+}
+
+QString Widget::previousOut( QString n ) const {
+	if ( n.isNull() )
+		return 0;
+	int i = _outchannels.indexOf( n ) - 1;
+	if ( i > -1 )
+		return _outchannels.at( i );
+	return 0;
+}
+
+
+
+QString Widget::nextIn( QString n ) const {
+	qDebug() << "Widget::nextIn --- (" << n << ")";
+	if ( n.isNull() )
+		return 0;
+	int i = _inchannels.indexOf( n ) + 1;
+	qDebug() << "Widget::nextIn --- i=" << i;
 	if ( i < _inchannels.size() )
 		return _inchannels.at( i );
 	return 0;
@@ -394,6 +424,8 @@ bool Element::isResponsible( QString in, QString out ) {
 	return false;
 }
 
+
+
 void Element::select( bool n ) {
 	//qDebug( "MixingMatrix::Element::select( bool %i )", n );
 	if ( n != _selected ) {
@@ -401,6 +433,7 @@ void Element::select( bool n ) {
 			_selected = n;
 			QPalette pal;
 			if ( _selected ) {
+				//connect(pCheckbox, SIGNAL(buttonClicked(QAbstractButton*)), this, SLOT(onButtonClicked(QAbstractButton*)));
 				setFrameShadow( QFrame::Sunken );
 				pal.setColor( QPalette::Window, pal.color( QPalette::Window ).darker() );
 			} else {
@@ -415,22 +448,47 @@ void Element::select( bool n ) {
 	}
 }
 
+
 int Element::neighbors() const {
-	Element* neighbor = _parent->getResponsible( _parent->nextIn( _in[ _in.size()-1 ] ), _out[ 0 ] );
-	if ( neighbor && neighbor->isSelected() )
-		return neighbor->neighbors()+1;
+	Element* neighbor_r = _parent->getResponsible( _parent->nextIn( _in[ _in.size()-1 ] ), _out[ 0 ] );
+	//Element* neighbor_l = _parent->getResponsible( _parent->previousIn( _in[ _in.size()-1 ] ), _out[ 0 ] );
+	if ( neighbor_r && neighbor_r->isSelected() )
+		return neighbor_r->neighbors()+1;
+	//if ( neighbor_l && neighbor_l->isSelected() )
+	//	return neighbor_l->neighbors()-1;
 	return 0;
 }
+
 QStringList Element::neighborsList() const {
-	//qDebug( "self = [%s]", qPrintable( _in.join( "|" ) ) );
-	//qDebug( "neighbor = %s", qPrintable( _parent->nextIn( _in[ _in.size()-1 ] ) ) );
-	Element* neighbor = _parent->getResponsible( _parent->nextIn( _in[ _in.size()-1 ] ), _out[ 0 ] );
+	qDebug( "Element::neighborList --- self = [%s]", qPrintable( _in.join( "|" ) ) );
+	qDebug( "Element::neighborList --- neighbor_r = %s", qPrintable( _parent->nextIn( _in[ _in.size()-1 ] ) ) );
+	//qDebug( "neighbor_l = %s", qPrintable( _parent->previousIn( _in[ _in.size()-1 ] ) ) );
+	Element* neighbor_r = _parent->getResponsible( _parent->nextIn( _in[ _in.size()-1 ] ), _out[ 0 ] );
+	//Element* neighbor_l = _parent->getResponsible( _parent->previousIn( _in[ _in.size()-1 ] ), _out[ 0 ] );
 	QStringList tmp;
-	if ( neighbor && neighbor->isSelected() )
-		tmp = neighbor->neighborsList();
+	//QString neighbor = qPrintable( _parent->nextIn( _in[ _in.size()-1 ] ) );
+	//if ( neighbor_l && neighbor_l->isSelected()) {
+	//	tmp = neighbor_l->neighborsList();
+	//	tmp = tmp + _in;
+	//}
+	qDebug( "Element::neighborList --- _in is %s", qPrintable(_in.join(",")));
+	
+	if ( neighbor_r && neighbor_r->isSelected())
+		tmp = neighbor_r->neighborsList();
 	tmp = _in + tmp;
+		
+
+	qDebug( "Element::neighborList --- tmp is %s", qPrintable(tmp.join(",")));
+	
 	return tmp;
+	//if ( neighbor_l && neighbor_l->isSelected() ) 
+		//tmp = neighbor_l->neighborsList();
+	
+	//return _in;
 }
+		
+
+
 int Element::followers( int n ) const {
 	if ( n==0 )
 		return 0;
@@ -446,7 +504,7 @@ QStringList Element::followersList() const {
 	QStringList tmp;
 	if ( follower && follower->isSelected() )
 		tmp = follower->followersList();
-	tmp = _out + tmp;
+	tmp = _out + tmp;	
 	return tmp;
 }
 

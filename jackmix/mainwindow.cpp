@@ -121,6 +121,7 @@ void MainWindow::init() {
 	_filemenu->addAction( "Save File...", this, SLOT( saveFile() ), Qt::CTRL+Qt::Key_S );
 	_filemenu->addSeparator();
 	_filemenu->addAction( "&Quit", this, SLOT( close() ), Qt::CTRL+Qt::Key_Q );
+	
 
 	_editmenu = menuBar()->addMenu( "&Edit" );
 	_select_action = new QAction( "Select Mode", this );

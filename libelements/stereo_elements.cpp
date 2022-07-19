@@ -93,10 +93,7 @@ Mono2StereoElement::Mono2StereoElement( QStringList inchannel, QStringList outch
 	_layout->setMargin( 0 );
 	_layout->setSpacing( 0 );
   
-	menu()->addAction( "Select", this, SLOT( slot_simple_select() ) );
-	menu()->addAction( "Replace", this, SLOT( slot_simple_replace() ) );
-        menu()->addAction( "Explode", this, SLOT( slot_simple_explode() ) );
-	menu()->addAction( "Assign MIDI Parameter", this, SLOT( slot_assign_midi_parameters() ) );
+	
 	
 	_balance = new JackMix::GUI::Knob( _balance_value, -1, 1, 2, 0.1, this, "%1" );
 	_layout->addWidget( _balance, 10 );
@@ -109,6 +106,12 @@ Mono2StereoElement::Mono2StereoElement( QStringList inchannel, QStringList outch
 	connect( _volume, SIGNAL( select() ), this, SLOT( slot_simple_select() ) );
 	connect( _volume, SIGNAL( replace() ), this, SLOT( slot_simple_replace() ) );
 
+	menu()->addAction( "Select", this, SLOT( slot_simple_select() ) );
+	menu()->addAction( "&Replace", this, SLOT( slot_simple_replace() ) );
+        menu()->addAction( "&Explode", this, SLOT( slot_simple_explode() ) );
+	menu()->addAction( "&Assign MIDI Parameter", this, SLOT( slot_assign_midi_parameters() ) );
+	
+	
 	// WATCH OUT: Order of initialisation is really important!
 	// Make sure all the widgets are contructed before adding them to the delegates list
 
@@ -195,14 +198,18 @@ Stereo2StereoElement::Stereo2StereoElement( QStringList inchannels, QStringList 
 	QAction *toggle = new QAction( "Toggle Selection", this );
 	connect( toggle, SIGNAL( triggered() ), this, SLOT( slot_simple_select() ) );
 	menu()->addAction( toggle );
-	QAction *replace = new QAction( "Replace", this );
+	
+	QAction *replace = new QAction( "&Replace", this );
 	connect( replace, SIGNAL( triggered() ), this, SLOT( slot_simple_replace() ) );
 	menu()->addAction( replace );
-	QAction *explode = new QAction( "Explode", this );
+	
+	QAction *explode = new QAction( "&Explode", this );
+	explode->setShortcut(Qt::CTRL+Qt::Key_E);
+	this->addAction(explode);
 	connect( explode, SIGNAL( triggered() ), this, SLOT( slot_simple_explode() ) );
 	menu()->addAction( explode );
 
-	QAction *assign = new QAction( "Assign MIDI Parameter", this );
+	QAction *assign = new QAction( "&Assign MIDI Parameter", this );
 	connect( assign, SIGNAL( triggered() ), this, SLOT( slot_assign_midi_parameters() ) );
 	menu()->addAction( assign );
 	

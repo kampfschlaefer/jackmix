@@ -68,6 +68,8 @@ public:
 
 	QStringList inchannels() const { return _inchannels; }
 	QStringList outchannels() const { return _outchannels; }
+	QString previousIn( QString ) const;
+	QString previousOut( QString ) const;
 	QString nextIn( QString ) const;
 	QString nextOut( QString ) const;
 

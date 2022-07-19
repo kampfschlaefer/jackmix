@@ -32,7 +32,9 @@
 #include <QtWidgets/QLabel>
 #include <QtCore/QList>
 #include <QtCore/QStringList>
-//#include <QtCore/QDebug>
+#include <QtWidgets/QAction>
+#include <QShortcut>
+#include <QtCore/QDebug>
 
 #include <controlreceiver.h>
 #include <controlsender.h>
@@ -77,12 +79,18 @@ AuxElement::AuxElement( QStringList inchannel, QStringList outchannel, MixingMat
 	: Element( inchannel, outchannel, p, n )
 	, dB2VolCalc( -42, 6 )
 {
+	
 	if (p->mode() == Widget::Select) {
 		menu()->addAction( "Select", this, SLOT( slot_simple_select() ) );
-		menu()->addAction( "Replace", this, SLOT( slot_simple_replace() ) );
+		
+		menu()->addAction( "&Replace", this, SLOT( slot_simple_replace() ), Qt::Key_R );
+		
+		
 	}
-	menu()->addAction( "Assign MIDI Parameter", this, SLOT( slot_assign_midi_parameters() ) );
+	
+	menu()->addAction( "&Assign MIDI Parameter", this, SLOT( slot_assign_midi_parameters() ) );
 
+	
 	QVBoxLayout* _layout = new QVBoxLayout( this );
 
 	if ( _in[0] == _out[0] ) {
@@ -93,7 +101,8 @@ AuxElement::AuxElement( QStringList inchannel, QStringList outchannel, MixingMat
 	_poti = new JackMix::GUI::Knob(
 		amptodb( backend()->getVolume( _in[0], _out[0] ) ),
 		dbmin, dbmax, 2, 3, this );
-	_layout->addWidget( _poti, 100 );
+	_layout->addWidget( _poti, 2000 );
+	
 
 	connect( _poti, SIGNAL( valueChanged( double ) ), this, SLOT( emitvalue( double ) ) );
 	connect( _poti, SIGNAL( select() ), this, SLOT( slot_simple_select() ) );
