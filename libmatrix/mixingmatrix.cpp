@@ -134,6 +134,7 @@ bool Widget::createControl( QStringList inchannels, QStringList outchannels ) {
 	//qDebug( "Widget::createControl( QStringList '%s', QStringList '%s', %s)", qPrintable( inchannels.join( "," ) ), qPrintable( outchannels.join( "," ) ) );
 
 	QStringList controls = Global::the()->canCreate( inchannels.size(), outchannels.size() );
+	//QStringList controls = Global::the()->canCreate( 1, 2 );
 	if ( ! controls.isEmpty() ) {
 		//qDebug( "Found %s to control [%i,%i] channels", controls.front().toStdString().c_str(), inchannels.size(), outchannels.size() );
 		return Global::the()->create( controls.front(), inchannels, outchannels, this );
@@ -449,6 +450,7 @@ void Element::select( bool n ) {
 }
 
 
+
 int Element::neighbors() const {
 	Element* neighbor_r = _parent->getResponsible( _parent->nextIn( _in[ _in.size()-1 ] ), _out[ 0 ] );
 	//Element* neighbor_l = _parent->getResponsible( _parent->previousIn( _in[ _in.size()-1 ] ), _out[ 0 ] );
@@ -471,14 +473,14 @@ QStringList Element::neighborsList() const {
 	//	tmp = neighbor_l->neighborsList();
 	//	tmp = tmp + _in;
 	//}
-	qDebug( "Element::neighborList --- _in is %s", qPrintable(_in.join(",")));
+	//qDebug( "Element::neighborList --- _in is %s", qPrintable(_in.join(",")));
 	
-	if ( neighbor_r && neighbor_r->isSelected())
+	if (neighbor_r && neighbor_r->isSelected())
 		tmp = neighbor_r->neighborsList();
 	tmp = _in + tmp;
-		
 
 	qDebug( "Element::neighborList --- tmp is %s", qPrintable(tmp.join(",")));
+	qDebug( "Element::neighborList --- _in is %s", qPrintable(_in.join(",")));
 	
 	return tmp;
 	//if ( neighbor_l && neighbor_l->isSelected() ) 
@@ -555,6 +557,8 @@ void Element::renamechannels(QString old_name, QString new_name)
 	if (disp_name) disp_name->setText( QString("<qt><center>%1</center></qt>").arg(new_name) );
 }
 
+
+
 ElementFactory::ElementFactory() {
 	Global::the()->registerFactory( this );
 }
@@ -575,20 +579,20 @@ Global* Global::the() {
 }
 
 void Global::registerFactory( ElementFactory* n ) {
-	//qDebug( "Global::registerFactory( ElementFactory* %p )", n );
+	qDebug( "Global::registerFactory( ElementFactory* %p )", n );
 	_factories.push_back( n );
 }
 void Global::unregisterFactory( ElementFactory* n ) {
-	//qDebug( "Global::unregisterFactory( ElementFactory* %p )", n );
+	qDebug( "Global::unregisterFactory( ElementFactory* %p )", n );
 	_factories.removeAll( n );
 }
 
 QStringList Global::canCreate( int in, int out ) {
-	//qDebug() << "Global::canCreate(" << in << "," << out << ")";
+	qDebug() << "Global::canCreate(" << in << "," << out << ")";
 	QStringList tmp;
 	for ( int i=0; i<_factories.size(); i++ )
 		tmp += _factories[ i ]->canCreate( in, out );
-	//qDebug() << " returning" << tmp;
+	qDebug() << " returning" << tmp;
 	return tmp;
 }
 

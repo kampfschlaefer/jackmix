@@ -31,7 +31,7 @@
 #include <QtCore/QList>
 #include <QtCore/QHash>
 #include <QtWidgets/QGridLayout>
-
+#include <mixingmatrix.h>
 #include "controlsender.h"
 
 class QHBox;
@@ -99,6 +99,8 @@ private slots:
 	void removeInput( QString );
 	void removeOutput();
 	void removeOutput( QString );
+
+	//void slot_simple_replace();
 
 	void allAutoFill();
 	void scheduleAutoFill();
