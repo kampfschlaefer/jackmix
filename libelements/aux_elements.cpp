@@ -85,6 +85,8 @@ AuxElement::AuxElement( QStringList inchannel, QStringList outchannel, MixingMat
 		
 		menu()->addAction( "&Replace", this, SLOT( slot_simple_replace() ), Qt::Key_R );
 		
+		_button = new QRadioButton(this);
+		connect(_button, SIGNAL(clicked()),this,SLOT(slot_simple_select()));
 		
 	}
 	
