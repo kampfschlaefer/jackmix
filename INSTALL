@@ -30,14 +30,19 @@ Install the jack-audio-connection-kit and compile it.
 	Or download the source code via the link below.
 	https://github.com/jackaudio/jack2/releases/tag/v1.9.21
       
-	Compile and install Jack2 , on linux, using './waf configure', './waf' and './waf install' as root. On macosx, users can use the xcode project. On Windows, users can use the Code::Blocks workspace (you also have a small script to make an all in one installer).
+	Compile and install Jack2 , on linux, using './waf configure', './waf' and './waf install' as root. 
+	On macosx, users can use the xcode project. 
+	On Windows, users can use the Code::Blocks workspace (you also have a small script to make an all in one installer).
       
 	Editing the configuration file
 	
-      	If your system has no directory called /etc/security/limits.d then you will need to edit /etc/security/limits.conf. If /etc/security/limits.d does exist on your machine, then you will need to create and edit a file called /etc/security/limits.d/audio.conf. The file must contain (at least) the following two lines:
-@audio   -  rtprio     95
-@audio   -  memlock    unlimited
-      	Contrary to a lot of misinformation on the web, there is no reason to include a line here that provides enhanced “niceness” control, which is completely irrelevant for realtime scheduling and low latency audio applications.
+      	If your system has no directory called /etc/security/limits.d then you will need to edit /etc/security/limits.conf. 
+	If /etc/security/limits.d does exist on your machine, then you will need to create and edit a file called /etc/security/limits.d/audio.conf. 
+	The file must contain (at least) the following two lines:
+		@audio   -  rtprio     95
+		@audio   -  memlock    unlimited
+      	Contrary to a lot of misinformation on the web, there is no reason to include a line here that provides enhanced “niceness” control, 
+	which is completely irrelevant for realtime scheduling and low latency audio applications.
       
       	Creating an “audio” group
       		As the super-user (“root”) run the following commands from a terminal window:
@@ -45,13 +50,16 @@ Install the jack-audio-connection-kit and compile it.
 		$ sudo usermod -a -G audio yourUserID
       	Users should substitute their actual user id or “login” for “yourUserID”.
       
-      	Users can carry out these two steps using the graphical tools available under the “System Administration” section of your desktop’s main menu. However, this text-based method is faster and much easier to explain.
+      	Users can carry out these two steps using the graphical tools available under the “System Administration” section of your desktop’s main menu. 		However, this text-based method is faster and much easier to explain.
       
-      	Suppose users use a distribution that has already created the group and configured the “limits” file. In that case, users will need to determine the name of the group (it is likely called “audio” or “jackuser”). Then they can add themselves to the group with this command (run as the superuser inside a terminal window):
+      	Suppose users use a distribution that has already created the group and configured the “limits” file. 
+	In that case, users will need to determine the name of the group (it is likely called “audio” or “jackuser”). 
+	Then they can add themselves to the group with this command (run as the superuser inside a terminal window):
 		$ usermod -a -G theGroupName yourUserID 
       
       	Logout and back in
-      		None of the changes users have made above will affect users until they log out and back in. If that does not work, try rebooting. In either case, users do not need to reinstall any software.
+      		None of the changes users have made above will affect users until they log out and back in. 
+		If that does not work, try rebooting. In either case, users do not need to reinstall any software.
       
 Install alsa, libsound2-dev, linux-lowlatency, pulseaudio-module-jack, qjackctl
 	$ sudo apt-get install alsa 
@@ -60,10 +68,13 @@ Install alsa, libsound2-dev, linux-lowlatency, pulseaudio-module-jack, qjackctl
 	$ sudo apt-get install pulseaudio-module-jack
 	$ sudo apt-get install qjackctl
 
-      	After completing the above steps, run qjackctl. Qjackctl is the basis for Jackmix to run. If qjackctl fails to run, Jackmix will not be available. 
+      	After completing the above steps, run qjackctl. Qjackctl is the basis for Jackmix to run. 
+	If qjackctl fails to run, Jackmix will not be available. 
        
       
 Complie and run Jackmix
-	The Jackmix project provides the SConstruct compilation file, so users can compile the entire Jackmix project by typing scons in the terminal and pressing enter. Once compiled, the executable jackmix file is generated in the /jackmix directory, and the graphical user interface appears after running jackmix successfully.
+	The Jackmix project provides the SConstruct compilation file, so users can compile the entire Jackmix project 
+	by typing scons in the terminal and pressing enter. Once compiled, the executable jackmix file is generated in 
+	the /jackmix directory, and the graphical user interface appears after running jackmix successfully.
       
 
