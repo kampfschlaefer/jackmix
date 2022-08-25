@@ -26,3 +26,13 @@ libcontrol/controlsender_test
 libgui/channelselector_test
 libgui/midicontrolchannelassigner_test
 libgui/slider_test
+*.dot
+*.tex
+*.png
+*.html
+*.sty
+*.svg
+*.js
+*.css
+*.tmp
+doxydoc/latex/Makefile

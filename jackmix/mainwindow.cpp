@@ -121,6 +121,7 @@ void MainWindow::init() {
 	_filemenu->addAction( "Save File...", this, SLOT( saveFile() ), Qt::CTRL+Qt::Key_S );
 	_filemenu->addSeparator();
 	_filemenu->addAction( "&Quit", this, SLOT( close() ), Qt::CTRL+Qt::Key_Q );
+	
 
 	_editmenu = menuBar()->addMenu( "&Edit" );
 	_select_action = new QAction( "Select Mode", this );
@@ -130,24 +131,34 @@ void MainWindow::init() {
 	//_select_action->addTo( new QToolBar( this ) );
 	_editmenu->addAction( "&Fill empty spaces", this, SLOT( scheduleAutoFill() ) );
 	_editmenu->addSeparator();
+	
 	_add_inchannel_action = new QAction( "Add &Input...", this );
 	connect( _add_inchannel_action, SIGNAL( triggered() ), this, SLOT( addInput() ) );
 	_editmenu->addAction( _add_inchannel_action );
+	
 	_add_outchannel_action = new QAction( "Add &Output...", this );
 	connect( _add_outchannel_action, SIGNAL( triggered() ), this, SLOT( addOutput() ) );
 	_editmenu->addAction( _add_outchannel_action );
+	
 	_rename_input_action = new QAction( "Re&name Inputs...", this);
 	connect( _rename_input_action, SIGNAL( triggered() ), this, SLOT(renameInput()) );
 	_editmenu->addAction( _rename_input_action );
+	
 	_rename_output_action = new QAction( "Ren&ame Outputs...", this);
 	connect( _rename_output_action, SIGNAL( triggered() ), this, SLOT(renameOutput()) );
 	_editmenu->addAction( _rename_output_action );
+	
 	_remove_inchannel_action = new QAction( "&Remove Input...", this );
 	connect( _remove_inchannel_action, SIGNAL( triggered() ), this, SLOT( removeInput() ) );
 	_editmenu->addAction( _remove_inchannel_action );
+	
 	_remove_outchannel_action = new QAction( "R&emove Output...", this );
 	connect( _remove_outchannel_action, SIGNAL( triggered() ), this, SLOT( removeOutput() ) );
 	_editmenu->addAction( _remove_outchannel_action );
+	
+	//_replace_action = new QAction( "Replace elements...", this );
+	//connect( _replace_action, SIGNAL( triggered() ), this, SLOT( slot_simple_select()));
+	//_editmenu->addAction(_replace_action);
 
 	_viewmenu = menuBar()->addMenu( "&View" );
 	_togglein_action = new QAction( "Hide &inputcontrols", this );

@@ -101,8 +101,10 @@ void MidiControlChannelAssigner::commitnquit() {
 
 void MidiControlChannelAssigner::updateParameters(QList<int> p) {
 	// The MIDI parameters of the parent widget might have changed since construction
+	qDebug() << "p.size() is :" << p.size();
 	if (p.size() != _num_controls)
 		qDebug() << "Update of MIDI dialogue data from wrong-size vector!";
+		
 	
 	for (int i = 0; i < _num_controls; i++ ) {
 		int ival;

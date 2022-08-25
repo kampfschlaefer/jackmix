@@ -29,7 +29,7 @@
 #include <mixingmatrix.h>
 #include <dbvolcalc.h>
 #include <controlreceiver.h>
-
+#include <QRadioButton>
 namespace JackMix {
 
 namespace GUI {
@@ -53,12 +53,17 @@ public:
 	int outchannels() const { return 1; }
 	
 	void setIndicator(const QColor& c);
- 
+
+signals:
+	
 public slots:
+
+	
 	void emitvalue( double );
 
 private:
 	JackMix::GUI::Knob *_poti;
+	QRadioButton *_button;
 };
 
 void init_aux_elements();

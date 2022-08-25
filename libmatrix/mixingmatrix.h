@@ -68,6 +68,8 @@ public:
 
 	QStringList inchannels() const { return _inchannels; }
 	QStringList outchannels() const { return _outchannels; }
+	QString previousIn( QString ) const;
+	QString previousOut( QString ) const;
 	QString nextIn( QString ) const;
 	QString nextOut( QString ) const;
 
@@ -200,6 +202,7 @@ public:
 	QStringList followersList() const;
 	/** Allow others to see our controlling midi parameters (but not change them) */
 	const QList<int>& midiParameters() const;
+	
 	
 	/** Inform the Element the parent's dead so it doesn't try to deregister itself
 	 *  on destruction (otherwise there may be a segfault at closedown)

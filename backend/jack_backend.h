@@ -55,17 +55,37 @@ public:
 	JackBackend( GuiServer_Interface* );
 	/// Ends everything
 	~JackBackend();
-
+	
+	/**
+ 	 * @brief Adding an output channel and return ture on success.
+ 	 * @param Qstring The name of the output channel that we want to add.
+	 * @return true or false
+ 	 */
 	bool addOutput( QString );
+	/**
+	 * @brief Remove an input channel and return true on success.
+	 * @param Qstring The name of the input channel that we want to remove.
+	 * @return true or false
+	 */
 	bool removeInput( QString );
+	/**
+ 	 * @brief Adding an input channel and return ture on success.
+ 	 * @param Qstring The name of the input channel that we want to add.
+	 * @return true or false
+ 	 */
 	bool addInput( QString );
+	/**
+	 * @brief Remove an input channel and return true on success.
+	 * @param Qstring The name of the input channel that we want to remove.
+	 * @return true or false
+	 */
 	bool removeOutput( QString );
 	/**
-	 * Rename a jack port
+	 * @brief Rename a jack port
 	 * 
-	 * \param old_name current port name
-	 * \param new_name new port name
-	 * \returns whether a port was renamed
+	 * @param old_name current port name
+	 * @param new_name new port name
+	 * @returns whether a port was renamed
 	 */
 	bool rename(const QString old_name, const QString new_name);
 	bool rename(const QString old_name, const char *new_name);
@@ -120,7 +140,7 @@ private:
 	::jack_port_t *midi_port;
 	
 	/**
-	 * Handle changes in jack server sample rate
+	 * @brief Handle changes in jack server sample rate
 	 * 
 	 * @param rate New sample rate
 	 * @param args Client-supplied args (not used)
