@@ -49,12 +49,12 @@ public:
 	~StereoFactory() {}
 
 	QStringList canCreate() const {
-		return QStringList()<<"Mono2StereoElement"<<"Stereo2StereoElement"<<"Mono2StereoElement2";
+		return QStringList()<<"Mono2StereoElement"<<"Stereo2StereoElement"<<"Threeinput2outputElement";
 	}
 	QStringList canCreate( int in, int out ) const {
 		if ( in==1 && out==2 ) return QStringList()<<"Mono2StereoElement";
 		if ( in==2 && out==2 ) return QStringList()<<"Stereo2StereoElement";
-		if ( in==3 && out==2 ) return QStringList()<<"Mono2StereoElement2";
+		if ( in==3 && out==2 ) return QStringList()<<"Threeinput2outputElement";
 		return QStringList();
 	}
 
@@ -63,8 +63,8 @@ public:
 			return new Mono2StereoElement( ins, outs, p, n );
 		if ( type=="Stereo2StereoElement" )
 			return new Stereo2StereoElement( ins, outs, p, n );
-		if ( type=="Mono2StereoElement2" )
-			return new Mono2StereoElement2( ins, outs, p, n );
+		if ( type=="Threeinput2outputElement" )
+			return new Threeinput2outputElement( ins, outs, p, n );
 		return 0;
 	}
 };
@@ -138,14 +138,14 @@ Mono2StereoElement::~Mono2StereoElement() {
 }
 
 void Mono2StereoElement::balance( double n ) {
-	//qDebug( "Mono2StereoElement::balance( double %f )", n );
+	qDebug( "Mono2StereoElement::balance( double %f )", n );
 	_balance_value = n;
 	calculateVolumes();
 	_balance->value( n );
 	emit valueChanged( this, QString( "balance" ) );
 }
 void Mono2StereoElement::volume( double n ) {
-	//qDebug( "Mono2StereoElement::volume( double %f )", n );
+	qDebug( "Mono2StereoElement::volume( double %f )", n );
 	_volume_value = n;
 	calculateVolumes();
 	_volume->value( n );
@@ -241,14 +241,14 @@ Stereo2StereoElement::~Stereo2StereoElement() {
 }
 
 void Stereo2StereoElement::balance( double n ) {
-	//qDebug( "Mono2StereoElement::balance( double %f )", n );
+	qDebug( "Mono2StereoElement::balance( double %f )", n );
 	_balance_value = n;
 	_balance_widget->value( n );
 	calculateVolumes();
 	emit valueChanged( this, QString( "balance" ) );
 }
 void Stereo2StereoElement::volume( double n ) {
-	//qDebug( "Mono2StereoElement::volume( double %f )", n );
+	qDebug( "Mono2StereoElement::volume( double %f )", n );
 	_volume_value = n;
 	_volume_widget->value( n );
 	calculateVolumes();
@@ -272,7 +272,7 @@ void Stereo2StereoElement::calculateVolumes() {
 
 
 
-Mono2StereoElement2::Mono2StereoElement2( QStringList inchannel, QStringList outchannels, MixingMatrix::Widget* p, const char* n )
+Threeinput2outputElement::Threeinput2outputElement( QStringList inchannel, QStringList outchannels, MixingMatrix::Widget* p, const char* n )
 	: Element( inchannel, outchannels, p, n )
 	, dB2VolCalc(-42, 6 )
 	, _balance_value( 0 )
@@ -282,7 +282,7 @@ Mono2StereoElement2::Mono2StereoElement2( QStringList inchannel, QStringList out
 	, _balance_value3( 0 )
 	, _volume_value3( 0 )
 {
-	//qDebug( "Mono2StereoElement::Mono2StereoElement()" );
+	
 	double left = backend()->getVolume( _in[0], _out[0] );
 	double right = backend()->getVolume( _in[0], _out[1] );
 	//qDebug( " volumes: %f, %f", left, right );
@@ -364,10 +364,7 @@ Mono2StereoElement2::Mono2StereoElement2( QStringList inchannel, QStringList out
 	connect( assign, SIGNAL( triggered() ), this, SLOT( slot_assign_midi_parameters() ) );
 	menu()->addAction( assign );
 	
-	// WATCH OUT: Order of initialisation is really important!
-	// Make sure all the widgets are contructed before adding them to the delegates list
-
-	// Initial MIDI parameters and associated AbstractSliders
+	
 	midi_params.append(0);
 	midi_delegates.append(_volume_widget);
 	midi_params.append(0);
@@ -390,25 +387,25 @@ Mono2StereoElement2::Mono2StereoElement2( QStringList inchannel, QStringList out
 	connect( _cca, SIGNAL(assignParameters(QList<int>)), this, SLOT(update_midi_parameters(QList<int>)) );
 
 }
-Mono2StereoElement2::~Mono2StereoElement2() {
+Threeinput2outputElement::~Threeinput2outputElement() {
 }
 
-void Mono2StereoElement2::balance( double n ) {
-	//qDebug( "Mono2StereoElement::balance( double %f )", n );
+void Threeinput2outputElement::balance( double n ) {
+	
 	_balance_value = n;
 	calculateVolumes();
 	_balance->value( n );
 	emit valueChanged( this, QString( "balance" ) );
 }
-void Mono2StereoElement2::volume( double n ) {
-	//qDebug( "Mono2StereoElement::volume( double %f )", n );
+void Threeinput2outputElement::volume( double n ) {
+
 	_volume_value = n;
 	calculateVolumes();
 	_volume_widget->value( n );
 	emit valueChanged( this, QString( "volume" ) );
 }
 
-void Mono2StereoElement2::calculateVolumes() {
+void Threeinput2outputElement::calculateVolumes() {
 	double left, right;
 		left = dbtoamp( _volume_value );
 		right = dbtoamp( _volume_value );
@@ -419,26 +416,15 @@ void Mono2StereoElement2::calculateVolumes() {
 	backend()->setVolume( _in[0], _out[0], left );
 	backend()->setVolume( _in[0], _out[1], right );
 }
-void Mono2StereoElement2::balance2( double n ) {
-	//qDebug( "Mono2StereoElement::balance( double %f )", n );
+void Threeinput2outputElement::balance2( double n ) {
+	
 	_balance_value2 = n;
 	calculateVolumes2();
 	_balance2->value( n );
 	emit valueChanged( this, QString( "balance2" ) );
 }
 
-/*
-void Mono2StereoElement2::volume2( double n ) {
-	//qDebug( "Mono2StereoElement::volume( double %f )", n );
-	_volume_value2 = n;
-	calculateVolumes2();
-	_volume_widget->value2( n );
-	emit valueChanged( this, QString( "volume2" ) );
-}
-*/
-
-
-void Mono2StereoElement2::calculateVolumes2() {
+void Threeinput2outputElement::calculateVolumes2() {
 	double left2, right2;
 		left2 = dbtoamp( _volume_value2 );
 		right2 = dbtoamp( _volume_value2 );
@@ -450,26 +436,15 @@ void Mono2StereoElement2::calculateVolumes2() {
 	backend()->setVolume( _in[1], _out[1], right2 );
 }
 
-void Mono2StereoElement2::balance3( double n ) {
-	//qDebug( "Mono2StereoElement::balance( double %f )", n );
+void Threeinput2outputElement::balance3( double n ) {
+	
 	_balance_value3 = n;
 	calculateVolumes();
 	_balance3->value( n );
 	emit valueChanged( this, QString( "balance3" ) );
 }
 
-/*
-void Mono2StereoElement2::volume3( double n ) {
-	//qDebug( "Mono2StereoElement::volume( double %f )", n );
-	_volume_value3 = n;
-	calculateVolumes3();
-	_volume_widget->value3( n );
-	emit valueChanged( this, QString( "volume3" ) );
-}
-*/
-
-
-void Mono2StereoElement2::calculateVolumes3() {
+void Threeinput2outputElement::calculateVolumes3() {
 	double left3, right3;
 		left3 = dbtoamp( _volume_value3 );
 		right3 = dbtoamp( _volume_value3 );

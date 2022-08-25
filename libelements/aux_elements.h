@@ -53,8 +53,12 @@ public:
 	int outchannels() const { return 1; }
 	
 	void setIndicator(const QColor& c);
- 
+
+signals:
+	
 public slots:
+
+	
 	void emitvalue( double );
 
 private:

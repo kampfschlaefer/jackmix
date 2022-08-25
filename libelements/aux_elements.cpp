@@ -87,7 +87,6 @@ AuxElement::AuxElement( QStringList inchannel, QStringList outchannel, MixingMat
 		
 		_button = new QRadioButton(this);
 		connect(_button, SIGNAL(clicked()),this,SLOT(slot_simple_select()));
-		
 	}
 	
 	menu()->addAction( "&Assign MIDI Parameter", this, SLOT( slot_assign_midi_parameters() ) );
@@ -103,9 +102,12 @@ AuxElement::AuxElement( QStringList inchannel, QStringList outchannel, MixingMat
 	_poti = new JackMix::GUI::Knob(
 		amptodb( backend()->getVolume( _in[0], _out[0] ) ),
 		dbmin, dbmax, 2, 3, this );
+		
+	//_button = new QRadioButton(this);
+	
 	_layout->addWidget( _poti, 2000 );
 	
-
+	//connect(_button, SIGNAL(buttonClicked()),this,SLOT(slot_simple_select()));
 	connect( _poti, SIGNAL( valueChanged( double ) ), this, SLOT( emitvalue( double ) ) );
 	connect( _poti, SIGNAL( select() ), this, SLOT( slot_simple_select() ) );
 	connect( _poti, SIGNAL( replace() ), this, SLOT( slot_simple_replace() ) );
