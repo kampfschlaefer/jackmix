@@ -30,7 +30,7 @@ def uic_scanner( node, env, path ):
 		return [ str(node).split("/")[-1].split(".")[0:-1][0] + ".h" ]
 
 	contents = node.get_contents()
-	includes = include_re.findall(contents)
+	includes = include_re.findall(str(contents))
 	if str(node).split(".")[-1] == "cpp":
 		#print "uic_scanner processing a cpp-file " + str(node)
 		ret = []

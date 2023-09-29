@@ -35,7 +35,7 @@ def CheckForPKGConfig( context, version='0.0.0' ):
 # This should allow caching of the flags so that pkg-config is called only once.
 #
 def GetPKGFlags( context, name, version="" ):
-	import os
+	import subprocess
 
 	if version == "":
 		context.Message( "Checking for %s... \t" % name )
@@ -48,8 +48,10 @@ def GetPKGFlags( context, name, version="" ):
 		context.Result( ret )
 		return ret
 
-	out = os.popen2( "pkg-config --cflags --libs %s" % name )[1]
-	ret = out.read()
+	#out = os.popen2( "pkg-config --cflags --libs %s" % name )[1]
+	p = subprocess.Popen(['pkg-config', '--cflags', '--libs', name],
+                      stdout=subprocess.PIPE)
+	ret = p.stdout.read()
 
 	context.Result( True )
 	return ret
