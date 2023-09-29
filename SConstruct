@@ -13,6 +13,7 @@ env = Environment(
 	toolpath=['admin']
 )
 
+#env.Replace(CXX = "/usr/bin/g++")
 env.Replace(LIBS="")
 env.Replace(LIBPATH="")
 
@@ -28,9 +29,9 @@ conf = Configure(
 	log_file='cache/config.log'
 )
 
-if not conf.CheckHeader('stdio.h', language="C"):
+if not conf.CheckCHeader('stdio.h'):
 	Exit(1)
-if not conf.CheckHeader("iostream", language="C++"):
+if not conf.CheckCXXHeader("iostream"):
 	Exit(1)
 
 allpresent = 1

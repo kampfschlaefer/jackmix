@@ -14,7 +14,7 @@ def exists( env ):
 def moc_emitter( target, source, env ):
 	base = str(source[0]).split(".")[0:-1][0]
 	contents = source[0].get_contents();
-	if contents.count( "\n#include \""+base+".moc\"" ):
+	if contents.count( ("\n#include \""+base+".moc\"").encode() ):
 		#print "moc_emitter on " + str(source[0])
 		header = base+".h"
 		moc = base+".moc"
@@ -73,24 +73,31 @@ def uic_scanner( node, env, path ):
 	return []
 
 def GetAppVersion( context, app, version ):
-	import os
+	import subprocess
 
-	context.Message( "Checking if the output of '%s' contains '%s' " % (app,version) )
+	context.Message( f"Checking if the output of '{' '.join(app)}' contains {version}")
 
-	out = os.popen3( app )
-	#print out[1] + out[2]
-	str = out[1].read() + out[2].read()
+	#out = os.popen3( app )
+	p = subprocess.Popen(app, 
+						stdin=subprocess.PIPE,
+						stdout=subprocess.PIPE,
+						stderr=subprocess.PIPE,
+						close_fds=True,
+						universal_newlines=True)
+	out = (p.stdin, p.stdout, p.stderr)
+	#print(out)
+	vstr = out[1].read() + out[2].read()
 
 	ret = False
 
-	if str.count( version ) > 0:
+	if vstr.count( version ) > 0:
 		ret = True
 
 	context.Result( ret )
 	return ret
 
 def generate( env ):
-	print "Configuring qt5muc..."
+	print("Configuring qt5muc...")
 
 	conf = env.Configure( custom_tests = { 'GetAppVersion' : GetAppVersion } )
 
@@ -98,7 +105,7 @@ def generate( env ):
 		ret = ""
 		for command in commandlist:
 			if len( ret ) == 0:
-				if conf.GetAppVersion( "%s -v" % command, version ):
+				if conf.GetAppVersion( [command, '-v'], version ):
 					ret = command
 		return ret
 
@@ -115,7 +122,7 @@ def generate( env ):
 		env.Exit( 1 )
 
 	env = conf.Finish()
-	print "Done. Will define a more or less automatic environment to do all the qt-specific stuff."
+	print("Done. Will define a more or less automatic environment to do all the qt-specific stuff.")
 
 	moc = SCons.Builder.Builder( action="%s $SOURCES > $TARGET" % moc, suffix='.moc', src_suffix='.h'   )
 	uic = SCons.Builder.Builder( action="%s $SOURCES > $TARGET" % uic, suffix='.h',   src_suffix='.ui'  )
