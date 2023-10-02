@@ -40,7 +40,7 @@ allpresent &= conf.CheckForPKGConfig()
 
 pkgs = {
 	'jack': '0.100.0',
-	'lash-1.0': '0.5.1',
+#	'lash-1.0': '0.5.1',
 	'Qt5Core': '5.3',
 	'Qt5Widgets': '5.3',
 	'Qt5Gui': '5.3',
@@ -64,13 +64,13 @@ env = conf.Finish()
 env.MergeFlags("-I#")
 
 print("Merging %s" % env["QT5WIDGETS_FLAGS"])
-env.MergeFlags(env["QT5WIDGETS_FLAGS"])
+env.MergeFlags({"CXXFLAGS": env["QT5WIDGETS_FLAGS"]})
 
 # target processing is done in the subdirectory
 env.SConscript(
 	dirs=[
 		'libcore',
-		'libqlash',
+#		'libqlash',
 		'libgui',
 		'backend',
 		'libmatrix',
