@@ -70,6 +70,8 @@ public:
 	QStringList outchannels() const { return _outchannels; }
 	QString nextIn( QString ) const;
 	QString nextOut( QString ) const;
+	QString prevIn( QString ) const;
+	QString prevOut( QString ) const;
 
 	/// New input/output channels
 	void addinchannel( QString );

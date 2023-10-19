@@ -282,6 +282,26 @@ QString Widget::nextOut( QString n ) const {
 	return 0;
 }
 
+QString Widget::prevIn( QString n ) const {
+	//qDebug() << "Widget::prevIn(" << n << ")";
+	if ( n.isNull() )
+		return 0;
+	int i = _inchannels.indexOf( n ) - 1;
+	//qDebug() << " i=" << i;
+	if ((-1)< i && i < _inchannels.size() )
+		return _inchannels.at( i );
+	return 0;
+}
+QString Widget::prevOut( QString n ) const {
+	if ( n.isNull() )
+		return 0;
+	int i = _outchannels.indexOf( n ) - 1;
+	if ((-1)< i && i<_outchannels.size() )
+		return _outchannels.at( i );
+	return 0;
+}
+
+
 void Widget::addinchannel( QString name ) {
 	//qDebug() << "Widget::addinchannel(" << name << ")";
 	_inchannels.push_back( name );
@@ -422,13 +442,18 @@ int Element::neighbors() const {
 	return 0;
 }
 QStringList Element::neighborsList() const {
-	//qDebug( "self = [%s]", qPrintable( _in.join( "|" ) ) );
-	//qDebug( "neighbor = %s", qPrintable( _parent->nextIn( _in[ _in.size()-1 ] ) ) );
-	Element* neighbor = _parent->getResponsible( _parent->nextIn( _in[ _in.size()-1 ] ), _out[ 0 ] );
 	QStringList tmp;
-	if ( neighbor && neighbor->isSelected() )
-		tmp = neighbor->neighborsList();
-	tmp = _in + tmp;
+	tmp =_in +tmp;
+	Element* neighbor = _parent->getResponsible( _parent->nextIn( _in[ _in.size()-1 ] ), _out[ 0 ] );
+	while ( neighbor && neighbor->isSelected() ){
+		tmp = tmp + neighbor->_in;
+		neighbor = neighbor->_parent->getResponsible( neighbor->_parent->nextIn( neighbor->_in[ neighbor->_in.size()-1 ] ), neighbor->_out[ 0 ] );
+	}
+	neighbor = _parent->getResponsible( _parent->prevIn( _in[ _in.size()-1 ] ), _out[ 0 ] );
+	while ( neighbor && neighbor->isSelected() ){
+		tmp = neighbor->_in + tmp;
+		neighbor = neighbor->_parent->getResponsible( neighbor->_parent->prevIn( neighbor->_in[ neighbor->_in.size()-1 ] ), neighbor->_out[ 0 ] );
+	}
 	return tmp;
 }
 int Element::followers( int n ) const {
@@ -440,13 +465,18 @@ int Element::followers( int n ) const {
 	return 0;
 }
 QStringList Element::followersList() const {
-	//qDebug( "self = [%s]", qPrintable( _out.join( "|" ) ) );
-	//qDebug( "follower = %s", qPrintable( _parent->nextOut( _out[ _out.size()-1 ] ) ) );
-	Element* follower = _parent->getResponsible( _in[ 0 ], _parent->nextOut(  _out[  _out.size()-1 ] ) );
 	QStringList tmp;
-	if ( follower && follower->isSelected() )
-		tmp = follower->followersList();
-	tmp = _out + tmp;
+	tmp =_out +tmp;
+	Element* follower = _parent->getResponsible( _in[ 0 ], _parent->nextOut(  _out[  _out.size()-1 ] ) );
+	while ( follower && follower->isSelected() ){
+		tmp = tmp + follower->_out;
+		follower = follower->_parent->getResponsible( follower->_in[ 0 ], follower->_parent->nextOut(  follower->_out[  follower->_out.size()-1 ] ) );
+	}
+	follower = _parent->getResponsible( _in[ 0 ], _parent->prevOut(  _out[  _out.size()-1 ] ) );
+	while ( follower && follower->isSelected() ){
+		tmp = follower->_out + tmp;
+		follower = follower->_parent->getResponsible( follower->_in[ 0 ], follower->_parent->prevOut(  follower->_out[  follower->_out.size()-1 ] ) );
+	}
 	return tmp;
 }
 
