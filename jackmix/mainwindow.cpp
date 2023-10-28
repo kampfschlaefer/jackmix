@@ -298,7 +298,7 @@ void MainWindow::openFile( QString path ) {
 				QStringList outs;
 				for ( QDomElement out = element.firstChildElement( "out" ); !out.isNull(); out = out.nextSiblingElement( "out" ) )
 					outs << out.attribute( "name" );
-				_mixerwidget->createControl( ins, outs );
+				_mixerwidget->createControl( ins, outs);
 				// Just one set of midi control parameters for the whole saved element
 				_mixermps[QString("%1,%2").arg(ins[0], outs[0])] = element.attribute("midi");
 

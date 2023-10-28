@@ -34,10 +34,14 @@ namespace JackMix {
 
 namespace GUI {
 	class Knob;
+    class Slider;
 	class MidiControlChannelAssigner;
 }
 
 namespace MixerElements {
+
+class AuxElement;
+class AuxElementSlider;
 	
 /**
  * Simpliest form of a control connecting one input with one output.
@@ -59,6 +63,25 @@ public slots:
 
 private:
 	JackMix::GUI::Knob *_poti;
+};
+
+class AuxElementSlider : public JackMix::MixingMatrix::Element
+                 , public dB2VolCalc {
+Q_OBJECT
+public:
+	AuxElementSlider( QStringList inchannel, QStringList outchannel, MixingMatrix::Widget*, const char* =0 );
+	~AuxElementSlider();
+
+	int inchannels() const { return 1; }
+	int outchannels() const { return 1; }
+	
+	void setIndicator(const QColor& c);
+ 
+public slots:
+	void emitvalue( double );
+
+private:
+	JackMix::GUI::Slider *_poti;
 };
 
 void init_aux_elements();
