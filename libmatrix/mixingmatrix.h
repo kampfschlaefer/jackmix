@@ -86,7 +86,7 @@ public:
 	
 	/// Create Controls
 	// Create controls. return true on success
-	bool createControl( QStringList inchannels, QStringList outchannels);
+	bool createControl( QStringList inchannels, QStringList outchannels, int state = 0);
 
 	/// Layout
 	QSize smallestElement() const;
@@ -161,11 +161,12 @@ Q_PROPERTY( int ins READ inchannels )
 Q_PROPERTY( int outs READ outchannels )
 Q_PROPERTY( QString name READ name WRITE name )
 public:
+
 	/**
 	 * Gets the upper left corner in channelnames.
 	 * And lists with the names of the channels to control.
 	 */
-	Element( QStringList in, QStringList out, Widget*, const char* =0 );
+	Element( QStringList in, QStringList out, Widget*, std::string t, const char* =0);
 	virtual ~Element();
 
 	JackMix::BackendInterface* backend() const { return _parent->backend(); }
@@ -280,6 +281,9 @@ private slots:
 private:
 	bool _selected;
 	Widget* _parent;
+public:
+	std::string _type;
+	
 };
 
 
@@ -296,7 +300,7 @@ public:
 	 * Returns a list of the elements this factory can create and
 	 * which support the named number of in and out channels
 	 */
-	virtual QStringList canCreate( int in, int out ) const =0;
+	virtual QStringList canCreate( int in, int out,int state = 0 ) const =0;
 
 	/**
 	 * Returns an object of the given Elementtype or 0 if this factory can not create it.

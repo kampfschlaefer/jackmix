@@ -22,6 +22,7 @@
 */
 
 #include "mixingmatrix.h"
+
 #include "mixingmatrix_privat.h"
 #include "mixingmatrix.moc"
 #include "mixingmatrix_privat.moc"
@@ -42,6 +43,7 @@
 #include <QtCore/QDebug>
 #include <QtCore/QList>
 #include <QtGui/QColor>
+#include <string>
 
 namespace JackMix {
 namespace MixingMatrix {
@@ -90,6 +92,12 @@ void Widget::replace( Element* n ) {
 	//qDebug( "Widget::replace( Element* %p )", n );
 	//qDebug( "This Element has %i selected neighbors.", n->neighbors() );
 	//qDebug( " and %i selected followers.", n->followers( n->neighbors() ) );
+	int s = 0;
+	std::string t = typeid(n).name();
+	if (n->_type =="AuxElement"){
+		s=1;
+	}
+
 	QStringList in, out;
 	in = n->neighborsList();
 	//qDebug( "Selected ins = %s", qPrintable( in.join( "," ) ) );
@@ -103,7 +111,7 @@ void Widget::replace( Element* n ) {
 				tmp->deleteLater();
 		}
 	}
-	createControl( in, out );
+	createControl( in, out, s );
 	QTimer::singleShot( 1, this, SLOT( autoFill() ) );
 }
 
@@ -122,10 +130,10 @@ Element* Widget::getResponsible( QString in, QString out ) const {
 	return 0;
 }
 
-bool Widget::createControl( QStringList inchannels, QStringList outchannels ) {
+bool Widget::createControl( QStringList inchannels, QStringList outchannels, int state) {
 	//qDebug( "Widget::createControl( QStringList '%s', QStringList '%s', %s)", qPrintable( inchannels.join( "," ) ), qPrintable( outchannels.join( "," ) ) );
 
-	QStringList controls = Global::the()->canCreate( inchannels.size(), outchannels.size() );
+	QStringList controls = Global::the()->canCreate( inchannels.size(), outchannels.size(), state );
 	if ( ! controls.isEmpty() ) {
 		//qDebug( "Found %s to control [%i,%i] channels", controls.front().toStdString().c_str(), inchannels.size(), outchannels.size() );
 		return Global::the()->create( controls.front(), inchannels, outchannels, this );
@@ -379,7 +387,7 @@ void Widget::debugPrint() {
 }
 
 
-Element::Element( QStringList in, QStringList out, Widget* p, const char* n )
+Element::Element( QStringList in, QStringList out, Widget* p, std::string t, const char* n)
 	: QFrame( p )
 	, _menu( new QMenu( this ) )
 	, _cca( 0 )
@@ -387,6 +395,7 @@ Element::Element( QStringList in, QStringList out, Widget* p, const char* n )
 	, _out( out )
 	, _selected( false )
 	, _parent( p )
+	, _type(t)
 {
 	//qDebug( "MixingMatrix::Element::Element( QStringList '%s', QStringList '%s' )", qPrintable( in.join(",") ), qPrintable( out.join(",") ) );
 	disp_name = 0; // Assumme no label for this element for now
@@ -555,11 +564,11 @@ void Global::unregisterFactory( ElementFactory* n ) {
 	_factories.removeAll( n );
 }
 
-QStringList Global::canCreate( int in, int out ) {
+QStringList Global::canCreate( int in, int out, int state) {
 	//qDebug() << "Global::canCreate(" << in << "," << out << ")";
 	QStringList tmp;
 	for ( int i=0; i<_factories.size(); i++ )
-		tmp += _factories[ i ]->canCreate( in, out );
+		tmp += _factories[ i ]->canCreate( in, out, state );
 	//qDebug() << " returning" << tmp;
 	return tmp;
 }

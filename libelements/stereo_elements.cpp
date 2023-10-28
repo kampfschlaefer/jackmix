@@ -51,7 +51,7 @@ public:
 	QStringList canCreate() const {
 		return QStringList()<<"Mono2StereoElement"<<"Stereo2StereoElement";
 	}
-	QStringList canCreate( int in, int out ) const {
+	QStringList canCreate( int in, int out, int state = 0 ) const {
 		if ( in==1 && out==2 ) return QStringList()<<"Mono2StereoElement";
 		if ( in==2 && out==2 ) return QStringList()<<"Stereo2StereoElement";
 		return QStringList();
@@ -72,7 +72,7 @@ void MixerElements::init_stereo_elements() {
 
 
 Mono2StereoElement::Mono2StereoElement( QStringList inchannel, QStringList outchannels, MixingMatrix::Widget* p, const char* n )
-	: Element( inchannel, outchannels, p, n )
+	: Element( inchannel, outchannels, p, "Mono2StereoElement", n)
 	, dB2VolCalc( -42, 6 )
 	, _balance_value( 0 )
 	, _volume_value( 0 )
@@ -162,7 +162,7 @@ void Mono2StereoElement::calculateVolumes() {
 
 
 Stereo2StereoElement::Stereo2StereoElement( QStringList inchannels, QStringList outchannels, MixingMatrix::Widget* p, const char* n )
-	: Element( inchannels, outchannels, p, n )
+	: Element( inchannels, outchannels, p,"Stereo2StereoElement", n )
 	, dB2VolCalc( -42, 6 )
 	, _balance_value( 0 )
 	, _volume_value( 0 )
