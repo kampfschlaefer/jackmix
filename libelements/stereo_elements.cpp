@@ -51,6 +51,7 @@ public:
 	QStringList canCreate() const {
 		return QStringList()<<"Mono2StereoElement"<<"Stereo2StereoElement";
 	}
+	//state unused
 	QStringList canCreate( int in, int out, int state = 0 ) const {
 		if ( in==1 && out==2 ) return QStringList()<<"Mono2StereoElement";
 		if ( in==2 && out==2 ) return QStringList()<<"Stereo2StereoElement";
