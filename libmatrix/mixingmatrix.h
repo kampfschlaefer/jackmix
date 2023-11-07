@@ -86,6 +86,7 @@ public:
 	
 	/// Create Controls
 	// Create controls. return true on success
+	//takes a list of the input and output channels as well as state used to represent the type (0 = slider, 1 = knob)
 	bool createControl( QStringList inchannels, QStringList outchannels, int state = 0);
 
 	/// Layout

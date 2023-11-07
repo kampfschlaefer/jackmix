@@ -92,10 +92,11 @@ void Widget::replace( Element* n ) {
 	//qDebug( "Widget::replace( Element* %p )", n );
 	//qDebug( "This Element has %i selected neighbors.", n->neighbors() );
 	//qDebug( " and %i selected followers.", n->followers( n->neighbors() ) );
-	int s = 0;
-	std::string t = typeid(n).name();
+	//state used to represent the type (0 = slider, 1 = knob)
+	//state defaults to 0 so it will default to creating an AuxElement
+	int state = 0;
 	if (n->_type =="AuxElement"){
-		s=1;
+		state=1;
 	}
 
 	QStringList in, out;
@@ -111,7 +112,7 @@ void Widget::replace( Element* n ) {
 				tmp->deleteLater();
 		}
 	}
-	createControl( in, out, s );
+	createControl( in, out, state );
 	QTimer::singleShot( 1, this, SLOT( autoFill() ) );
 }
 

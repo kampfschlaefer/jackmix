@@ -57,6 +57,8 @@ public:
 	QStringList canCreate() const {
 		return QStringList()<<"AuxElement";
 	}
+	//state used to represent the type (0 = slider, 1 = knob)
+	//based on current type shown by the state value output should be the opposing type
 	QStringList canCreate( int in, int out, int state = 0 ) const {
 		if ( in==1 && out==1 && state==0) return QStringList()<<"AuxElement";
 		if ( in==1 && out==1 && state==1) return QStringList()<<"AuxElementSlider";
