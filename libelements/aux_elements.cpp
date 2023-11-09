@@ -57,11 +57,11 @@ public:
 	QStringList canCreate() const {
 		return QStringList()<<"AuxElement";
 	}
-	//state used to represent the type (0 = slider, 1 = knob)
-	//based on current type shown by the state value output should be the opposing type
-	QStringList canCreate( int in, int out, int state = 0 ) const {
-		if ( in==1 && out==1 && state==0) return QStringList()<<"AuxElement";
-		if ( in==1 && out==1 && state==1) return QStringList()<<"AuxElementSlider";
+	//ctrlType represens the type of the element that will be replaced with the new element
+	//ctrlType is defalut set to AuxElementSlider so an AuxElement will be the default output
+	QStringList canCreate( int in, int out, std::string ctrlType = "AuxElementSlider" ) const {
+		if ( in==1 && out==1 && ctrlType=="AuxElementSlider") return QStringList()<<"AuxElement";
+		if ( in==1 && out==1 && ctrlType=="AuxElement") return QStringList()<<"AuxElementSlider";
 		return QStringList();
 	}
 

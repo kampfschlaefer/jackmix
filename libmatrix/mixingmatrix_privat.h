@@ -49,7 +49,7 @@ public:
 	 * Returns the names of the Controls for the given number of in
 	 * and out channels
 	 */
-	QStringList canCreate( int in, int out, int state = 0 );
+	QStringList canCreate( int in, int out, std::string ctrlType = "AuxElementSlider" );
 
 	/**
 	 * Create a control of the given type and for the given in and

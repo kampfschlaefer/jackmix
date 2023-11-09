@@ -84,8 +84,8 @@ public:
 	
 	/// Create Controls
 	// Create controls. return true on success
-	//takes a list of the input and output channels as well as state used to represent the type (0 = slider, 1 = knob)
-	bool createControl( QStringList inchannels, QStringList outchannels, int state = 0);
+	//takes a list of the input and output channels as well as ctrlType the type of the element currently in use
+	bool createControl( QStringList inchannels, QStringList outchannels, std::string ctrlType = "AuxElementSlider");
 
 	/// Layout
 	QSize smallestElement() const;
@@ -188,7 +188,7 @@ public:
 
 	/**
 	 * Do the things you need to do in the subclasses when the
-	 * selected state changes.
+	 * selected ctrlType changes.
 	 */
 	virtual void isSelected( bool ) {};
 
@@ -299,7 +299,7 @@ public:
 	 * Returns a list of the elements this factory can create and
 	 * which support the named number of in and out channels
 	 */
-	virtual QStringList canCreate( int in, int out,int state = 0 ) const =0;
+	virtual QStringList canCreate( int in, int out,std::string ctrlType = "AuxElementSlider" ) const =0;
 
 	/**
 	 * Returns an object of the given Elementtype or 0 if this factory can not create it.
