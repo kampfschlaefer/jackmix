@@ -465,7 +465,9 @@ QStringList Element::neighborsList() const {
 	int step = 1;
 	while ( neighbor && neighbor->isSelected() ){
 		Element* n = neighbor;
-		tmp = neighbor->_in + tmp;		
+		if(n!=this){
+		tmp = neighbor->_in + tmp;	
+		}	
 		while (n== neighbor){
 			qDebug() << "match";
 			neighbor = neighbor->_parent->getResponsible( neighbor->_parent->prevIn( neighbor->_in[ neighbor->_in.size()-1 ], step ), neighbor->_out[ 0 ] );
@@ -499,7 +501,9 @@ QStringList Element::followersList() const {
 	int step = 1;
 	while ( follower && follower->isSelected() ){
 		Element* f = follower;
+		if(f!=this){
 		tmp = follower->_out + tmp;
+		}
 		while (f== follower){	
 			qDebug() << "match";
 			follower = follower->_parent->getResponsible( follower->_in[ 0 ], follower->_parent->prevOut(  follower->_out[  follower->_out.size()-1 ] ,step) );
