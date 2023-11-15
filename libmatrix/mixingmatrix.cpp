@@ -120,7 +120,7 @@ void Widget::explode( Element* n )  {
 }
 
 Element* Widget::getResponsible( QString in, QString out ) const {
-	//qDebug() << "Widget::getResponsible(" << in << "," << out << ") size =" << _elements.size();
+	qDebug() << "Widget::getResponsible(" << in << "," << out << ") size =" << _elements.size();
 	for ( int i=0; i<_elements.size(); i++ )
 		if ( _elements[ i ] && _elements[ i ]->isResponsible( in, out ) )
 			return _elements[ i ];
@@ -269,7 +269,7 @@ QSize Widget::smallestElement() const {
 }
 
 QString Widget::nextIn( QString n ) const {
-	//qDebug() << "Widget::nextIn(" << n << ")";
+	qDebug() << "Widget::nextIn(" << n << ")";
 	if ( n.isNull() )
 		return 0;
 	int i = _inchannels.indexOf( n ) + 1;
@@ -279,6 +279,7 @@ QString Widget::nextIn( QString n ) const {
 	return 0;
 }
 QString Widget::nextOut( QString n ) const {
+	qDebug() << "Widget::nextOut(" << n << ")";
 	if ( n.isNull() )
 		return 0;
 	int i = _outchannels.indexOf( n ) + 1;
@@ -287,20 +288,21 @@ QString Widget::nextOut( QString n ) const {
 	return 0;
 }
 
-QString Widget::prevIn( QString n ) const {
-	//qDebug() << "Widget::prevIn(" << n << ")";
+QString Widget::prevIn( QString n, int step ) const {
+	qDebug() << "Widget::prevIn(" << n << ")";
 	if ( n.isNull() )
 		return 0;
-	int i = _inchannels.indexOf( n ) - 1;
+	int i = _inchannels.indexOf( n ) - step;
 	//qDebug() << " i=" << i;
 	if ((-1)< i && i < _inchannels.size() )
 		return _inchannels.at( i );
 	return 0;
 }
-QString Widget::prevOut( QString n ) const {
+QString Widget::prevOut( QString n, int step  ) const {
+	qDebug() << "Widget::prevOut(" << n << ")";
 	if ( n.isNull() )
 		return 0;
-	int i = _outchannels.indexOf( n ) - 1;
+	int i = _outchannels.indexOf( n ) - step;
 	if ((-1)< i && i<_outchannels.size() )
 		return _outchannels.at( i );
 	return 0;
@@ -450,16 +452,28 @@ int Element::neighbors() const {
 QStringList Element::neighborsList() const {
 	QStringList tmp;
 	tmp =_in +tmp;
+	qDebug() << "\n\n\n\n\n\n\nInitial Neighbor Next";
 	Element* neighbor = _parent->getResponsible( _parent->nextIn( _in[ _in.size()-1 ] ), _out[ 0 ] );
+	qDebug() << "While Neighbor Next";
 	while ( neighbor && neighbor->isSelected() ){
 		tmp = tmp + neighbor->_in;
 		neighbor = neighbor->_parent->getResponsible( neighbor->_parent->nextIn( neighbor->_in[ neighbor->_in.size()-1 ] ), neighbor->_out[ 0 ] );
 	}
+	qDebug() << "Initial Neighbor Prev";
 	neighbor = _parent->getResponsible( _parent->prevIn( _in[ _in.size()-1 ] ), _out[ 0 ] );
+	qDebug() << "While Neighbor Prev";
 	while ( neighbor && neighbor->isSelected() ){
+		Element* n = neighbor;
 		tmp = neighbor->_in + tmp;
 		neighbor = neighbor->_parent->getResponsible( neighbor->_parent->prevIn( neighbor->_in[ neighbor->_in.size()-1 ] ), neighbor->_out[ 0 ] );
+		int step = 1;
+		while (n== neighbor){
+			step++;
+			qDebug() << "match";
+			neighbor = neighbor->_parent->getResponsible( neighbor->_parent->prevIn( neighbor->_in[ neighbor->_in.size()-1 ], step ), neighbor->_out[ 0 ] );
+		}
 	}
+	qDebug() << "complete neighbor list\n";
 	return tmp;
 }
 int Element::followers( int n ) const {
@@ -473,16 +487,28 @@ int Element::followers( int n ) const {
 QStringList Element::followersList() const {
 	QStringList tmp;
 	tmp =_out +tmp;
+	qDebug() << "Initial Follower Next";
 	Element* follower = _parent->getResponsible( _in[ 0 ], _parent->nextOut(  _out[  _out.size()-1 ] ) );
+	qDebug() << "While Follower Next";
 	while ( follower && follower->isSelected() ){
 		tmp = tmp + follower->_out;
 		follower = follower->_parent->getResponsible( follower->_in[ 0 ], follower->_parent->nextOut(  follower->_out[  follower->_out.size()-1 ] ) );
 	}
+	qDebug() << "Initial Follower Prev";
 	follower = _parent->getResponsible( _in[ 0 ], _parent->prevOut(  _out[  _out.size()-1 ] ) );
+	qDebug() << "While Follower Prev";
 	while ( follower && follower->isSelected() ){
+		Element* f = follower;
 		tmp = follower->_out + tmp;
 		follower = follower->_parent->getResponsible( follower->_in[ 0 ], follower->_parent->prevOut(  follower->_out[  follower->_out.size()-1 ] ) );
+		int step = 1;
+		while (f== follower){
+			step++;
+			qDebug() << "match";
+			follower = follower->_parent->getResponsible( follower->_in[ 0 ], follower->_parent->prevOut(  follower->_out[  follower->_out.size()-1 ] ,step) );
+		}
 	}
+	qDebug() << "complete follower list\n";
 	return tmp;
 }
 
