@@ -622,7 +622,7 @@ bool Global::create( QString type, QStringList ins, QStringList outs, Widget* pa
 
 void Global::debug() {
 	for ( int i=0; i<_factories.size(); i++ )
-		//qDebug("The factory %p can create '%s'",_factories[ i ],qPrintable(_factories[ i ]->canCreate().join(" ")));
+		qDebug("The factory %p can create '%s'",_factories[ i ],qPrintable(_factories[ i ]->canCreate().join(" ")));
 }
 
 
