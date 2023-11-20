@@ -211,7 +211,7 @@ JackBackend::FaderState& JackBackend::getMatrixVolume( QString channel, QString 
 			return getInVolume(channel);
 	} else {
 		if (!volumes[channel].contains(output) ){//|| volumes[channel][output].p == nullptr) {
-                        qDebug() << "Inserting new FaderState in volumes.";
+                        //qDebug() << "Inserting new FaderState in volumes.";
 			volumes[channel].insert(output, FaderState(0, this));
 		}
 

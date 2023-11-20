@@ -187,7 +187,7 @@ void Widget::update_peak_inidicators(JackMix::BackendInterface::levels_t newLeve
                 if (e) {
                         (static_cast<MixerElements::AuxElement*>(e))->setIndicator(indicatorColors[l]);
                  } else {
-                        qDebug() << "getResponsible(" << n << ", " << n << "] returned null";
+                        //qDebug() << "getResponsible(" << n << ", " << n << "] returned null";
                 }
                 
                 ++it;
@@ -279,6 +279,7 @@ QString Widget::nextIn( QString n ) const {
 	return 0;
 }
 QString Widget::nextOut( QString n ) const {
+	//qDebug() << "Widget::nextOut(" << n << ")";
 	if ( n.isNull() )
 		return 0;
 	int i = _outchannels.indexOf( n ) + 1;
@@ -286,6 +287,27 @@ QString Widget::nextOut( QString n ) const {
 		return _outchannels.at( i );
 	return 0;
 }
+
+QString Widget::prevIn( QString n, int step ) const {
+	//qDebug() << "Widget::prevIn(" << n << ")";
+	if ( n.isNull() )
+		return 0;
+	int i = _inchannels.indexOf( n ) - step;
+	//qDebug() << " i=" << i;
+	if ((-1)< i && i < _inchannels.size() )
+		return _inchannels.at( i );
+	return 0;
+}
+QString Widget::prevOut( QString n, int step  ) const {
+	//qDebug() << "Widget::prevOut(" << n << ")";
+	if ( n.isNull() )
+		return 0;
+	int i = _outchannels.indexOf( n ) - step;
+	if ((-1)< i && i<_outchannels.size() )
+		return _outchannels.at( i );
+	return 0;
+}
+
 
 void Widget::addinchannel( QString name ) {
 	//qDebug() << "Widget::addinchannel(" << name << ")";
@@ -360,7 +382,7 @@ void Widget::renamechannels(QString old_name, QString new_name) {
 }
 
 void Widget::debugPrint() {
-        qDebug( "\nWidget::debugPrint()" );
+        //qDebug( "\nWidget::debugPrint()" );
 }
 
 
@@ -428,13 +450,31 @@ int Element::neighbors() const {
 	return 0;
 }
 QStringList Element::neighborsList() const {
-	//qDebug( "self = [%s]", qPrintable( _in.join( "|" ) ) );
-	//qDebug( "neighbor = %s", qPrintable( _parent->nextIn( _in[ _in.size()-1 ] ) ) );
-	Element* neighbor = _parent->getResponsible( _parent->nextIn( _in[ _in.size()-1 ] ), _out[ 0 ] );
 	QStringList tmp;
-	if ( neighbor && neighbor->isSelected() )
-		tmp = neighbor->neighborsList();
-	tmp = _in + tmp;
+	tmp =_in +tmp;
+	//qDebug() << "Initial Neighbor Next";
+	Element* neighbor = _parent->getResponsible( _parent->nextIn( _in[ _in.size()-1 ] ), _out[ 0 ] );
+	//qDebug() << "While Neighbor Next";
+	while ( neighbor && neighbor->isSelected() ){
+		tmp = tmp + neighbor->_in;
+		neighbor = neighbor->_parent->getResponsible( neighbor->_parent->nextIn( neighbor->_in[ neighbor->_in.size()-1 ] ), neighbor->_out[ 0 ] );
+	}
+	//qDebug() << "Initial Neighbor Prev";
+	neighbor = _parent->getResponsible( _parent->prevIn( _in[ _in.size()-1 ] ), _out[ 0 ] );
+	//qDebug() << "While Neighbor Prev";
+	while ( neighbor && neighbor->isSelected() ){
+		int step = 1;
+		Element* n = neighbor;
+		//check that neighbor is not the same as starting element
+		if(n!=this){
+		tmp = neighbor->_in + tmp;	
+		}
+		//check that getResponsible is giving a new neighbor element otherwise try again with larger step size
+		while (n== neighbor){
+			neighbor = neighbor->_parent->getResponsible( neighbor->_parent->prevIn( neighbor->_in[ neighbor->_in.size()-1 ], step ), neighbor->_out[ 0 ] );
+			step++;
+		}
+	}
 	return tmp;
 }
 int Element::followers( int n ) const {
@@ -446,13 +486,31 @@ int Element::followers( int n ) const {
 	return 0;
 }
 QStringList Element::followersList() const {
-	//qDebug( "self = [%s]", qPrintable( _out.join( "|" ) ) );
-	//qDebug( "follower = %s", qPrintable( _parent->nextOut( _out[ _out.size()-1 ] ) ) );
-	Element* follower = _parent->getResponsible( _in[ 0 ], _parent->nextOut(  _out[  _out.size()-1 ] ) );
 	QStringList tmp;
-	if ( follower && follower->isSelected() )
-		tmp = follower->followersList();
-	tmp = _out + tmp;
+	tmp =_out +tmp;
+	//qDebug() << "Initial Follower Next";
+	Element* follower = _parent->getResponsible( _in[ 0 ], _parent->nextOut(  _out[  _out.size()-1 ] ) );
+	//qDebug() << "While Follower Next";
+	while ( follower && follower->isSelected() ){
+		tmp = tmp + follower->_out;
+		follower = follower->_parent->getResponsible( follower->_in[ 0 ], follower->_parent->nextOut(  follower->_out[  follower->_out.size()-1 ] ) );
+	}
+	//qDebug() << "Initial Follower Prev";
+	follower = _parent->getResponsible( _in[ 0 ], _parent->prevOut(  _out[  _out.size()-1 ] ) );
+	//qDebug() << "While Follower Prev";
+	while ( follower && follower->isSelected() ){
+		int step = 1;
+		Element* f = follower;
+		//check that follower is not the same as starting element
+		if(f!=this){
+		tmp = follower->_out + tmp;
+		}
+		//check that getResponsible is giving a new follower element otherwise try again with larger step size
+		while (f== follower){	
+			follower = follower->_parent->getResponsible( follower->_in[ 0 ], follower->_parent->prevOut(  follower->_out[  follower->_out.size()-1 ] ,step) );
+			step++;
+		}
+	}
 	return tmp;
 }
 
