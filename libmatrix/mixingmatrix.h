@@ -84,7 +84,8 @@ public:
 	
 	/// Create Controls
 	// Create controls. return true on success
-	bool createControl( QStringList inchannels, QStringList outchannels);
+	//takes a list of the input and output channels as well as ctrlType the type of the element currently in use
+	bool createControl( QStringList inchannels, QStringList outchannels, std::string ctrlType = "AuxElementSlider");
 
 	/// Layout
 	QSize smallestElement() const;
@@ -159,11 +160,12 @@ Q_PROPERTY( int ins READ inchannels )
 Q_PROPERTY( int outs READ outchannels )
 Q_PROPERTY( QString name READ name WRITE name )
 public:
+
 	/**
 	 * Gets the upper left corner in channelnames.
 	 * And lists with the names of the channels to control.
 	 */
-	Element( QStringList in, QStringList out, Widget*, const char* =0 );
+	Element( QStringList in, QStringList out, Widget*, std::string t, const char* =0);
 	virtual ~Element();
 
 	JackMix::BackendInterface* backend() const { return _parent->backend(); }
@@ -186,7 +188,7 @@ public:
 
 	/**
 	 * Do the things you need to do in the subclasses when the
-	 * selected state changes.
+	 * selected ctrlType changes.
 	 */
 	virtual void isSelected( bool ) {};
 
@@ -278,6 +280,9 @@ private slots:
 private:
 	bool _selected;
 	Widget* _parent;
+public:
+	std::string _type;
+	
 };
 
 
@@ -294,7 +299,7 @@ public:
 	 * Returns a list of the elements this factory can create and
 	 * which support the named number of in and out channels
 	 */
-	virtual QStringList canCreate( int in, int out ) const =0;
+	virtual QStringList canCreate( int in, int out,std::string ctrlType = "AuxElementSlider" ) const =0;
 
 	/**
 	 * Returns an object of the given Elementtype or 0 if this factory can not create it.
