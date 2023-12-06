@@ -57,7 +57,7 @@ void AbstractSlider::setNormalisedValue(double v, bool show_numeric) {
 	v = qMax(v, 0.0);
 	v = qMin(v, 1.0);
 	// The call below will be handled by a virtual method in a derived class
-	// The second argument enables or suppresses an auxilliary numeric display
+	// The second argument enables or suppresses an auxiliary numeric display
 	// of the slider's value.
 	value(dbmin + v*(dbmax-dbmin), show_numeric);
 }
@@ -66,7 +66,7 @@ void AbstractSlider::setMidiValue(int iv) {
 	iv = qMax(iv, 0);
 	iv = qMin(iv, 127);
 	// Some cheap MIDI controllers "dither" (change randomly by 1 or more LSBs)
-	// so we'll suppress any auxilliary display of slider value because it might
+	// so we'll suppress any auxiliary display of slider value because it might
 	// keep popping up annoyingly when the slider isn't being adjusted.
 	setNormalisedValue(iv/127.0, false);
 }

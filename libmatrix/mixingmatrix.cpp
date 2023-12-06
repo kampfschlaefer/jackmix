@@ -151,7 +151,7 @@ void Widget::autoFill() {
 					createControl( QStringList()<<*init, QStringList()<<*outit );
 				// }
 				//else
-					//qDebug( "   (%s|%s) is allready occupied. :(", qPrintable( *init ), qPrintable( *outit ) );
+					//qDebug( "   (%s|%s) is already occupied. :(", qPrintable( *init ), qPrintable( *outit ) );
 			}
 	} else if ( _direction == Vertical ) {
 		//qDebug() << "Available outputs are" << _outchannels.join( "," );
@@ -397,7 +397,7 @@ Element::Element( QStringList in, QStringList out, Widget* p, std::string t, con
 	, _type(t)
 {
 	//qDebug( "MixingMatrix::Element::Element( QStringList '%s', QStringList '%s' )", qPrintable( in.join(",") ), qPrintable( out.join(",") ) );
-	disp_name = 0; // Assumme no label for this element for now
+	disp_name = 0; // Assume no label for this element for now
 	setFrameStyle( QFrame::Raised|QFrame::Panel );
 	setLineWidth( 1 );
 	if (p) p->anotherControl();

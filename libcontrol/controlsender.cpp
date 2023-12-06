@@ -53,7 +53,7 @@ void PortListener::run()
 	running = true;
 	
 	while (running) {
-		// *ix system calls are uninterruptable, so we'll pop back into
+		// *ix system calls are uninterruptible, so we'll pop back into
 		// user-space every 200ms or so
 		if (poll(pfd, npfd, 200) > 0) {
 			do {
@@ -99,7 +99,7 @@ ControlSender::ControlSender(const char* port_name)
 }
 
 ControlSender::~ControlSender() {
-	// close down the port listner thread
+	// close down the port listener thread
 	port_listener->quit();
 	port_listener->wait();
 	// then close the MIDI port
@@ -124,12 +124,12 @@ void ControlSender::unsubscribe(ControlReceiver *receiver) {
 		unsubscribe(receiver, i);
 }
 void ControlSender::unsubscribe(ControlReceiver *receiver, int parameter) {
-	if (parameter > 0 && parameter < maxMidiParam)  // remove all occurances from this routing entry
+	if (parameter > 0 && parameter < maxMidiParam)  // remove all occurrences from this routing entry
 		dtab[parameter].removeAll(receiver);
 }
 
 void ControlSender::despatch_message(int param, int val) {
-	// Ignore parameter index past end of the despatch table.
+	// Ignore parameter index past end of the dispatch table.
 	// That includes the "specials" like MIDI all-off, which, it turns out,
 	// is one of the reserved CC messages referred to as Channel Control messages
 	// (controller # >= 122) See for example:

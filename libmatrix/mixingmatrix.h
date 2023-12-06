@@ -180,7 +180,7 @@ public:
 	QStringList in() const { return _in; }
 	QStringList out() const { return _out; }
 
-	// Returns wether the control is responsible for the named node.
+	// Returns whether the control is responsible for the named node.
 	bool isResponsible( QString in, QString out );
 
 	bool isSelected() const { return _selected; }
@@ -209,7 +209,7 @@ public:
 	 *  on destruction (otherwise there may be a segfault at closedown)
 	 */
 	void invalidateRegistry() { _parent = 0; };
-	/** Replace all occurances of the old channel name with the new one in both the
+	/** Replace all occurrences of the old channel name with the new one in both the
 	 *  input and output channel lists
 	 */
 	void renamechannels(QString old_name, QString new_name);
@@ -243,7 +243,7 @@ protected:
 	 */
 	/** The current parameter associated with each delegate. */
 	QLayout* layout();
-	/** If the derrived class has a label, this is it.
+	/** If the derived class has a label, this is it.
 	 *  Used to change text if an input or output channel is renamed
 	 */
 	QLabel* disp_name;

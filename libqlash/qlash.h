@@ -95,7 +95,7 @@ class qLashClient : public QObject
 
 	signals:
 		/**
-		 * @brief The server tells us to quit immediatly.
+		 * @brief The server tells us to quit immediately.
 		 *
 		 * ...without saving or user interaction ( if possible, otherwise
 		 * handling of lash-sessions gets very painful ).

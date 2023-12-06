@@ -111,7 +111,7 @@ Mono2StereoElement::Mono2StereoElement( QStringList inchannel, QStringList outch
 	connect( _volume, SIGNAL( replace() ), this, SLOT( slot_simple_replace() ) );
 
 	// WATCH OUT: Order of initialisation is really important!
-	// Make sure all the widgets are contructed before adding them to the delegates list
+	// Make sure all the widgets are constructed before adding them to the delegates list
 
 	// Initial MIDI parameters and associated AbstractSliders
 	midi_params.append(0);
@@ -208,7 +208,7 @@ Stereo2StereoElement::Stereo2StereoElement( QStringList inchannels, QStringList 
 	menu()->addAction( assign );
 	
 	// WATCH OUT: Order of initialisation is really important!
-	// Make sure all the widgets are contructed before adding them to the delegates list
+	// Make sure all the widgets are constructed before adding them to the delegates list
 
 	// Initial MIDI parameters and associated AbstractSliders
 	midi_params.append(0);

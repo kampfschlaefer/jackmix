@@ -18,7 +18,7 @@ See:
 
 
 JackMix is a matrix mixer allowing p input channels to be mixed into
-q output channles by a matrix of faders. It relies on the Jack framework
+q output channels by a matrix of faders. It relies on the Jack framework
 to route these inputs and outputs.
 
 There's a video about Nick using jackmix at [https://vimeo.com/75655401]

@@ -39,7 +39,7 @@
  *    infinite loop is born.
  * <dt>The <b>REAL</b> Solution:<dd>
  *    Plug the UpdateFilter between the server-connection and the slider.
- *    Everytime the server sends updates the filter will block the signals
+ *    Every time the server sends updates the filter will block the signals
  *    from the inside.
  * </dl>
  *

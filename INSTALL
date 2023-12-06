@@ -2,7 +2,7 @@ Installation
 ------------
 
 
-To install JackMix you basicly need to do:
+To install JackMix you basically need to do:
  scons
 
 JackMix requires Qt4.2 or higher, the jack-audio-connection-kit

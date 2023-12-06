@@ -211,7 +211,7 @@ void MainWindow::init() {
 	connect (_backend, SIGNAL(outputLevelsChanged(JackMix::BackendInterface::levels_t)),
                  _outputswidget, SLOT(update_peak_inidicators(JackMix::BackendInterface::levels_t)));
 
-	// Connect the backend's MIDI control events to the MIDI listener's despatcher.
+	// Connect the backend's MIDI control events to the MIDI listener's dispatcher.
 	connect (_backend, SIGNAL(cc_message(int, int)),
 		 midiControlSender, SLOT(despatch_message(int, int)));
 
@@ -379,7 +379,7 @@ void MainWindow::saveFile( QString path ) {
 		//qDebug()<<" Responsible element for " << in << ": " << _inputswidget->getResponsible(in, in);
 		const QList<int> &mp = _inputswidget->getResponsible(in,in)->midiParameters();
 		// I'm going to use a loop to make it clear ordering is important
-		// (actually, foreach maitains ordering of a QList in Qt 4.8, but this might change
+		// (actually, foreach maintains ordering of a QList in Qt 4.8, but this might change
 		QStringList mpl;
 		for (int i = 0 ; i < mp.size() ; i++ )
 			mpl << QString("%1").arg(mp.at(i));
@@ -420,7 +420,7 @@ void MainWindow::saveFile( QString path ) {
 		foreach( QString out, outs ) {
 			Element* tmp = _mixerwidget->getResponsible( in, out );
 			if ( !savedelements.contains( tmp ) && ( tmp->in().size() > 1 || tmp->out().size() > 1 ) ) {
-				// Save all the midi conotrol parameters for this compound element
+				// Save all the midi control parameters for this compound element
 				xml += "<element midi=\"";
 				const QList<int> &mp = tmp->midiParameters();
 				QStringList mpl;

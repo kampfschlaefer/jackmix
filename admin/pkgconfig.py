@@ -30,7 +30,7 @@ def CheckForPKGConfig( context, version='0.0.0' ):
         return ret
 
 #
-# Checks for the existance of the package and returns the packages flags.
+# Checks for the existence of the package and returns the packages flags.
 #
 # This should allow caching of the flags so that pkg-config is called only once.
 #
