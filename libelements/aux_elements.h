@@ -44,7 +44,7 @@ class AuxElement;
 class AuxElementSlider;
 	
 /**
- * Simpliest form of a control connecting one input with one output.
+ * Simplest form of a control connecting one input with one output.
  */
 class AuxElement : public JackMix::MixingMatrix::Element
                  , public dB2VolCalc {

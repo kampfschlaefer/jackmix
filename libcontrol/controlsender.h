@@ -22,7 +22,7 @@
 #ifndef CONTROLSENDER_H
 #define CONTROLSENDER_H
 
-/** ControlSender Create and Service incomming MIDI control sequences
+/** ControlSender Create and Service incoming MIDI control sequences
  * 
  * An application should have one instance of this class for each MIDI port
  * which is requires monitoring (so jackmix has only one). The lifecycle
@@ -96,7 +96,7 @@ protected:
 	int port_id;
 	snd_seq_t *seq_handle;
 	static constexpr int maxMidiParam = 120;
-	/** Despatch table
+	/** Dispatch table
 	 *  An array of vectors, one for each MIDI parameter read from the input
 	 *  channel.
 	 */
@@ -123,9 +123,9 @@ public:
 	void quit(void) { running = false; };
 
 signals:
-	/** emit incomming MIDI messages
-	 * @param param  Parameter of the incomming control message
-	 * @param val Value of the incomming message
+	/** emit incoming MIDI messages
+	 * @param param  Parameter of the incoming control message
+	 * @param val Value of the incoming message
 	 */
 	void message(int param, int val);
 

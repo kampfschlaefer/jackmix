@@ -42,13 +42,13 @@ class MidiControlChannelAssigner : public QDialog
 {
 Q_OBJECT
 public:
-	/** Contstructor
-	 *  Build a dialoge with the given title and label, and with the initial values supplied
+	/** Constructor
+	 *  Build a dialog with the given title and label, and with the initial values supplied
 	 *  as a list of integers. Midi supports control channels in the range 0-119;
 	 *  120 and above are reserved for "Channel Mode Messages"
 	 *  (see http://www.midi.org/techspecs/midimessages.php). If the pointer supplied in init
 	 *  is not null, it is assumed to reference an array of int large enough to hold one initial
-	 *  value for each requested conotrol channel.
+	 *  value for each requested control channel.
 	 * 
 	 *  The controls parameter is a list of strings which identify to the user the slider within
 	 *  the element being controlled, so a Mono-to-Stereo element may request a MIDI channel to

@@ -67,14 +67,14 @@ Q_OBJECT
 		/**
 		 * @brief Add a channel and return true on success.
 		 *
-		 * If the actual backend doesn't support adding and removing, thats
+		 * If the actual backend doesn't support adding and removing, that's
 		 * okay. Just return false..
 		 */
 		virtual bool addOutput( QString ) =0;
 		/**
 		 * @brief Add a channel and return true on success.
 		 *
-		 * If the actual backend doesn't support adding and removing, thats
+		 * If the actual backend doesn't support adding and removing, that's
 		 * okay. Just return false..
 		 */
 		virtual bool addInput(QString name) =0;
@@ -95,14 +95,14 @@ Q_OBJECT
 		/**
 		 * @brief Remove a channel and return true on success.
 		 *
-		 * If the actual backend doesn't support adding and removing, thats
+		 * If the actual backend doesn't support adding and removing, that's
 		 * okay. Just return false..
 		 */
 		virtual bool removeOutput( QString ) =0;
 		/**
 		 * @brief Remove a channel and return true on success.
 		 *
-		 * If the actual backend doesn't support adding and removing, thats
+		 * If the actual backend doesn't support adding and removing, that's
 		 * okay. Just return false..
 		 */
 		virtual bool removeInput( QString ) =0;
@@ -113,14 +113,14 @@ Q_OBJECT
                 // that you can ignore it, and no signals will be sent; the input
                 // and output potentiometers remain dark
                 //
-                // If you would like to impelment it, the idea is to record the
+                // If you would like to implement it, the idea is to record the
                 // abs maximum level of each buffer (as floats in the range 0..1)
                 // newInputLevel(QString key, float max) and newOutputLevel will
                 // do that for you. When the levels for each input and output have
                 // been recorded, call report() to signal the Widget to change the
                 // colours of the input and output elements
 		//
-		// Similarly, of the backend of the dervied class uses its own
+		// Similarly, of the backend of the derived class uses its own
 		// MIDI message handler, it can use the cc_message signal to notify
 		// control changes.
                 
@@ -161,7 +161,7 @@ Q_OBJECT
 		
 		/** How long a fader change takes to execute (for de-zipping) */
 		constexpr static float interp_time {.08};
-		/** Fader iterpolation length in samples. It is initialised
+		/** Fader interpolation length in samples. It is initialised
 		 *  by the class implementing this interface based on the
 		 *  interp_time and the backend's sample rate, probably by
 		 *  calling the utility function set_interp_len
@@ -185,7 +185,7 @@ Q_OBJECT
 		struct FaderState {
 			float target;  /**< The target setting of the fader */
 			float current; /**< The current setting of the fader,
-				            changing troughout interpolation */
+				            changing throughout interpolation */
 			unsigned int num_steps; /**< The number of steps required
 			                             to interpolate this fader change */
 			unsigned int cur_step;  /**< Count of steps in this interpolation */
@@ -209,7 +209,7 @@ Q_OBJECT
 			FaderState& operator=(float volume);
 			
 			/**
-			 * Qt types (particuarly qHash, qMap) need a default constructor
+			 * Qt types (particularly qHash, qMap) need a default constructor
 			 * because they don't have copy constructors. See:
 			 *  https://doc.qt.io/qt-5/qobject.html#no-copy-constructor-or-assignment-operator
 			 * So we have to supply one for FaderState so it plays nice with
@@ -235,7 +235,7 @@ Q_OBJECT
 		 * 
 		 * This assumes samples are stored in a buffer which can be
 		 * subscripted via [] and that they are all multiplied
-		 * by a constant which changes continuously througout
+		 * by a constant which changes continuously throughout
 		 * the length of the buffer. If that isn't true for the
 		 * backend implementing this interface, it will have
 		 * to provide its own code. You can't have virtual

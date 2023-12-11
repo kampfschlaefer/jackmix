@@ -42,7 +42,7 @@ public:
 
 public slots:
 	virtual void value(double);
-	// Abstract class has no timed auxilliary displays, so ignore second argument if supplied
+	// Abstract class has no timed auxiliary displays, so ignore second argument if supplied
 	virtual void value(double n, bool) { value(n); };
 	double value() const { return _value; };
 	virtual void setNormalisedValue(double, bool show_numeric=true); //<! Set the slider position in the range (0.0, 1.0)

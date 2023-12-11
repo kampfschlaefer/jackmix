@@ -57,8 +57,8 @@ public:
 	QStringList canCreate() const {
 		return QStringList()<<"AuxElement";
 	}
-	//ctrlType represens the type of the element that will be replaced with the new element
-	//ctrlType is defalut set to AuxElementSlider so an AuxElement will be the default output
+	//ctrlType represents the type of the element that will be replaced with the new element
+	//ctrlType is default set to AuxElementSlider so an AuxElement will be the default output
 	QStringList canCreate( int in, int out, std::string ctrlType = "AuxElementSlider" ) const {
 		if ( in==1 && out==1 && ctrlType=="AuxElementSlider") return QStringList()<<"AuxElement";
 		if ( in==1 && out==1 && ctrlType=="AuxElement") return QStringList()<<"AuxElementSlider";
@@ -103,7 +103,7 @@ AuxElement::AuxElement( QStringList inchannel, QStringList outchannel, MixingMat
 	connect( _poti, SIGNAL( select() ), this, SLOT( slot_simple_select() ) );
 	connect( _poti, SIGNAL( replace() ), this, SLOT( slot_simple_replace() ) );
 	
-	midi_params.append(0);        // Initial MIDI paramater number
+	midi_params.append(0);        // Initial MIDI parameter number
 	midi_delegates.append(_poti); //   for the potentiometer
 	//qDebug()<<"There are "<<midi_delegates.size()<<" Midi delegates";
 
@@ -149,7 +149,7 @@ AuxElementSlider::AuxElementSlider( QStringList inchannel, QStringList outchanne
 	connect( _poti, SIGNAL( select() ), this, SLOT( slot_simple_select() ) );
 	connect( _poti, SIGNAL( replace() ), this, SLOT( slot_simple_replace() ) );
 	
-	midi_params.append(0);        // Initial MIDI paramater number
+	midi_params.append(0);        // Initial MIDI parameter number
 	midi_delegates.append(_poti); //   for the potentiometer
 	//qDebug()<<"There are "<<midi_delegates.size()<<" Midi delegates";
 
