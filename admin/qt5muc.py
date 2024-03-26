@@ -105,7 +105,7 @@ def generate( env ):
                                         ret = command
                 return ret
 
-        moc = CommandFromList( ( "moc", "moc5", "moc-qt5" ), "moc 5." )
+        moc = CommandFromList( ( "moc", "moc5", "moc-qt5" ), "5." )
         if len( moc ) < 3:
                 env.Exit( 1 )
 
